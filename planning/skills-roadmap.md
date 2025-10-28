@@ -3,7 +3,7 @@
 **Project**: Claude Code Skills Collection
 **Maintainer**: Jeremy Dawes (Jezweb)
 **Repository**: https://github.com/jezweb/claude-skills
-**Last Updated**: 2025-10-26
+**Last Updated**: 2025-10-28
 
 ---
 
@@ -161,6 +161,34 @@ Result: Integrated solution from atomic skills
 - Helper scripts (test-access-jwt.sh, create-service-token.sh)
 
 **Production Validated**: @hono/cloudflare-access actively maintained, 3k+ weekly downloads
+
+---
+
+#### typescript-mcp
+**Status**: ✅ Complete (2025-10-28)
+**Priority**: High
+**Dependencies**: None (integrates with cloudflare-worker-base, cloudflare-d1, cloudflare-kv, cloudflare-r2, cloudflare-vectorize)
+**Actual Dev Time**: 4.5 hours
+**Token Savings**: ~70%
+**Errors Prevented**: 10+
+
+**What It Does**:
+- TypeScript MCP server development using official @modelcontextprotocol/sdk
+- 6 production-ready templates (basic, tool-server, resource-server, full-server, authenticated, wrangler config)
+- 7 comprehensive reference guides (tool patterns, authentication, testing, deployment, Cloudflare integration, common errors, agents comparison)
+- Authentication patterns for API keys, OAuth 2.0, Zero Trust, JWT
+- Cloudflare service integrations (D1, KV, R2, Vectorize, Workers AI, Queues)
+- Error prevention with GitHub issue sources (export syntax, memory leaks, schema validation, CORS, auth bypass)
+- Deployment workflows with Wrangler and CI/CD
+- Testing strategies (unit tests, MCP Inspector, E2E)
+- Helper scripts (init-mcp-server.sh, test-mcp-connection.sh)
+
+**Production Validated**: Official MCP SDK examples + Cloudflare MCP server
+
+**Auto-Trigger Keywords**:
+- `typescript mcp`, `mcp server`, `model context protocol`, `@modelcontextprotocol/sdk`
+- `mcp tools`, `mcp resources`, `cloudflare mcp`, `streamablehttpservertransport`
+- Error keywords: `export syntax error mcp`, `mcp schema validation failure`, `mcp memory leak`
 
 ---
 
