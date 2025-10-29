@@ -3,7 +3,7 @@
 **Project**: Claude Code Skills Collection
 **Maintainer**: Jeremy Dawes (Jezweb)
 **Repository**: https://github.com/jezweb/claude-skills
-**Last Updated**: 2025-10-28
+**Last Updated**: 2025-10-29
 
 ---
 
@@ -161,6 +161,33 @@ Result: Integrated solution from atomic skills
 - Helper scripts (test-access-jwt.sh, create-service-token.sh)
 
 **Production Validated**: @hono/cloudflare-access actively maintained, 3k+ weekly downloads
+
+---
+
+#### cloudflare-sandbox
+**Status**: ✅ Complete (2025-10-29)
+**Priority**: High
+**Dependencies**: cloudflare-worker-base, cloudflare-durable-objects (for understanding)
+**Actual Dev Time**: 5 hours
+**Token Savings**: ~79%
+**Errors Prevented**: 10
+
+**What It Does**:
+- Cloudflare Sandboxes SDK for secure code execution in Linux containers
+- Complete 3-layer architecture guide (Workers + Durable Objects + Containers)
+- Container lifecycle and persistence patterns (Active/Idle/Destroy states)
+- Session management for stateful multi-step workflows
+- Sandbox naming strategies (per-user, per-session, per-task, per-conversation)
+- 4 production templates (basic-executor, chat-agent, ci-cd, workspace)
+- 4 comprehensive reference guides (persistence, sessions, errors, naming)
+- Setup and validation scripts
+- Code interpreter API (Jupyter-like execution)
+- Git operations (clone, diff, commit)
+- Background process management
+- R2/KV integration for file persistence
+- Handles ephemeral container issues (files deleted after ~10min idle)
+
+**Production Validated**: Based on official Cloudflare tutorials (Claude Code integration, AI Code Executor)
 
 ---
 
@@ -1806,15 +1833,16 @@ Calculate:
 ## 📈 Progress Tracking
 
 ### Overall Progress:
-- **Completed**: 30 skills ✅ (includes 10 skills not listed in main table)
-- **In Main Table**: 20/33 complete (61%)
-- **Additional Complete Skills**: cloudflare-full-stack-scaffold, cloudflare-full-stack-integration, cloudflare-email-routing, cloudflare-turnstile, cloudflare-cron-triggers, cloudflare-browser-rendering, sveltia-cms, tinacms, session-handoff-protocol, zustand-state-management
+- **Completed**: 50 skills ✅ ALL COMPLETE!
+- **In Main Table Below**: 39 skills detailed
+- **Not in Table** (11 skills): vercel-kv, vercel-blob, neon-vercel-postgres, auth-js, fastmcp, typescript-mcp, project-planning, project-session-management, nextjs, sveltia-cms, zustand-state-management
 - **Batch 1 - Cloudflare Foundation**: 9/9 complete (100%) 🎯
-- **Batch 2 - AI SDK & Auth & Frameworks**: 4/6 complete (67%)
-- **Batch 3 - Cloudflare Advanced**: 3/6 complete (50%) 🎯
+- **Batch 2 - AI SDK & Auth & Frameworks**: 6/6 complete (100%) 🎯
+- **Batch 3 - Cloudflare Advanced**: 6/6 complete (100%) 🎯
 - **Batch 4 - Data & Utilities**: 2/2 complete (100%) 🎯
-- **Batch 5 - AI API/SDK Suite**: 0/9 planned (0%) ⭐
-- **Batch 6 - UI & Generative UI**: 1/1 complete (100%) 🎯 ⭐ NEW!
+- **Batch 5 - AI API/SDK Suite**: 9/9 complete (100%) 🎯
+- **Batch 6 - UI & Generative UI**: 1/1 complete (100%) 🎯
+- **New Planned**: 1 skill (cloudflare-sandboxing)
 
 ### Skills by Status:
 
@@ -1840,25 +1868,25 @@ Calculate:
 | **react-hook-form-zod** | **✅ Complete** | **4h** | **~60%** | **12** | High |
 | **cloudflare-workflows** | **✅ Complete** | **4h** | **~67%** | **5** | Critical |
 | **cloudflare-hyperdrive** | **✅ Complete** | **5h** | **~58%** | **10** | High |
-| cloudflare-browser-rendering | Planned | 5-6h (est.) | ~50% | 8+ | Medium |
-| cloudflare-cron-triggers | Planned | 3-4h (est.) | ~40% | 6+ | Medium |
-| cloudflare-email-workers | Planned | 4-5h (est.) | ~45% | 7+ | Medium |
+| **cloudflare-browser-rendering** | **✅ Complete** | **5h** | **~52%** | **8** | Medium |
+| **cloudflare-cron-triggers** | **✅ Complete** | **3.5h** | **~45%** | **4** | Medium |
+| **cloudflare-email-routing** | **✅ Complete** | **4h** | **~48%** | **5** | Medium |
 | **tanstack-query** | **✅ Complete** | **4h** | **~55%** | **8** | Medium |
 | **drizzle-orm-d1** | **✅ Complete** | **5.5h** | **~60%** | **12** | High |
-| claude-api | Planned | 5-6h (est.) | ~62% | 10+ | Critical |
-| claude-agent-sdk | Planned | 6-8h (est.) | ~65% | 12+ | High |
-| **openai-api** | **✅ Complete** | **7h** | **~60%** | **10** | Critical |
-| **openai-responses** | **✅ Complete** | **5.5h** | **~65%** | **8** | Critical |
-| openai-assistants | Planned | 5-6h (est.) | ~55% | 12+ | High |
-| openai-realtime | Planned | 4-5h (est.) | ~50% | 8+ | Medium |
-| openai-batch | Planned | 3-4h (est.) | ~50% | 6+ | Medium |
-| openai-agents-sdk | Planned | 6-8h (est.) | ~60% | 10+ | Low |
-| google-gemini-api | Planned | 8-10h (est.) | ~65% | 15+ | Critical |
+| **claude-api** | **✅ Complete** | **6h** | **~62%** | **8** | Critical |
+| **claude-agent-sdk** | **✅ Complete** | **7h** | **~65%** | **10** | High |
+| **openai-api** | **✅ Complete** | **7h** | **~60%** | **8** | Critical |
+| **openai-responses** | **✅ Complete** | **5.5h** | **~65%** | **6** | Critical |
+| **openai-assistants** | **✅ Complete** | **6h** | **~58%** | **10** | High |
+| **openai-agents** | **✅ Complete** | **8h** | **~63%** | **12** | High |
+| **google-gemini-api** | **✅ Complete** | **8h** | **~65%** | **8** | Critical |
+| **google-gemini-embeddings** | **✅ Complete** | **4h** | **~60%** | **6** | Medium |
+| **thesys-generative-ui** | **✅ Complete** | **6h** | **~62%** | **8** | High |
 
-**Total Skills In Table**: 34 (21 complete, 13 to build)
-**Total Skills In Repo**: 31 (all complete)
-**Batch 5 (Planned)**: 9 skills - AI API/SDK Suite (Claude, OpenAI, Google Gemini)
-**Batch 6 (Complete)**: 1 skill - UI & Generative UI (TheSys C1)
+**Total Skills In Table**: 48 (all complete ✅)
+**Total Skills In Repo**: 50 (all complete ✅)
+**Not in Table**: 11 skills (all complete) - vercel-kv, vercel-blob, neon-vercel-postgres, auth-js, fastmcp, typescript-mcp, project-planning, project-session-management, nextjs, sveltia-cms, zustand-state-management
+**Planned Next**: cloudflare-sandboxing
 
 ---
 
@@ -1897,6 +1925,44 @@ A skill is considered "complete" when:
 ---
 
 ## 🚀 Future Skills (Backlog)
+
+### New Skill: cloudflare-sandboxing
+
+**Status**: Planned (2025-10-29)
+**Priority**: High
+**Estimated Dev Time**: 4-6 hours
+**Token Savings**: ~55% (estimated)
+**Errors Prevented**: 8+ (estimated)
+
+**Goal**: Comprehensive skill for Cloudflare Sandboxing API - create isolated execution environments for running untrusted code safely.
+
+**What It Does**:
+- Sandbox creation and configuration
+- Code execution in isolated environments
+- Timeout and resource limit management
+- Security best practices
+- Error handling patterns
+- Integration with Workers
+
+**Use Cases**:
+- Code playgrounds and REPLs
+- User-submitted script execution
+- Plugin systems
+- Multi-tenant applications
+- AI code generation testing
+
+**Documentation References**:
+- Cloudflare Sandboxing docs
+- Worker binding patterns
+- Security considerations
+
+**Templates to Include**:
+- Basic sandbox execution
+- Timeout handling
+- Error boundaries
+- Resource limits
+
+---
 
 ### Planned Enhancement: cloudflare-full-stack-scaffold v2.0
 
@@ -2033,6 +2099,6 @@ A skill is considered "complete" when:
 
 ---
 
-**Last Updated**: 2025-10-26 (Added: Skill #27 - thesys-generative-ui complete, Batch 6 - UI & Generative UI)
-**Next Review**: 2025-10-31
+**Last Updated**: 2025-10-29 (All 50 skills complete! Added cloudflare-sandboxing to roadmap)
+**Next Review**: 2025-11-29
 **Maintainer**: Jeremy Dawes | jeremy@jezweb.net
