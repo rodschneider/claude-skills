@@ -53,6 +53,28 @@ const token = await handleUpload({ ... });
 
 ---
 
+## Production Templates
+
+Ready-to-use React components for common file upload patterns:
+
+### UI Components
+- **`templates/drag-drop-upload.tsx`** - Complete drag & drop upload with progress tracking, file preview, error handling, and batch upload support
+- **`templates/avatar-upload-flow.tsx`** - Full avatar upload flow with image preview, validation, delete old avatar, and server action variant
+- **`templates/file-list-manager.tsx`** - Display uploaded files with view/download/delete actions, pagination, and file type icons
+
+### Configuration
+- **`templates/package.json`** - Dependencies and versions for Vercel Blob + Next.js
+
+All templates include:
+- ✅ File validation (type, size)
+- ✅ Progress tracking
+- ✅ Error handling
+- ✅ TypeScript types
+- ✅ Server action examples
+- ✅ Client upload tokens (secure)
+
+---
+
 ## Errors Prevented (10 Total)
 
 1. Missing environment variable
