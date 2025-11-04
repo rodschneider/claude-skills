@@ -1,26 +1,29 @@
 ---
 name: better-chatbot
 description: |
-  This skill provides project-specific coding conventions, repository structure standards, testing patterns, and contribution guidelines for the better-chatbot project (https://github.com/cgoinglove/better-chatbot). Use this skill when contributing to or working with better-chatbot to ensure code follows established patterns for server actions, tool abstractions, workflow systems, and E2E testing orchestration.
+  This skill provides project-specific coding conventions, architectural principles, repository structure standards, testing patterns, and contribution guidelines for the better-chatbot project (https://github.com/cgoinglove/better-chatbot). Use this skill when contributing to or working with better-chatbot to understand the design philosophy and ensure code follows established patterns.
 
-  Use when: working in better-chatbot repository, contributing features/fixes, following server action validators, setting up Playwright tests, understanding tool abstraction system (MCP/Workflow/Default), implementing workflows, handling multi-AI provider integration
+  Includes: API architecture deep-dive, three-tier tool system (MCP/Workflow/Default), component design patterns, database repository patterns, architectural principles (progressive enhancement, defensive programming, streaming-first), practical templates for adding features (tools, routes, repositories).
 
-  Keywords: better-chatbot, chatbot contribution, better-chatbot standards, chatbot development, AI chatbot patterns, Next.js chatbot, Vercel AI SDK chatbot, MCP tools, workflow builder, server action validators, better-chatbot testing, validatedActionWithUser, tool abstraction, DAG workflows
+  Use when: working in better-chatbot repository, contributing features/fixes, understanding architectural decisions, following server action validators, implementing tools/workflows, setting up Playwright tests, adding API routes, designing database queries, building UI components, handling multi-AI provider integration
+
+  Keywords: better-chatbot, chatbot contribution, better-chatbot standards, chatbot development, AI chatbot patterns, API architecture, three-tier tool system, repository pattern, progressive enhancement, defensive programming, streaming-first, compound component pattern, Next.js chatbot, Vercel AI SDK chatbot, MCP tools, workflow builder, server action validators, tool abstraction, DAG workflows, shared business logic, safe() wrapper, tool lifecycle
 license: MIT
 metadata:
-  version: 1.0.0
+  version: 2.0.0
   author: Jeremy Dawes (Jez) | Jezweb
   upstream: https://github.com/cgoinglove/better-chatbot
-  last_verified: 2025-10-29
+  last_verified: 2025-11-04
   tech_stack: Next.js 15, Vercel AI SDK 5, Better Auth, Drizzle ORM, PostgreSQL, Playwright
   token_savings: ~60%
   errors_prevented: 8
+  enhancement_date: 2025-11-04
 ---
 
 # better-chatbot Contribution & Standards Skill
 
 **Status**: Production Ready
-**Last Updated**: 2025-10-29
+**Last Updated**: 2025-11-04 (v2.0.0 - Enhanced with architecture deep-dive)
 **Dependencies**: None (references better-chatbot project)
 **Latest Versions**: Next.js 15.3.2, Vercel AI SDK 5.0.82, Better Auth 1.3.34, Drizzle ORM 0.41.0
 
@@ -67,9 +70,784 @@ better-chatbot/
 └── drizzle/                    # Database migrations
 ```
 
-### Key Concepts
+---
 
-**1. Server Action Validators** (`lib/action-utils.ts`)
+## API Architecture & Design Patterns
+
+### Route Structure Philosophy
+
+**Convention**: RESTful resources with Next.js App Router conventions
+
+```
+/api/[resource]/route.ts         → GET/POST collection endpoints
+/api/[resource]/[id]/route.ts    → GET/PUT/DELETE item endpoints
+/api/[resource]/actions.ts       → Server actions (mutations)
+```
+
+### Standard Route Handler Pattern
+
+**Location**: `src/app/api/`
+
+**Template structure**:
+```typescript
+export async function POST(request: Request) {
+  try {
+    // 1. Parse and validate request body with Zod
+    const json = await request.json();
+    const parsed = zodSchema.parse(json);
+
+    // 2. Check authentication
+    const session = await getSession();
+    if (!session?.user.id) return new Response("Unauthorized", { status: 401 });
+
+    // 3. Check authorization (ownership/permissions)
+    if (resource.userId !== session.user.id) return new Response("Forbidden", { status: 403 });
+
+    // 4. Load/compose dependencies (tools, context, etc.)
+    const tools = await loadMcpTools({ mentions, allowedMcpServers });
+
+    // 5. Execute with streaming if applicable
+    const stream = createUIMessageStream({ execute: async ({ writer }) => { ... } });
+
+    // 6. Return response
+    return createUIMessageStreamResponse({ stream });
+  } catch (error) {
+    logger.error(error);
+    return Response.json({ message: error.message }, { status: 500 });
+  }
+}
+```
+
+### Shared Business Logic Pattern
+
+**Key Insight**: Extract complex orchestration logic into shared utilities
+
+**Example**: `src/app/api/chat/shared.chat.ts`
+
+This file demonstrates how to handle:
+- Tool loading (`loadMcpTools`, `loadWorkFlowTools`, `loadAppDefaultTools`)
+- Filtering and composition (`filterMCPToolsByMentions`, `excludeToolExecution`)
+- System prompt building (`mergeSystemPrompt`)
+- Manual tool execution handling
+
+**Pattern**:
+```typescript
+// Shared utility function
+export const loadMcpTools = (opt?) =>
+  safe(() => mcpClientsManager.tools())
+    .map((tools) => {
+      if (opt?.mentions?.length) {
+        return filterMCPToolsByMentions(tools, opt.mentions);
+      }
+      return filterMCPToolsByAllowedMCPServers(tools, opt?.allowedMcpServers);
+    })
+    .orElse({} as Record<string, VercelAIMcpTool>);
+
+// Used in multiple routes
+// - /api/chat/route.ts
+// - /api/chat/temporary/route.ts
+// - /api/workflow/[id]/execute/route.ts
+```
+
+**Why**: DRY principle, single source of truth, consistent behavior
+
+### Defensive Programming with safe()
+
+**Library**: `ts-safe` for functional error handling
+
+**Philosophy**: Never crash the chat - degrade features gracefully
+
+```typescript
+// Returns empty object on failure, chat continues
+const MCP_TOOLS = await safe()
+  .map(errorIf(() => !isToolCallAllowed && "Not allowed"))
+  .map(() => loadMcpTools({ mentions, allowedMcpServers }))
+  .orElse({});  // Graceful fallback
+```
+
+### Streaming-First Architecture
+
+**Pattern**: Use Vercel AI SDK streaming utilities
+
+```typescript
+// In route handler
+const stream = createUIMessageStream({
+  execute: async ({ writer }) => {
+    // Stream intermediate results
+    writer.write({ type: "text", content: "Processing..." });
+
+    // Execute with streaming
+    const result = await streamText({
+      model,
+      messages,
+      tools,
+      onChunk: (chunk) => writer.write({ type: "text-delta", delta: chunk })
+    });
+
+    return { output: result };
+  }
+});
+
+return createUIMessageStreamResponse({ stream });
+```
+
+**Why**: Live feedback, better UX, handles long-running operations
+
+---
+
+## Tool System Deep Dive
+
+### Three-Tier Tool Architecture
+
+**Design Goal**: Balance extensibility (MCP), composability (workflows), and batteries-included (default tools)
+
+```
+Tier 1: MCP Tools (External)
+  ↓ Can be used in
+Tier 2: Workflow Tools (User-Created)
+  ↓ Can be used in
+Tier 3: Default Tools (Built-In)
+```
+
+### Tier 1: MCP Tools (External Integrations)
+
+**Location**: `src/lib/ai/mcp/`
+
+**Philosophy**: Model Context Protocol servers become first-class tools
+
+**Manager Pattern**:
+```typescript
+// mcp-manager.ts - Singleton for all MCP clients
+export const mcpClientsManager = globalThis.__mcpClientsManager__;
+
+// API:
+mcpClientsManager.init()              // Initialize configured servers
+mcpClientsManager.getClients()        // Get connected clients
+mcpClientsManager.tools()             // Get all tools as Vercel AI SDK tools
+mcpClientsManager.toolCall(serverId, toolName, args)  // Execute tool
+```
+
+**Why Global Singleton?**
+- Next.js dev hot-reloading → reconnecting MCP servers on every change is expensive
+- Persists across HMR updates
+- Production: only one instance needed
+
+**Tool Wrapping**:
+```typescript
+// MCP tools are tagged with metadata for filtering
+type VercelAIMcpTool = Tool & {
+  _mcpServerId: string;
+  _originToolName: string;
+  _toolName: string; // Transformed for AI SDK
+};
+
+// Branded type for runtime checking
+VercelAIMcpToolTag.create(tool)
+```
+
+### Tier 2: Workflow Tools (Visual Composition)
+
+**Location**: `src/lib/ai/workflow/`
+
+**Philosophy**: Visual workflows become callable tools via `@workflow_name`
+
+**Node Types**:
+```typescript
+enum NodeKind {
+  Input = "input",      // Entry point
+  LLM = "llm",          // AI reasoning
+  Tool = "tool",        // Call MCP/default tools
+  Http = "http",        // HTTP requests
+  Template = "template",// Text processing
+  Condition = "condition", // Branching logic
+  Output = "output",    // Exit point
+}
+```
+
+**Execution with Streaming**:
+```typescript
+// Workflows stream intermediate results
+executor.subscribe((e) => {
+  if (e.eventType == "NODE_START") {
+    dataStream.write({
+      type: "tool-output-available",
+      toolCallId,
+      output: { status: "running", node: e.nodeId }
+    });
+  }
+  if (e.eventType == "NODE_END") {
+    dataStream.write({
+      type: "tool-output-available",
+      toolCallId,
+      output: { status: "complete", result: e.result }
+    });
+  }
+});
+```
+
+**Key Feature**: Live progress updates in chat UI
+
+### Tier 3: Default Tools (Built-In Capabilities)
+
+**Location**: `src/lib/ai/tools/`
+
+**Categories**:
+```typescript
+export const APP_DEFAULT_TOOL_KIT = {
+  [AppDefaultToolkit.Visualization]: {
+    CreatePieChart, CreateBarChart, CreateLineChart,
+    CreateTable, CreateTimeline
+  },
+  [AppDefaultToolkit.WebSearch]: {
+    WebSearch, WebContent
+  },
+  [AppDefaultToolkit.Http]: {
+    Http
+  },
+  [AppDefaultToolkit.Code]: {
+    JavascriptExecution, PythonExecution
+  },
+};
+```
+
+**Tool Implementation Pattern**:
+```typescript
+// Execution returns "Success", rendering happens client-side
+export const createTableTool = createTool({
+  description: "Create an interactive table...",
+  inputSchema: z.object({
+    title: z.string(),
+    columns: z.array(...),
+    data: z.array(...)
+  }),
+  execute: async () => "Success"
+});
+
+// Client-side rendering in components/tool-invocation/
+export function InteractiveTable({ part }) {
+  const args = part.input;
+  return <DataTable columns={args.columns} data={args.data} />;
+}
+```
+
+**Why Separation?**
+- Server: Pure data/business logic
+- Client: Rich visualization/interaction
+- Easier testing, better performance
+
+### Tool Lifecycle
+
+```
+1. Request → /api/chat/route.ts
+2. Parse mentions (@tool, @workflow, @agent)
+3. Load tools based on mentions/permissions:
+   - loadMcpTools() → filters by mentions or allowedMcpServers
+   - loadWorkFlowTools() → converts workflows to tools
+   - loadAppDefaultTools() → filters default toolkits
+4. Merge all tools into single Record<string, Tool>
+5. Handle toolChoice mode:
+   - "manual" → LLM proposes, user confirms
+   - "auto" → full execution
+   - "none" → no tools loaded
+6. Pass tools to streamText()
+7. Stream results back
+```
+
+### Convention-Based Extension
+
+**Adding a new tool type is simple**:
+1. Add enum to `AppDefaultToolkit`
+2. Implement tool with `createTool()`
+3. Add to `APP_DEFAULT_TOOL_KIT`
+4. Tool automatically available via `@toolname`
+
+---
+
+## Component & Design Philosophy
+
+### Organization by Feature
+
+**Location**: `src/components/`
+
+```
+components/
+├── ui/              → shadcn/ui primitives
+├── layouts/         → App structure
+├── agent/           → Agent-specific
+├── workflow/        → Workflow editor
+├── tool-invocation/ → Tool result rendering
+└── *.tsx            → Shared components
+```
+
+**Principle**: Group by feature, not by type
+
+### Compound Component Pattern
+
+**Example**: `message.tsx` + `message-parts.tsx`
+
+**Philosophy**: Break complex components into composable parts
+
+```typescript
+// message.tsx exports multiple related components
+export function PreviewMessage({ message }) { ... }
+export function ErrorMessage({ error }) { ... }
+
+// message-parts.tsx handles polymorphic content
+export function MessageParts({ parts }) {
+  return parts.map(part => {
+    if (isToolUIPart(part)) return <ToolInvocation part={part} />;
+    if (part.type === 'text') return <Markdown text={part.text} />;
+    // ... other types
+  });
+}
+```
+
+### Client Component Wrapper Pattern
+
+**Example**: `chat-bot.tsx`
+
+**Structure**:
+```typescript
+export default function ChatBot({ threadId, initialMessages }) {
+  // 1. State management (Zustand)
+  const [model, toolChoice] = appStore(useShallow(state => [...]));
+
+  // 2. Vercel AI SDK hook
+  const { messages, append, status } = useChat({
+    id: threadId,
+    initialMessages,
+    body: { chatModel: model, toolChoice },
+  });
+
+  // 3. Render orchestration
+  return (
+    <>
+      <ChatGreeting />
+      <MessageList messages={messages} />
+      <PromptInput onSubmit={append} />
+    </>
+  );
+}
+```
+
+**Why**: Top-level orchestrates, delegates rendering to specialized components
+
+### Tool Result Rendering Separation
+
+**Key Architecture Decision**:
+- Tool **execution** lives in `lib/ai/tools/`
+- Tool **rendering** lives in `components/tool-invocation/`
+
+**Example**:
+```typescript
+// Server-side (lib/ai/tools/create-table.ts)
+execute: async (params) => "Success"
+
+// Client-side (components/tool-invocation/interactive-table.tsx)
+export function InteractiveTable({ part }) {
+  const { columns, data } = part.input;
+  return <DataTable columns={columns} data={data} />;
+}
+```
+
+**Benefits**:
+- Clear separation of concerns
+- Easier testing
+- Client can be rich/interactive without server complexity
+
+---
+
+## Database & Repository Patterns
+
+### Repository Pattern Architecture
+
+**Location**: `src/lib/db/`
+
+**Structure**:
+```
+db/
+├── repository.ts          → Single import point
+├── pg/
+│   ├── db.pg.ts          → Drizzle connection
+│   ├── schema.pg.ts      → Table definitions
+│   └── repositories/     → Feature queries
+└── migrations/           → Drizzle migrations
+```
+
+**Philosophy**: Abstract DB behind repository interfaces
+
+### Interface-First Design
+
+**Pattern**:
+```typescript
+// 1. Define interface in src/types/[domain].ts
+export type ChatRepository = {
+  insertThread(thread: Omit<ChatThread, "createdAt">): Promise<ChatThread>;
+  selectThread(id: string): Promise<ChatThread | null>;
+  selectThreadDetails(id: string): Promise<ThreadDetails | null>;
+};
+
+// 2. Implement in src/lib/db/pg/repositories/[domain]-repository.pg.ts
+export const pgChatRepository: ChatRepository = {
+  selectThreadDetails: async (id: string) => {
+    const [thread] = await db
+      .select()
+      .from(ChatThreadTable)
+      .leftJoin(UserTable, eq(ChatThreadTable.userId, UserTable.id))
+      .where(eq(ChatThreadTable.id, id));
+
+    if (!thread) return null;
+
+    const messages = await pgChatRepository.selectMessagesByThreadId(id);
+
+    return {
+      id: thread.chat_thread.id,
+      title: thread.chat_thread.title,
+      userId: thread.chat_thread.userId,
+      createdAt: thread.chat_thread.createdAt,
+      userPreferences: thread.user?.preferences,
+      messages,
+    };
+  },
+};
+
+// 3. Export from src/lib/db/repository.ts
+export const chatRepository = pgChatRepository;
+```
+
+**Why**:
+- Easy to swap implementations (pg → sqlite)
+- Testable without database
+- Consistent API across codebase
+
+### Query Optimization Strategies
+
+**1. Indexes on Foreign Keys**:
+```typescript
+export const ChatThreadTable = pgTable("chat_thread", {
+  id: uuid("id").primaryKey(),
+  userId: uuid("user_id").references(() => UserTable.id),
+}, (table) => ({
+  userIdIdx: index("chat_thread_user_id_idx").on(table.userId),
+}));
+```
+
+**2. Selective Loading**:
+```typescript
+// Load minimal data
+selectThread(id) → { id, title, userId, createdAt }
+
+// Load full data when needed
+selectThreadDetails(id) → { ...thread, messages, userPreferences }
+```
+
+**3. SQL Aggregation**:
+```typescript
+// Get threads with last message timestamp
+const threadsWithActivity = await db
+  .select({
+    threadId: ChatThreadTable.id,
+    lastMessageAt: sql<string>`MAX(${ChatMessageTable.createdAt})`,
+  })
+  .from(ChatThreadTable)
+  .leftJoin(ChatMessageTable, eq(ChatThreadTable.id, ChatMessageTable.threadId))
+  .groupBy(ChatThreadTable.id)
+  .orderBy(desc(sql`last_message_at`));
+```
+
+### Schema Evolution Workflow
+
+```bash
+# 1. Modify schema in src/lib/db/pg/schema.pg.ts
+export const NewTable = pgTable("new_table", { ... });
+
+# 2. Generate migration
+pnpm db:generate
+
+# 3. Review generated SQL in drizzle/migrations/
+# 4. Apply migration
+pnpm db:migrate
+
+# 5. Optional: Visual DB exploration
+pnpm db:studio
+```
+
+---
+
+## Architectural Principles
+
+### 1. Progressive Enhancement
+
+Features build in layers:
+
+```
+Base Layer: Chat + LLM
+    ↓
+Tool Layer: Default + MCP
+    ↓
+Composition Layer: Workflows (tools as nodes)
+    ↓
+Personalization Layer: Agents (workflows + prompts)
+```
+
+**Evidence**:
+- Agents can have `instructions.mentions` (inject tools/workflows)
+- Workflows can call MCP + default tools
+- Chat API composes all three tiers
+
+**User Journey**:
+1. Start with default tools (no setup)
+2. Add MCP servers for specialized needs
+3. Combine into workflows for automation
+4. Package into agents for personas
+
+### 2. Convention Over Configuration
+
+**New Tool?**
+- Add to `AppDefaultToolkit` enum → auto-available
+
+**New Workflow Node?**
+- Add to `NodeKind` enum → executor handles it
+
+**New MCP Server?**
+- Just configure via UI → manager handles lifecycle
+
+### 3. Defensive Programming
+
+**Use `safe()` everywhere**:
+```typescript
+const tools = await safe(() => loadMcpTools())
+  .orElse({});  // Returns default on failure
+```
+
+**Philosophy**: Never crash the chat - degrade gracefully
+
+### 4. Streaming-First
+
+**Evidence**:
+- Chat API uses `createUIMessageStream()`
+- Workflow execution streams intermediate steps
+- Tool calls stream progress updates
+
+**Why**: Live feedback, better UX, handles long operations
+
+### 5. Type-Driven Development
+
+**Pattern**:
+```typescript
+// Zod defines runtime validation AND TypeScript types
+const schema = z.object({ name: z.string() });
+type SchemaType = z.infer<typeof schema>;
+
+// Discriminated unions for polymorphic data
+type WorkflowNodeData =
+  | { kind: "input"; ... }
+  | { kind: "llm"; ... }
+  | { kind: "tool"; ... };
+
+// Brand types for runtime checking
+VercelAIMcpToolTag.isMaybe(tool)
+```
+
+---
+
+## Practical Templates
+
+### Template: Adding a New Default Tool
+
+```typescript
+// 1. Define in lib/ai/tools/[category]/[tool-name].ts
+import { tool as createTool } from "ai";
+import { z } from "zod";
+
+export const myNewTool = createTool({
+  description: "Clear description for LLM to understand when to use this",
+  inputSchema: z.object({
+    param: z.string().describe("What this parameter does"),
+  }),
+  execute: async (params) => {
+    // For visualization tools: return "Success"
+    // For data tools: return actual data
+    return "Success";
+  },
+});
+
+// 2. Add to lib/ai/tools/tool-kit.ts
+import { DefaultToolName } from "./index";
+import { myNewTool } from "./[category]/[tool-name]";
+
+export enum DefaultToolName {
+  // ... existing
+  MyNewTool = "my_new_tool",
+}
+
+export const APP_DEFAULT_TOOL_KIT = {
+  [AppDefaultToolkit.MyCategory]: {
+    [DefaultToolName.MyNewTool]: myNewTool,
+  },
+};
+
+// 3. Create rendering in components/tool-invocation/my-tool-invocation.tsx
+export function MyToolInvocation({ part }: { part: ToolUIPart }) {
+  const args = part.input as z.infer<typeof myNewTool.inputSchema>;
+  return <div>{/* Render based on args */}</div>;
+}
+
+// 4. Add to components/tool-invocation/index.tsx switch
+if (toolName === DefaultToolName.MyTool) {
+  return <MyToolInvocation part={part} />;
+}
+```
+
+### Template: Adding a New API Route
+
+```typescript
+// src/app/api/[resource]/route.ts
+import { getSession } from "auth/server";
+import { [resource]Repository } from "lib/db/repository";
+import { z } from "zod";
+
+const querySchema = z.object({
+  limit: z.coerce.number().default(10),
+});
+
+export async function GET(request: Request) {
+  // 1. Auth check
+  const session = await getSession();
+  if (!session?.user.id) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  // 2. Parse & validate
+  try {
+    const url = new URL(request.url);
+    const params = querySchema.parse(Object.fromEntries(url.searchParams));
+
+    // 3. Use repository
+    const data = await [resource]Repository.selectByUserId(
+      session.user.id,
+      params.limit
+    );
+
+    return Response.json(data);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return Response.json(
+        { error: "Invalid params", details: error.message },
+        { status: 400 }
+      );
+    }
+    console.error("Failed:", error);
+    return new Response("Internal Server Error", { status: 500 });
+  }
+}
+
+export async function POST(request: Request) {
+  const session = await getSession();
+  if (!session?.user.id) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const data = createSchema.parse(body);
+
+    const item = await [resource]Repository.insert({
+      ...data,
+      userId: session.user.id,
+    });
+
+    return Response.json(item);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return Response.json({ error: "Invalid input" }, { status: 400 });
+    }
+    return Response.json({ error: "Internal error" }, { status: 500 });
+  }
+}
+```
+
+### Template: Adding a New Repository
+
+```typescript
+// 1. Define interface in src/types/[domain].ts
+export type MyRepository = {
+  selectById(id: string): Promise<MyType | null>;
+  selectByUserId(userId: string, limit?: number): Promise<MyType[]>;
+  insert(data: InsertType): Promise<MyType>;
+  update(id: string, data: Partial<InsertType>): Promise<MyType>;
+  delete(id: string): Promise<void>;
+};
+
+// 2. Add table to src/lib/db/pg/schema.pg.ts
+export const MyTable = pgTable("my_table", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => UserTable.id).notNull(),
+  name: text("name").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("my_table_user_id_idx").on(table.userId),
+}));
+
+// 3. Implement in src/lib/db/pg/repositories/my-repository.pg.ts
+import { pgDb as db } from "../db.pg";
+import { MyTable } from "../schema.pg";
+import { eq, desc } from "drizzle-orm";
+
+export const pgMyRepository: MyRepository = {
+  selectById: async (id) => {
+    const [result] = await db
+      .select()
+      .from(MyTable)
+      .where(eq(MyTable.id, id));
+    return result ?? null;
+  },
+
+  selectByUserId: async (userId, limit = 10) => {
+    return await db
+      .select()
+      .from(MyTable)
+      .where(eq(MyTable.userId, userId))
+      .orderBy(desc(MyTable.createdAt))
+      .limit(limit);
+  },
+
+  insert: async (data) => {
+    const [result] = await db
+      .insert(MyTable)
+      .values(data)
+      .returning();
+    return result;
+  },
+
+  update: async (id, data) => {
+    const [result] = await db
+      .update(MyTable)
+      .set(data)
+      .where(eq(MyTable.id, id))
+      .returning();
+    return result;
+  },
+
+  delete: async (id) => {
+    await db.delete(MyTable).where(eq(MyTable.id, id));
+  },
+};
+
+// 4. Export from src/lib/db/repository.ts
+export { pgMyRepository as myRepository } from "./pg/repositories/my-repository.pg";
+
+// 5. Generate and run migration
+// pnpm db:generate
+// pnpm db:migrate
+```
+
+---
+
+## Server Action Validators & Coding Standards
+
+### Server Action Validators (`lib/action-utils.ts`)
+
 Centralized pattern for validated, permission-gated server actions:
 
 ```typescript

@@ -1,7 +1,7 @@
 # better-chatbot
 
 **Status**: Production Ready ✅
-**Last Updated**: 2025-10-29
+**Last Updated**: 2025-11-04 (v2.0.0 - Enhanced with architecture deep-dive)
 **Production Tested**: https://betterchatbot.vercel.app
 
 ---
@@ -28,6 +28,16 @@ Claude Code automatically discovers this skill when you mention:
 - Vercel AI SDK chatbot
 - Next.js chatbot
 - multi-AI provider
+- repository pattern
+- three-tier tool system
+- progressive enhancement architecture
+- streaming-first design
+- compound component pattern
+- defensive programming
+- safe() wrapper
+- shared business logic
+- tool lifecycle
+- API route patterns
 
 ### Error-Based Keywords
 - "unauthorized users accessing actions"
@@ -38,23 +48,31 @@ Claude Code automatically discovers this skill when you mention:
 - "E2E tests failing on clean database"
 - "missing environment variables"
 - "conventional commit format"
+- "how to add new tool"
+- "how to add API route"
+- "repository implementation"
+- "database query optimization"
+- "component composition pattern"
+- "tool rendering separation"
 
 ---
 
 ## What This Skill Does
 
-This skill provides project-specific coding conventions, repository structure standards, testing patterns, and contribution guidelines for the better-chatbot project. It ensures contributions follow established patterns for server actions, tool abstractions, workflow systems, and E2E testing orchestration.
+This skill provides project-specific coding conventions, repository structure standards, testing patterns, architectural principles, and contribution guidelines for the better-chatbot project. It ensures contributions follow established patterns and understand the "why" behind design decisions.
 
 ### Core Capabilities
 
+✅ API architecture & design patterns (route handlers, shared logic, streaming)
+✅ Three-tier tool system (MCP, Workflow, Default)
+✅ Component & design philosophy (compound patterns, separation of concerns)
+✅ Database & repository patterns (interface-first, query optimization)
+✅ Architectural principles (progressive enhancement, defensive programming)
+✅ Practical templates (adding tools, routes, repositories)
 ✅ Server action validators (auth, validation, FormData)
-✅ Tool abstraction system (MCP/Workflow/Default)
 ✅ Workflow execution patterns (DAG streaming)
 ✅ Playwright E2E test orchestration
 ✅ Conventional Commit enforcement
-✅ Zod validation patterns
-✅ Zustand state management conventions
-✅ Multi-AI provider integration standards
 
 ---
 
@@ -174,9 +192,9 @@ git push origin feat/my-feature
 
 ```
 better-chatbot/
-├── SKILL.md              # Complete documentation
-├── README.md             # This file
-└── references/           # Upstream docs (loaded on demand)
+├── SKILL.md              # Complete documentation with architecture deep-dive
+├── README.md             # This file (quick reference)
+└── references/           # Upstream docs from better-chatbot repo
     ├── AGENTS.md         # Full repository guidelines
     └── CONTRIBUTING.md   # Complete contribution process
 ```

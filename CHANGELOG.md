@@ -9,6 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Enhanced - better-chatbot Skill v2.0.0 ✅
+
+**Date**: 2025-11-04
+
+**Major Enhancement**: Added comprehensive architecture deep-dive and practical templates for building features that align with the original developer's vision.
+
+#### better-chatbot v2.0.0 (Skill #52 - Enhanced)
+- **New Content**: Architecture deep-dive, design philosophy, practical feature templates
+- **Token Savings**: ~60% (maintained)
+- **Errors Prevented**: 8 (maintained)
+- **Lines Added**: ~600 lines of architectural guidance
+
+**What's New**:
+- ✅ **API Architecture & Design Patterns**: Route handler templates, shared business logic pattern, defensive programming with `safe()`, streaming-first architecture
+- ✅ **Tool System Deep Dive**: Three-tier architecture (MCP/Workflow/Default), tool lifecycle, convention-based extension, why global MCP singleton
+- ✅ **Component & Design Philosophy**: Organization by feature, compound component pattern, client wrapper pattern, tool result rendering separation
+- ✅ **Database & Repository Patterns**: Interface-first design, query optimization strategies, schema evolution workflow
+- ✅ **Architectural Principles**: Progressive enhancement, convention over configuration, defensive programming, streaming-first, type-driven development
+- ✅ **Practical Templates**: Adding new tools, API routes, repositories (complete copy-paste examples)
+- ✅ **References Directory**: Added upstream AGENTS.md and CONTRIBUTING.md from better-chatbot repo
+
+**New Keywords Added** (19):
+- repository pattern, three-tier tool system, progressive enhancement architecture
+- streaming-first design, compound component pattern, defensive programming
+- safe() wrapper, shared business logic, tool lifecycle, API route patterns
+- How-to keywords: "how to add new tool", "how to add API route", "repository implementation", "database query optimization", "component composition pattern", "tool rendering separation"
+
+**Enhancement Goal**: Help contributors build features that fit the existing architectural vision by understanding the "why" behind design decisions, not just the "what" of conventions.
+
+**Use Cases Enabled**:
+- Understanding why tools are separated into three tiers
+- Building new tools/routes/repositories that match existing patterns
+- Making architectural decisions aligned with the project philosophy
+- Contributing features without breaking established patterns
+- Optimizing database queries using proven strategies
+
+---
+
 ### Added - hugo Skill v1.0.0 ✅
 
 **Date**: 2025-11-04
