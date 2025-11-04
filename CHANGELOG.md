@@ -9,6 +9,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - hugo Skill v1.0.0 ✅
+
+**Date**: 2025-11-04
+
+**New Skill**: Complete Hugo static site generator skill with 4 production-ready templates.
+
+#### hugo (Skill #54)
+- **Purpose**: Build static websites with Hugo (blogs, documentation sites, landing pages, portfolios)
+- **Scope**: Hugo Extended installation, project scaffolding, theme integration (PaperMod, Hugo Book), Sveltia CMS setup, Cloudflare Workers deployment
+- **Token Savings**: ~60-65%
+- **Errors Prevented**: 9 (SCSS support, broken assets, TOML/YAML confusion, theme not found, version mismatch, future-dated posts, public/ conflicts, frontmatter errors, module cache)
+- **Production Tested**: https://hugo-blog-test.webfonts.workers.dev
+
+**Tech Stack**: Hugo v0.152.2+extended, PaperMod theme, Hugo Book theme, Sveltia CMS, Cloudflare Workers Static Assets, GitHub Actions
+
+**Templates Included** (4 complete templates):
+1. **hugo-blog**: Production-ready blog with PaperMod theme + Sveltia CMS
+2. **minimal-starter**: Bare-bones starter for full customization
+3. **hugo-docs**: Documentation site with Hugo Book theme (search, navigation, TOC)
+4. **hugo-landing**: Marketing landing page with custom responsive layouts
+
+**Key Features**:
+- 4 ready-to-use templates covering all major Hugo use cases
+- Hugo Extended v0.152.2 (verified latest stable)
+- PaperMod theme integration via Git submodules
+- Sveltia CMS configuration for content management
+- Cloudflare Workers Static Assets deployment (NOT Pages)
+- GitHub Actions CI/CD workflows for all templates
+- Comprehensive error prevention (9 documented errors with solutions)
+- Fast build times: 7-31ms (avg 17ms)
+
+**Use Cases**:
+- Building blogs with PaperMod theme
+- Creating documentation sites with search and navigation
+- Launching marketing landing pages
+- Scaffolding custom Hugo projects
+- Migrating from other SSGs to Hugo
+- Deploying to Cloudflare Workers
+
+**Documentation**:
+- SKILL.md: 400+ lines of comprehensive Hugo documentation
+- README.md: Auto-trigger keywords, quick reference, token metrics
+- Template READMEs: 100-400 lines each (detailed setup guides)
+
+**Build Performance**:
+- minimal-starter: 4 pages in 8ms
+- hugo-landing: 6 pages in 7ms
+- hugo-blog: 20 pages in 24ms
+- hugo-docs: 16 pages in 31ms
+
+---
+
 ### Added - better-chatbot and better-chatbot-patterns Skills v1.0.0 ✅
 
 **Date**: 2025-11-04
