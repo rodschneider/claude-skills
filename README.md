@@ -50,9 +50,9 @@ Skills will be available in Claude Code and automatically suggested when relevan
 
 ---
 
-## 📦 Available Skills (65 Production-Ready)
+## 📦 Available Skills (66 Production-Ready)
 
-**📋 Full Catalog**: See [MARKETPLACE.md](MARKETPLACE.md) for the complete organized list of all 65 skills by category.
+**📋 Full Catalog**: See [MARKETPLACE.md](MARKETPLACE.md) for the complete organized list of all 66 skills by category.
 
 **Below**: Featured skills with detailed descriptions and trigger keywords.
 
