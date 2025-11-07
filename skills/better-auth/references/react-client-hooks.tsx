@@ -12,9 +12,8 @@
 
 'use client'
 
-import { createAuthClient } from 'better-auth/client'
-import { useSession } from 'better-auth/client'
-import { useState } from 'react'
+import { createAuthClient, useSession } from 'better-auth/client'
+import { useState, useEffect } from 'react'
 
 // Initialize auth client
 export const authClient = createAuthClient({
@@ -379,14 +378,14 @@ export function OrganizationSwitcher() {
   const [loading, setLoading] = useState(true)
 
   // Fetch user's organizations
-  useState(() => {
+  useEffect(() => {
     async function fetchOrgs() {
       const orgs = await authClient.organization.listUserOrganizations()
       setOrganizations(orgs)
       setLoading(false)
     }
     fetchOrgs()
-  })
+  }, [])
 
   const switchOrganization = async (orgId: string) => {
     await authClient.organization.setActiveOrganization({ organizationId: orgId })
