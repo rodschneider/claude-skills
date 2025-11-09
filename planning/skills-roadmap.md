@@ -1876,15 +1876,16 @@ Calculate:
 ## 📈 Progress Tracking
 
 ### Overall Progress:
-- **Completed**: 50 skills ✅ ALL COMPLETE!
+- **Completed**: 51 skills ✅
 - **In Main Table Below**: 39 skills detailed
-- **Not in Table** (11 skills): vercel-kv, vercel-blob, neon-vercel-postgres, auth-js, fastmcp, typescript-mcp, project-planning, project-session-management, nextjs, sveltia-cms, zustand-state-management
+- **Not in Table** (12 skills): vercel-kv, vercel-blob, neon-vercel-postgres, auth-js, fastmcp, typescript-mcp, project-planning, project-session-management, nextjs, sveltia-cms, zustand-state-management, open-source-contributions
 - **Batch 1 - Cloudflare Foundation**: 9/9 complete (100%) 🎯
 - **Batch 2 - AI SDK & Auth & Frameworks**: 6/6 complete (100%) 🎯
 - **Batch 3 - Cloudflare Advanced**: 6/6 complete (100%) 🎯
 - **Batch 4 - Data & Utilities**: 2/2 complete (100%) 🎯
 - **Batch 5 - AI API/SDK Suite**: 9/9 complete (100%) 🎯
 - **Batch 6 - UI & Generative UI**: 1/1 complete (100%) 🎯
+- **Batch 7 - Development & Contribution Tools**: 1/1 complete (100%) 🎯
 - **New Planned**: 1 skill (cloudflare-sandboxing)
 
 ### Skills by Status:
@@ -1927,8 +1928,8 @@ Calculate:
 | **thesys-generative-ui** | **✅ Complete** | **6h** | **~62%** | **8** | High |
 
 **Total Skills In Table**: 48 (all complete ✅)
-**Total Skills In Repo**: 50 (all complete ✅)
-**Not in Table**: 11 skills (all complete) - vercel-kv, vercel-blob, neon-vercel-postgres, auth-js, fastmcp, typescript-mcp, project-planning, project-session-management, nextjs, sveltia-cms, zustand-state-management
+**Total Skills In Repo**: 51 (all complete ✅)
+**Not in Table**: 12 skills (all complete) - vercel-kv, vercel-blob, neon-vercel-postgres, auth-js, fastmcp, typescript-mcp, project-planning, project-session-management, nextjs, sveltia-cms, zustand-state-management, open-source-contributions
 **Planned Next**: cloudflare-sandboxing
 
 ---
@@ -1968,6 +1969,64 @@ A skill is considered "complete" when:
 ---
 
 ## 🚀 Future Skills (Backlog)
+
+### Batch 7 - Development & Contribution Tools ⭐
+
+#### open-source-contributions
+**Status**: ✅ Complete (2025-11-05)
+**Priority**: High
+**Dependencies**: None
+**Actual Dev Time**: 6 hours
+**Token Savings**: ~70%
+**Errors Prevented**: 15
+
+**What It Does**:
+- Complete guide to contributing to open source projects professionally
+- Pre-PR cleanup scripts (removes SESSION.md, planning/*, screenshots, temp test files)
+- PR description templates (What/Why/How structure)
+- Commit message guide (Conventional Commits format)
+- Communication best practices with maintainers
+- Common mistakes prevention (15 documented issues)
+- Complete checklists for pre-contribution, development, cleanup, submission
+- Good vs bad PR examples
+
+**Files Created**:
+- README.md (comprehensive auto-trigger keywords)
+- SKILL.md (complete guide, 2,500+ lines)
+- scripts/pre-pr-check.sh (scans for artifacts, validates PR size, checks branch)
+- scripts/clean-branch.sh (removes personal files safely)
+- references/pr-template.md (What/Why/How format)
+- references/pr-checklist.md (complete pre-submission checklist)
+- references/commit-message-guide.md (Conventional Commits)
+- references/files-to-exclude.md (comprehensive exclusion patterns)
+- assets/good-pr-example.md (well-structured PR)
+- assets/bad-pr-example.md (common mistakes to avoid)
+
+**Known Issues Prevented**:
+1. Including personal artifacts (SESSION.md, NOTES.md, planning/)
+2. Submitting debug screenshots
+3. Including temporary test files
+4. Not reading CONTRIBUTING.md
+5. Submitting massive PRs (>400 lines)
+6. Not testing before submission
+7. Ignoring code style standards
+8. Poor commit messages
+9. Not linking issues properly
+10. Including unrelated changes
+11. Committing secrets
+12. Not updating documentation
+13. Ignoring CI failures
+14. Being impatient or unresponsive
+15. Not discussing large changes first
+
+**Production Validated**: Based on GitHub official guides, real-world maintainer feedback, and community best practices
+
+**Auto-Trigger Keywords**:
+- `submit PR to`, `contribute to`, `pull request for`, `open source contribution`
+- `create pull request`, `PR to`, `contributing to`, `clean up PR`, `prepare pull request`
+- Error keywords: `personal artifacts in PR`, `pr too large`, `commit secrets`
+
+---
 
 ### New Skill: cloudflare-sandboxing
 
@@ -2142,6 +2201,6 @@ A skill is considered "complete" when:
 
 ---
 
-**Last Updated**: 2025-10-29 (All 50 skills complete! Added cloudflare-sandboxing to roadmap)
-**Next Review**: 2025-11-29
+**Last Updated**: 2025-11-05 (51 skills complete! Added open-source-contributions skill)
+**Next Review**: 2025-12-05
 **Maintainer**: Jeremy Dawes | jeremy@jezweb.net
