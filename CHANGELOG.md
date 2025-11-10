@@ -9,6 +9,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - ContextBricks NPM Package 🎨🧱
+
+**Date**: 2025-11-10
+
+**New Tool**: `contextbricks` - Custom status line for Claude Code CLI
+
+**NPM Package**: https://www.npmjs.com/package/contextbricks
+**Version**: 1.0.0
+**Install**: `npx contextbricks init`
+
+**Features**:
+- **Real-time context tracking** from Claude Code transcript files
+- **Brick visualization** showing token usage breakdown
+- **Git integration**: repo:branch [commit] message | github-repo *↑↓
+- **Session metrics**: model name, lines changed, free space
+- **Model-aware**: Automatic context limits (200k Sonnet, 1M Opus)
+
+**Distribution Methods**:
+1. **NPM** (recommended): `npx contextbricks init`
+2. **From source**: `cd tools/statusline && ./install.sh`
+
+**Files Added**:
+- `tools/statusline-npm/` - NPM package structure
+  - `package.json` - NPM configuration
+  - `bin/cli.js` - Node wrapper (dependency checking, commands)
+  - `scripts/` - Bash scripts (statusline, install, uninstall)
+  - `README.md` - NPM-specific documentation
+- `tools/statusline/` - Source implementation
+  - `statusline.sh` - Main status line script (198 lines)
+  - `install.sh` - Automated installer with backups
+  - `uninstall.sh` - Clean uninstaller
+  - `README.md` - Full documentation
+
+**Installation**:
+```bash
+# Quick install via npm
+npx contextbricks init
+
+# Or from source
+cd tools/statusline
+./install.sh
+```
+
+**Token Accuracy**: Matches /context command output (parses same JSONL transcript files)
+
+**Community References**:
+- Implementation approach: [codelynx.dev](https://codelynx.dev/posts/calculate-claude-code-context)
+- Inspired by: [ccstatusline](https://github.com/sirmalloc/ccstatusline)
+
+**Documentation**:
+- NPM: [npmjs.com/package/contextbricks](https://www.npmjs.com/package/contextbricks)
+- Full docs: [tools/statusline/README.md](tools/statusline/README.md)
+
 ### Removed - auth-js skill (deprecated) ❌
 
 **Date**: 2025-11-08

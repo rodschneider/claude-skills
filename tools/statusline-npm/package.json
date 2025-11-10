@@ -1,0 +1,43 @@
+{
+  "name": "contextbricks",
+  "version": "1.0.0",
+  "description": "Real-time context tracking with brick visualization for Claude Code CLI",
+  "keywords": [
+    "claude",
+    "claude-code",
+    "statusline",
+    "cli",
+    "context",
+    "bricks",
+    "git",
+    "tokens",
+    "terminal",
+    "visualization"
+  ],
+  "bin": {
+    "contextbricks": "./bin/cli.js"
+  },
+  "scripts": {
+    "postinstall": "echo '\n🧱 ContextBricks installed! Run: contextbricks init\n'"
+  },
+  "files": [
+    "bin/",
+    "scripts/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=14"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jezweb/claude-skills.git",
+    "directory": "tools/statusline-npm"
+  },
+  "bugs": {
+    "url": "https://github.com/jezweb/claude-skills/issues"
+  },
+  "author": "Jeremy Dawes <jeremy@jezweb.net> (https://jezweb.com.au)",
+  "license": "MIT",
+  "homepage": "https://github.com/jezweb/claude-skills/tree/main/tools/statusline"
+}

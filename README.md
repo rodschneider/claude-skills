@@ -632,6 +632,36 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ---
 
+## 🧰 Tools & Utilities
+
+### ContextBricks - Custom Status Line
+
+Enhanced status line for Claude Code with **real-time context tracking** and git integration.
+
+[![npm version](https://img.shields.io/npm/v/contextbricks.svg)](https://www.npmjs.com/package/contextbricks)
+
+**Features:**
+- Real token usage from transcript files (matches /context command)
+- Brick visualization showing context breakdown
+- Git info: repo:branch [commit] message | github-repo *↑↓
+- Model name, lines changed, free space
+
+**Installation:**
+```bash
+# Quick install via npm
+npx contextbricks init
+
+# Or from source
+cd tools/statusline
+./install.sh
+```
+
+**NPM Package**: [contextbricks](https://www.npmjs.com/package/contextbricks)
+
+See [tools/statusline/README.md](tools/statusline/README.md) for full documentation.
+
+---
+
 ## 📋 Skill Categories
 
 All 60 skills are production-ready and organized by domain:
