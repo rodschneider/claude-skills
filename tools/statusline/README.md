@@ -30,10 +30,11 @@ A custom status line for Claude Code CLI that displays real-time context trackin
 
 ### Quick Install (Recommended)
 
-**Via npm** (easiest):
+**Via npm** (easiest - one command!):
 ```bash
-npx contextbricks init
+npx contextbricks
 ```
+No need for `init` - it runs the installer automatically!
 
 **Or from source**:
 ```bash

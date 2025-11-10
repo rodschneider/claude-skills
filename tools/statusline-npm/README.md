@@ -22,26 +22,28 @@ A custom status line for Claude Code that displays accurate token usage with a b
 
 ```bash
 # Install and configure (one command!)
-npx contextbricks init
+npx contextbricks
 
 # Restart Claude Code to see your new status line
 ```
 
 That's it! Your status line now shows real-time context tracking.
 
+**Note**: Just `npx contextbricks` - no need for `init`! It runs the installer automatically.
+
 ## 📦 Installation Options
 
 ### Option 1: npx (Recommended - No Install)
 
 ```bash
-npx contextbricks init
+npx contextbricks        # Runs installer automatically
 ```
 
 ### Option 2: Global Install
 
 ```bash
 npm install -g contextbricks
-contextbricks init
+contextbricks              # Also runs installer automatically
 ```
 
 ### Option 3: From Source
@@ -85,8 +87,9 @@ ctx [■■■■■■■■■■■■■■■■■□□□□□□□□
 ## 📚 Commands
 
 ```bash
-contextbricks init          # Interactive install (recommended)
-contextbricks install       # Install status line
+contextbricks               # Interactive install (default - recommended)
+contextbricks init          # Interactive install (same as above)
+contextbricks install       # Install status line (non-interactive)
 contextbricks uninstall     # Uninstall status line
 contextbricks --help        # Show help
 contextbricks --version     # Show version

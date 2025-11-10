@@ -648,8 +648,8 @@ Enhanced status line for Claude Code with **real-time context tracking** and git
 
 **Installation:**
 ```bash
-# Quick install via npm
-npx contextbricks init
+# Quick install via npm (one command!)
+npx contextbricks
 
 # Or from source
 cd tools/statusline
