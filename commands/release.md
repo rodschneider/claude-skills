@@ -8,6 +8,356 @@ Safely prepare project for public GitHub release by sanitizing files, checking d
 
 Follow these steps to ensure project is safe to publish publicly. Run comprehensive safety checks before pushing to GitHub or creating public release.
 
+### Pre-Phase 0: GitHub Repository Setup (Optional)
+
+This phase ensures you have a GitHub repository configured before running safety checks. If you already have a remote repository, this phase will be skipped automatically.
+
+#### 0a. Check GitHub CLI
+
+**Check if gh CLI is installed**:
+
+```bash
+which gh
+```
+
+**If gh NOT installed**:
+```
+ℹ️  GitHub CLI (gh) not installed
+
+GitHub CLI provides easy repository creation and management.
+
+Install it? (y/n/skip)
+
+Install options:
+- macOS: brew install gh
+- Linux: See https://github.com/cli/cli/blob/trunk/docs/install_linux.md
+- Windows: winget install --id GitHub.cli
+
+Or choose 'skip' to set up repository manually.
+```
+
+**If user chooses 'skip' or 'n'**:
+```
+ℹ️  Skipping GitHub CLI setup
+
+You'll need to create the repository manually if it doesn't exist.
+Proceeding to safety checks...
+```
+
+Continue to Phase 1.
+
+**If gh IS installed or user installs it**:
+```
+✅ GitHub CLI installed
+```
+
+Continue to 0b.
+
+---
+
+#### 0b. Check GitHub Authentication
+
+**Check if authenticated**:
+
+```bash
+gh auth status
+```
+
+**If NOT authenticated**:
+```
+⚠️  Not authenticated with GitHub
+
+Authenticate now? (y/n)
+```
+
+**If yes**:
+```bash
+gh auth login
+```
+
+Follow the interactive prompts to authenticate.
+
+**After authentication**:
+```
+✅ Authenticated with GitHub
+```
+
+**If no**:
+```
+ℹ️  Skipping authentication
+
+You won't be able to create repositories automatically.
+Proceeding to safety checks...
+```
+
+Continue to Phase 1.
+
+---
+
+#### 0c. Check Git Remote Configuration
+
+**Check if git remote exists**:
+
+```bash
+git remote -v
+```
+
+**If NO remote configured**:
+```
+⚠️  No git remote configured
+
+This project doesn't have a GitHub repository set up yet.
+
+Options:
+1. Create new GitHub repository (recommended)
+2. Add existing remote URL manually
+3. Skip (set up later)
+
+Your choice (1/2/3):
+```
+
+**If choice 1 (Create new repo)**:
+
+Continue to 0d (Create Repository).
+
+**If choice 2 (Manual setup)**:
+```
+Enter remote URL (e.g., https://github.com/username/repo.git):
+```
+
+After user provides URL:
+```bash
+git remote add origin [user-provided-url]
+```
+
+Output:
+```
+✅ Remote added: origin → [url]
+```
+
+Continue to 0e (Verify Repository).
+
+**If choice 3 (Skip)**:
+```
+ℹ️  Skipping remote setup
+
+⚠️  Note: You'll need a remote repository to release publicly.
+Set it up manually later with:
+  git remote add origin [URL]
+
+Proceeding to safety checks...
+```
+
+Continue to Phase 1.
+
+**If remote ALREADY configured**:
+```
+✅ Remote configured: origin → [URL]
+```
+
+Continue to 0e (Verify Repository).
+
+---
+
+#### 0d. Create New GitHub Repository
+
+**Extract project details**:
+
+```bash
+# Try to get project name from various sources
+# 1. From package.json
+node -p "require('./package.json').name" 2>/dev/null
+
+# 2. From current directory name if package.json fails
+basename "$(pwd)"
+
+# 3. Get description if available
+node -p "require('./package.json').description" 2>/dev/null
+```
+
+**Propose repository creation**:
+```
+Creating new GitHub repository
+
+Project name: [detected-name]
+Description: [detected-description or "No description"]
+
+Repository settings:
+```
+
+**Ask for visibility**:
+```
+Repository visibility:
+1. Public (recommended for open source)
+2. Private
+
+Your choice (1/2):
+```
+
+**Ask if description needs editing** (if one was detected):
+```
+Use detected description? (y/n)
+"[detected-description]"
+```
+
+If no:
+```
+Enter description (or leave blank):
+```
+
+**Confirm before creating**:
+```
+Ready to create repository:
+
+Name: [name]
+Description: [description]
+Visibility: [public/private]
+Owner: [your-github-username]
+
+Create repository? (y/n)
+```
+
+**If yes**:
+
+```bash
+# Create repository and set as remote in one command
+gh repo create [name] --[public/private] --source=. --remote=origin --description "[description]"
+```
+
+**If creation succeeds**:
+```
+✅ Repository created: https://github.com/[user]/[name]
+✅ Remote configured: origin → https://github.com/[user]/[name].git
+```
+
+Continue to Phase 1.
+
+**If creation fails**:
+```
+❌ Repository creation failed: [error message]
+
+Common causes:
+- Repository name already exists
+- Invalid repository name (use lowercase, hyphens, underscores only)
+- Network connectivity issues
+- GitHub authentication expired
+
+Options:
+1. Try different name
+2. Add existing remote manually
+3. Skip and set up later
+
+Your choice (1/2/3):
+```
+
+Handle choice accordingly (retry with new name, manual setup, or skip).
+
+---
+
+#### 0e. Verify Repository Exists on GitHub
+
+**If remote is configured, verify it actually exists**:
+
+```bash
+# Extract repo info from remote URL
+git remote get-url origin
+
+# Try to view the repository
+gh repo view 2>&1
+```
+
+**If repository EXISTS**:
+```
+✅ GitHub repository verified: [repo-url]
+```
+
+Continue to Phase 1.
+
+**If repository DOES NOT exist**:
+```
+⚠️  Remote configured but repository doesn't exist on GitHub
+
+Remote URL: [url from git remote]
+Status: Repository not found (404)
+
+This usually happens when:
+- Remote URL was added but repo never created
+- Repository was deleted
+- Remote URL contains a typo
+
+Options:
+1. Create repository at this URL (if you own it)
+2. Change to different remote URL
+3. Skip (set up manually later)
+
+Your choice (1/2/3):
+```
+
+**If choice 1 (Create at URL)**:
+
+Extract repo name from URL and create:
+```bash
+# Parse owner/repo from URL
+# Example: https://github.com/username/repo.git → username/repo
+
+gh repo create [parsed-name] --[public/private] --source=.
+```
+
+**After creation**:
+```
+✅ Repository created: [url]
+```
+
+Continue to Phase 1.
+
+**If choice 2 (Change URL)**:
+```
+Enter new remote URL:
+```
+
+After user provides URL:
+```bash
+git remote set-url origin [new-url]
+```
+
+Re-run verification (go back to start of 0e).
+
+**If choice 3 (Skip)**:
+```
+⚠️  Proceeding without verified GitHub repository
+
+Note: Some features may not work (GitHub releases, etc.)
+
+Proceeding to safety checks...
+```
+
+Continue to Phase 1.
+
+---
+
+**Pre-Phase 0 Summary** (shown before Phase 1 starts):
+
+```
+═══════════════════════════════════════════════
+   REPOSITORY SETUP COMPLETE
+═══════════════════════════════════════════════
+
+[✅/ℹ️] GitHub CLI: [installed/not installed]
+[✅/ℹ️] Authentication: [authenticated/skipped]
+[✅/⚠️] Remote: [configured/not configured]
+[✅/⚠️] Repository: [verified/created/skipped]
+
+Repository: [url or "Not configured"]
+
+═══════════════════════════════════════════════
+
+Proceeding to safety checks...
+
+═══════════════════════════════════════════════
+```
+
+---
+
 ### Phase 1: Critical Safety Checks (BLOCKERS)
 
 These checks MUST pass before release. If any fail, STOP and require manual fixes.

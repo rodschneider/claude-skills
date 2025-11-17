@@ -9,6 +9,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Enhanced - `/release` Command with GitHub Repo Creation 🚀
+
+**Date**: 2025-11-17
+
+**Enhancement**: `/release` command now handles GitHub repository creation automatically
+
+**What Changed**:
+- Added **Pre-Phase 0: GitHub Repository Setup** - optional pre-flight check before safety scans
+- Detects if GitHub repository exists before running safety checks
+- Offers to create repository if missing (using `gh repo create`)
+- Fully backward compatible - skips Pre-Phase 0 if repository already configured
+
+**New Capabilities**:
+1. **Automatic Repository Detection**
+   - Checks if `gh` CLI installed
+   - Verifies GitHub authentication (`gh auth status`)
+   - Checks git remote configuration
+   - Verifies repository actually exists on GitHub
+
+2. **Smart Repository Creation**
+   - Auto-detects project name from `package.json` or directory name
+   - Auto-detects description from `package.json`
+   - Prompts for visibility (public/private)
+   - Creates repo and sets remote in one command: `gh repo create --source=.`
+
+3. **Edge Case Handling**
+   - No remote → offer to create new repo or add existing
+   - Remote exists but repo doesn't → offer to create at that URL
+   - `gh` not installed → graceful fallback to manual instructions
+   - Not authenticated → prompt for `gh auth login`
+
+**Pattern Source**: Learned from `fastmcp` skill's proven `gh repo create` usage
+
+**Files Modified**:
+- `commands/release.md` (root level)
+- `skills/project-workflow/commands/release.md` (bundled copy)
+
+**Impact**:
+- **+347 lines** (Pre-Phase 0 section)
+- **Zero breaking changes** (purely additive)
+- **Existing repos**: Pre-Phase 0 auto-skipped (instant pass-through to Phase 1)
+- **New projects**: Complete setup-to-release workflow
+
+**Usage Example** (new project):
+```bash
+# User: /release
+# Claude: No remote configured. Create new GitHub repository? (y/n)
+# User: y
+# Claude: [Creates repo, sets remote, proceeds to safety checks]
+```
+
+**Usage Example** (existing repo):
+```bash
+# User: /release
+# Claude: ✅ Repository verified
+#         [Skips directly to Phase 1: Safety Checks]
+```
+
+**Testing**: Verified in existing `claude-skills` repo - Pre-Phase 0 correctly skipped
+
+---
+
 ### Added - ContextBricks NPM Package 🎨🧱
 
 **Date**: 2025-11-10

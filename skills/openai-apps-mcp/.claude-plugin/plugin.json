@@ -1,6 +1,6 @@
 {
-  "name": "project-workflow",
-  "description": "Production-ready skill for project-workflow",
+  "name": "openai-apps-mcp",
+  "description": "Use this when the user wants to see a location on a map",
   "version": "1.0.0",
   "author": {
     "name": "Jeremy Dawes",
