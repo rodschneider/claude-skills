@@ -4,24 +4,30 @@
 
 This skill is prepared but not published. Waiting for v1.0 stable release and critical bug fixes.
 
-## Current Status
+## Current Status (2025-11-18)
 
-- **Version:** RC v1.120.20
-- **Blockers:** Memory leak (#5734), stability issues
-- **Expected:** 1-3 months
+- **Package:** `@tanstack/react-start@1.136.9`
+- **Status:** Release Candidate (RC announced Sept 22, 2025)
+- **Blockers:**
+  - Memory leak with TanStack Form (#5734) - OPEN
+  - v1.0 stable not yet released
+- **Expected:** Pending issue resolution
 
 ## When Stable
 
 Will provide:
-- Cloudflare Workers integration
-- Server functions
+- Cloudflare Workers + D1/KV/R2 integration
+- Server functions and API routes
 - SSR/CSR patterns
-- D1/KV/R2 examples
+- Migration guide from Next.js
+- Production deployment workflows
 
 ## Monitoring
 
-Check `planning/stability-tracker.md` for updates.
+Check `planning/stability-tracker.md` for weekly updates.
+
+**Track package:** `npm view @tanstack/react-start version`
 
 ---
 
-**Do not use this skill yet.** It's a placeholder for future work.
+**Do not use this skill yet.** It's a placeholder monitoring framework stability.
