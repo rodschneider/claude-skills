@@ -7,7 +7,7 @@ description: >
   needs. Optimized for Cloudflare Workers + Vite + React stack. Use when starting new projects,
   adding major features, or restructuring existing work into manageable phases.
 
-  Keywords: project planning, planning documentation, IMPLEMENTATION_PHASES.md, DATABASE_SCHEMA.md, API_ENDPOINTS.md, ARCHITECTURE.md, UI_COMPONENTS.md, TESTING.md, AGENTS_CONFIG.md, phased development, context-safe phases, verification criteria, exit criteria, planning docs generator, web app planning, Cloudflare Workers planning, Vite React planning, project structure, project phases, major features planning, new project setup
+  Keywords: project planning, planning documentation, IMPLEMENTATION_PHASES.md, DATABASE_SCHEMA.md, API_ENDPOINTS.md, ARCHITECTURE.md, UI_COMPONENTS.md, CRITICAL_WORKFLOWS.md, INSTALLATION_COMMANDS.md, ENV_VARIABLES.md, SESSION.md, TESTING.md, AGENTS_CONFIG.md, phased development, context-safe phases, verification criteria, exit criteria, planning docs generator, web app planning, Cloudflare Workers planning, Vite React planning, project structure, project phases, major features planning, new project setup, shadcn/ui installation, component planning, critical workflows, installation commands, environment variables, secrets configuration, compact session tracking
 license: MIT
 ---
 
@@ -92,10 +92,14 @@ You generate planning documentation for web app projects:
 - DATABASE_SCHEMA.md (when data model is significant)
 - API_ENDPOINTS.md (when API surface is complex)
 - ARCHITECTURE.md (when multiple services/workers)
-- UI_COMPONENTS.md (when UI is complex or needs planning)
+- UI_COMPONENTS.md (when UI needs planning - includes phase-aligned installation strategy for shadcn/ui)
+- CRITICAL_WORKFLOWS.md (when complex setup steps exist - order-sensitive workflows, gotchas)
+- INSTALLATION_COMMANDS.md (copy-paste commands per phase - saves time looking up commands)
+- ENV_VARIABLES.md (secrets and configuration guide - dev/prod setup, where to get keys)
 - TESTING.md (when testing strategy needs documentation)
 - AGENTS_CONFIG.md (when project uses AI agents)
 - INTEGRATION.md (when third-party integrations are numerous)
+- Compact SESSION.md (tracking template, <200 lines)
 
 ---
 
@@ -133,7 +137,23 @@ When invoked, the user will have described a project. Extract:
 
 ### Step 2: Ask Clarifying Questions
 
-Ask 3-5 targeted questions to fill gaps. Focus on:
+**IMPORTANT: Start with Pre-Planning Validation** to ensure user is ready for planning:
+
+```
+Before generating planning docs, a few quick checks:
+
+1. **Have you built a prototype or POC for this project?** (yes/no)
+   - If no: "I recommend building a small spike first to validate key assumptions (especially for new frameworks). Should I help you prototype first, or proceed with planning?"
+
+2. **Any complex setup workflows or gotchas discovered?** (describe or skip)
+   - Examples: Database binding order, auth factory patterns, build configuration
+   - If described: "I'll create CRITICAL_WORKFLOWS.md to document these."
+
+3. **Tech stack familiarity:** (expert/comfortable/learning)
+   - If learning: "I'll add extra time buffer (+30%) for learning curve in estimates."
+```
+
+**Then ask 3-5 targeted questions** to fill gaps. Focus on:
 - **Auth**: Public tool, user accounts, social auth, roles/permissions?
 - **Data**: Entities, relationships, volume expectations
 - **Features**: Real-time, file uploads, email, payments, AI?
@@ -169,18 +189,28 @@ I'll help structure this project. A few questions to optimize the planning:
 Based on answers, decide which docs to generate:
 
 **Always generate**:
-- IMPLEMENTATION_PHASES.md
+- IMPLEMENTATION_PHASES.md (the authoritative source of truth for phases)
+- Compact SESSION.md template (for tracking progress)
 
 **Generate if**:
 - DATABASE_SCHEMA.md → Project has ≥3 tables OR complex relationships
 - API_ENDPOINTS.md → Project has ≥5 endpoints OR needs API documentation
 - ARCHITECTURE.md → Multiple services/workers OR complex data flow
-- UI_COMPONENTS.md → Complex UI OR needs component planning
+- UI_COMPONENTS.md → Frontend project using shadcn/ui OR needs component planning (includes phase-aligned installation)
+- CRITICAL_WORKFLOWS.md → User mentioned complex setup steps OR order-sensitive workflows
+- INSTALLATION_COMMANDS.md → Helpful for all projects (copy-paste commands per phase)
+- ENV_VARIABLES.md → Project needs API keys OR environment configuration
 - TESTING.md → Testing strategy is non-trivial OR user requested
 - AGENTS_CONFIG.md → Uses AI agents OR LLM features
 - INTEGRATION.md → ≥3 third-party integrations OR complex webhooks
 
-**Ask user**: "I'll generate IMPLEMENTATION_PHASES.md. Should I also create [DATABASE_SCHEMA.md / API_ENDPOINTS.md / etc]?"
+**Ask user**: "I'll generate IMPLEMENTATION_PHASES.md and SESSION.md. Should I also create:
+- DATABASE_SCHEMA.md? (if ≥3 tables)
+- UI_COMPONENTS.md with installation strategy? (if using shadcn/ui)
+- CRITICAL_WORKFLOWS.md? (if complex setup workflows)
+- INSTALLATION_COMMANDS.md? (recommended - quick reference)
+- ENV_VARIABLES.md? (if needs secrets/config)
+[other conditional docs as applicable]"
 
 ### Step 4: Generate IMPLEMENTATION_PHASES.md
 
@@ -516,6 +546,531 @@ All endpoints return errors in this format:
 **Input Validation**: Zod schemas on client AND server
 **CORS**: Restricted to production domain
 **Secrets**: Environment variables in wrangler.jsonc (not committed)
+```
+
+### UI_COMPONENTS.md Template (Enhanced with Phase-Aligned Installation)
+
+**Use when**: Project uses shadcn/ui OR needs component planning
+
+```markdown
+# UI Components: [Project Name]
+
+**Framework:** shadcn/ui + Tailwind v4
+**Installation:** Components copied to @/components/ui (fully customizable)
+**Strategy:** Install components as needed per phase (not all upfront)
+
+---
+
+## Installation Strategy: By Phase
+
+### Phase [N]: [Phase Name] ([X] components)
+
+**When:** During [description of when this phase happens]
+
+**Components:**
+- `button` - [specific use cases in this phase]
+- `input` - [specific use cases]
+- `card` - [specific use cases]
+[... list all components for this phase ...]
+
+**Install:**
+\`\`\`bash
+pnpm dlx shadcn@latest add button input card [...]
+\`\`\`
+
+**Usage:** [Which routes/features use these]
+
+**Critical Notes:**
+- [Any gotchas, e.g., "Use sonner instead of toast for better UX"]
+- [Component-specific warnings, e.g., "data-table essential for TanStack Table integration"]
+
+---
+
+[Repeat for each phase...]
+
+---
+
+## Quick Reference Commands
+
+### MVP Install (All Core Components)
+\`\`\`bash
+pnpm dlx shadcn@latest add button input label card sonner [essential components...]
+\`\`\`
+
+### Full Featured Install
+\`\`\`bash
+pnpm dlx shadcn@latest add button input [all components...]
+\`\`\`
+
+### Update All Components
+\`\`\`bash
+pnpm dlx shadcn@latest update
+\`\`\`
+
+---
+
+## Component Usage by Route
+
+### [Route Name] (\`/route\`)
+- [List of components used]
+
+[Repeat for each major route...]
+
+---
+
+## Design Decisions
+
+### [Component Choice 1]
+**Recommendation:** [Chosen component]
+**Why:** [Justification]
+**Alternatives considered:** [What else was evaluated]
+**Savings:** [Time/token savings if applicable]
+
+[Repeat for each significant component decision...]
+
+---
+
+## Component Count Breakdown
+
+### By Category
+- **Forms:** X components ([list])
+- **Data Display:** X components ([list])
+- **Feedback:** X components ([list])
+- **Layout:** X components ([list])
+- **Navigation:** X components ([list])
+
+### By Priority
+- **Essential (MVP):** X components
+- **Recommended:** X additional components
+- **Optional (Enhanced UX):** X additional components
+
+---
+
+## Installation Checklist
+
+### Phase [N]: [Name] ✅
+- [ ] component1
+- [ ] component2
+[...]
+
+[Repeat for each phase...]
+
+---
+
+## Best Practices
+
+1. **Install as Needed** - Don't install all components upfront. Add them when implementing the feature.
+2. **Customize After Installation** - All components copied to @/components/ui are fully customizable.
+3. **Keep Components Updated** - Run \`pnpm dlx shadcn@latest update\` periodically.
+4. **Check for New Components** - shadcn/ui adds new components regularly.
+5. **Dark Mode Works Automatically** - All components respect Tailwind v4 theming.
+6. **Bundle Size Optimization** - Only installed components are included - unused code is tree-shaken.
+
+---
+
+## References
+
+- **shadcn/ui Docs:** https://ui.shadcn.com/docs/components
+- **Tailwind v4 Integration:** See \`tailwind-v4-shadcn\` skill
+- **Component Installation:** https://ui.shadcn.com/docs/installation/vite
+```
+
+### CRITICAL_WORKFLOWS.md Template (NEW)
+
+**Use when**: User mentioned complex setup steps OR order-sensitive workflows
+
+```markdown
+# Critical Workflows: [Project Name]
+
+**Purpose:** Document non-obvious setup steps and order-sensitive workflows to prevent getting stuck
+
+**Date:** [YYYY-MM-DD]
+
+---
+
+## ⚠️ [Workflow Name 1] ([Phase it applies to])
+
+**STOP! Read this before [starting X].**
+
+**Context:** [Why this workflow is tricky]
+
+**Order matters:**
+1. [Step 1 with specific command/action]
+2. [Step 2]
+3. [Step 3]
+[...]
+
+**Why this order:** [Explanation of what breaks if done wrong]
+
+**Code Example:**
+\`\`\`bash
+# Step 1: [Description]
+[command]
+
+# Step 2: [Description]
+[command]
+\`\`\`
+
+**Common Mistake:** [What people typically do wrong]
+**Fix if broken:** [How to recover]
+
+---
+
+## ⚠️ [Workflow Name 2]
+
+[Repeat structure...]
+
+---
+
+## Quick Checklist
+
+Before starting each phase, check if it has critical workflows:
+
+- [ ] Phase [N]: [Workflow name] (see above)
+- [ ] Phase [N+1]: No critical workflows
+- [ ] Phase [N+2]: [Workflow name] (see above)
+
+---
+
+## References
+
+- **[Link to official docs]**
+- **[Link to GitHub issue explaining gotcha]**
+- **[Link to skill that prevents this issue]**
+```
+
+### INSTALLATION_COMMANDS.md Template (NEW)
+
+**Use when**: All projects (recommended) - saves massive time
+
+```markdown
+# Installation Commands: [Project Name]
+
+**Purpose:** Copy-paste commands for each phase (no more "what was that command again?")
+
+**Date:** [YYYY-MM-DD]
+
+---
+
+## Phase 0: Planning
+[None - just docs]
+
+---
+
+## Phase 1: [Phase Name]
+
+### Scaffold Project
+\`\`\`bash
+npm create cloudflare@latest -- --framework=[framework]
+cd [project-name]
+\`\`\`
+
+### Install Dependencies
+\`\`\`bash
+pnpm add [packages]
+pnpm add -D [dev-packages]
+\`\`\`
+
+### Initialize Tools
+\`\`\`bash
+npx [tool] init
+\`\`\`
+
+### Verify Setup
+\`\`\`bash
+pnpm dev
+# Should see: [expected output]
+\`\`\`
+
+---
+
+## Phase 2: [Phase Name]
+
+[Repeat structure for each phase...]
+
+---
+
+## Database Commands (Phase [N])
+
+### Create Database
+\`\`\`bash
+npx wrangler d1 create [db-name]
+# Copy database_id and add to wrangler.jsonc under [[d1_databases]]
+\`\`\`
+
+### Run Migrations
+\`\`\`bash
+# Local (dev)
+npx wrangler d1 execute [db-name] --local --file=migrations/0001_initial.sql
+
+# Production
+npx wrangler d1 execute [db-name] --remote --file=migrations/0001_initial.sql
+\`\`\`
+
+### Query Database
+\`\`\`bash
+# Local
+npx wrangler d1 execute [db-name] --local --command="SELECT * FROM users"
+
+# Production
+npx wrangler d1 execute [db-name] --remote --command="SELECT * FROM users"
+\`\`\`
+
+---
+
+## Deployment Commands
+
+### Deploy to Cloudflare
+\`\`\`bash
+npm run build
+npx wrangler deploy
+\`\`\`
+
+### Set Production Secrets
+\`\`\`bash
+npx wrangler secret put [SECRET_NAME]
+# Enter value when prompted
+\`\`\`
+
+### Check Deployment
+\`\`\`bash
+npx wrangler tail
+# Watch logs in real-time
+\`\`\`
+
+---
+
+## Development Commands
+
+### Start Dev Server
+\`\`\`bash
+pnpm dev
+\`\`\`
+
+### Run Tests
+\`\`\`bash
+pnpm test
+\`\`\`
+
+### Lint & Format
+\`\`\`bash
+pnpm lint
+pnpm format
+\`\`\`
+
+---
+
+## Troubleshooting Commands
+
+### Clear Build Cache
+\`\`\`bash
+rm -rf dist/ .wrangler/
+pnpm dev
+\`\`\`
+
+### Check Wrangler Version
+\`\`\`bash
+npx wrangler --version
+# Should be: [expected version]
+\`\`\`
+
+### Verify Bindings
+\`\`\`bash
+npx wrangler d1 list
+npx wrangler r2 bucket list
+\`\`\`
+```
+
+### ENV_VARIABLES.md Template (NEW)
+
+**Use when**: Project needs API keys OR environment configuration
+
+```markdown
+# Environment Variables: [Project Name]
+
+**Purpose:** All secrets, API keys, and configuration needed for this project
+
+**Date:** [YYYY-MM-DD]
+
+---
+
+## Development (.dev.vars)
+
+**File:** \`.dev.vars\` (local file, NOT committed to git)
+
+\`\`\`bash
+# Auth
+CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+
+# Database
+DATABASE_URL=local
+
+# API Keys
+[SERVICE]_API_KEY=[value]
+
+# Feature Flags
+ENABLE_[FEATURE]=true
+\`\`\`
+
+**How to get these keys:**
+1. **Clerk Keys:** https://dashboard.clerk.com → API Keys
+2. **[Other Service]:** [Steps to obtain]
+
+---
+
+## Production (wrangler.jsonc secrets)
+
+**Secrets (set via CLI):**
+\`\`\`bash
+# Set via: npx wrangler secret put SECRET_NAME
+CLERK_SECRET_KEY=sk_live_...
+[SERVICE]_API_KEY=[production-value]
+\`\`\`
+
+**Bindings (configured in wrangler.jsonc):**
+\`\`\`jsonc
+{
+  "name": "[project-name]",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "[db-name]",
+      "database_id": "[copy from wrangler d1 create output]"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "[bucket-name]"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "[namespace-id]"
+    }
+  ]
+}
+\`\`\`
+
+---
+
+## Environment Variable Reference
+
+| Variable | Required | Where Used | Notes |
+|----------|----------|------------|-------|
+| CLERK_PUBLISHABLE_KEY | Yes | Frontend | Public, safe to commit in example files |
+| CLERK_SECRET_KEY | Yes | Worker | SECRET - never commit |
+| DATABASE_URL | Local only | Development | Points to local .wrangler/state |
+| [OTHER_VAR] | [Yes/No] | [Where] | [Notes] |
+
+---
+
+## Setup Checklist
+
+### Local Development
+- [ ] Create \`.dev.vars\` in project root
+- [ ] Add \`.dev.vars\` to \`.gitignore\` (should already be there)
+- [ ] Copy values from \`.dev.vars.example\` (if exists)
+- [ ] Get API keys from services (links above)
+- [ ] Run \`pnpm dev\` to verify
+
+### Production Deployment
+- [ ] Set all secrets via \`npx wrangler secret put\`
+- [ ] Configure all bindings in \`wrangler.jsonc\`
+- [ ] Deploy: \`npx wrangler deploy\`
+- [ ] Verify secrets are set: \`npx wrangler secret list\`
+- [ ] Test production deployment
+
+---
+
+## Security Notes
+
+**Never commit:**
+- \`.dev.vars\`
+- Any file with actual secret values
+- Production API keys
+
+**Safe to commit:**
+- \`.dev.vars.example\` (with placeholder values)
+- \`wrangler.jsonc\` (bindings config, NOT secret values)
+- Public keys (Clerk publishable key, etc.)
+
+**If secrets leaked:**
+1. Rotate all affected keys immediately
+2. Update production secrets: \`npx wrangler secret put [KEY]\`
+3. Revoke old keys in service dashboards
+4. Check git history for leaked secrets
+
+---
+
+## References
+
+- **Cloudflare Secrets:** https://developers.cloudflare.com/workers/configuration/secrets/
+- **Wrangler Configuration:** https://developers.cloudflare.com/workers/wrangler/configuration/
+- **[Service] API Docs:** [link]
+```
+
+### Compact SESSION.md Template (NEW)
+
+**Always generate this** - for tracking progress
+
+```markdown
+# Session State
+
+**Current Phase**: Phase 0 (Planning)
+**Current Stage**: Planning
+**Last Checkpoint**: None yet
+**Planning Docs**: \`docs/IMPLEMENTATION_PHASES.md\`, \`docs/CRITICAL_WORKFLOWS.md\` (if exists)
+
+---
+
+## Phase 0: Planning ✅
+**Completed**: [YYYY-MM-DD]
+**Summary**: Planning docs created
+**Deliverables**: [List generated docs]
+
+## Phase 1: [Name] ⏸️
+**Spec**: \`docs/IMPLEMENTATION_PHASES.md#phase-1\`
+**Type**: [Infrastructure/Database/API/UI/Integration]
+**Time**: [X hours]
+**Progress**: Not started
+**Next Action**: [Specific file + line + what to do]
+
+## Phase 2: [Name] ⏸️
+**Spec**: \`docs/IMPLEMENTATION_PHASES.md#phase-2\`
+**Type**: [Type]
+**Time**: [X hours]
+**Progress**: Not started
+
+[Collapse remaining phases to 2-3 lines each...]
+
+---
+
+## Critical Reminders
+
+**Before Starting:**
+- [ ] Read \`docs/CRITICAL_WORKFLOWS.md\` (if exists)
+- [ ] Review \`docs/INSTALLATION_COMMANDS.md\` for phase commands
+- [ ] Check \`docs/ENV_VARIABLES.md\` for required secrets
+
+**Critical Workflows:**
+[Link to specific workflows from CRITICAL_WORKFLOWS.md, if exists]
+
+---
+
+## Known Risks
+
+**High-Risk Phases:**
+- Phase [N]: [Name] - [Why risky]
+- Phase [N+1]: [Name] - [Why risky]
+
+**Mitigation:** [Strategy]
+
+---
+
+**Status Legend**: ⏸️ Pending | 🔄 In Progress | ✅ Complete | 🚫 Blocked | ⚠️ Issues
 ```
 
 ---
@@ -977,16 +1532,63 @@ I've structured your [Project Name] into [N] phases. Here's the planning documen
 - **Estimated Duration**: [X hours] (~[Y minutes] human time)
 - **Phases with Testing**: All phases include verification criteria
 - **Deployment Strategy**: [When to deploy]
+- **Docs Generated**: [List all docs created]
+
+---
+
+## ✅ Post-Generation Validation Checklist
+
+**Files Created:**
+- [ ] docs/IMPLEMENTATION_PHASES.md
+- [ ] docs/SESSION.md (compact template)
+- [ ] [Other generated docs...]
+
+**Before Starting Phase 1:**
+
+**Files:**
+- [ ] All planning docs reviewed
+- [ ] SESSION.md references correct file names (docs/IMPLEMENTATION_PHASES.md exists)
+- [ ] CRITICAL_WORKFLOWS.md read (if exists)
+- [ ] INSTALLATION_COMMANDS.md available for quick reference
+- [ ] ENV_VARIABLES.md lists all required secrets
+- [ ] "Next Action" in SESSION.md is concrete (file + line + what to do)
+
+**Understanding:**
+- [ ] Phase 1 tasks understood
+- [ ] Phase dependencies clear (what blocks what)
+- [ ] High-risk phases identified
+- [ ] Timeline realistic (includes buffer for learning curve if needed)
+- [ ] Critical workflows documented (D1 binding order, auth setup, etc.)
+
+**Environment:**
+- [ ] GitHub repo created (if needed)
+- [ ] Development environment ready (Node.js, pnpm, CLI tools)
+- [ ] Cloudflare account set up (if using Cloudflare)
+- [ ] Wrangler CLI installed and authenticated (if using Cloudflare)
+
+---
+
+## ⚠️ Common Mistakes to Avoid
+
+Before starting implementation, make sure you haven't made these common planning mistakes:
+
+1. **SESSION.md too verbose** - Should be <200 lines, reference IMPLEMENTATION_PHASES.md instead of duplicating
+2. **Missing IMPLEMENTATION_PHASES.md** - SESSION.md expects this file to exist
+3. **No critical workflows** - If complex setup exists, must be documented in CRITICAL_WORKFLOWS.md
+4. **Vague next action** - "Continue working on API" → Should be "Implement POST /api/tasks in src/routes/tasks.ts:47"
+5. **Phase numbering confusion** - Document whether Phase 0 (Planning) exists or starts at Phase 1
+6. **No timeline methodology** - Explain how estimates were calculated (prototype-based, estimated, etc.)
+7. **Planning before prototyping** - If using new framework, should build spike first (warned in pre-planning validation)
+
+---
 
 **Next Steps**:
-1. Review these planning docs
-2. Refine any phases that feel wrong
-3. Create SESSION.md to track progress (I can do this using the `project-session-management` skill)
-4. Start Phase 1 when ready
+1. **Review** all planning docs above
+2. **Validate** using checklist (files, understanding, environment)
+3. **Refine** any phases that feel wrong
+4. **Start Phase 1** when ready
 
-⭐ **Recommended**: Create SESSION.md now to track your progress through these phases. This makes it easy to resume work after context clears and ensures you never lose your place.
-
-Would you like me to create SESSION.md from these phases?
+⭐ **SESSION.md already created** - Use it to track your progress through these phases. Update it after significant progress, checkpoint frequently.
 
 Let me know if you'd like me to adjust any phases or add more detail anywhere!
 ```
