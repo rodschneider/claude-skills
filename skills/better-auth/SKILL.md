@@ -1,17 +1,17 @@
 ---
 name: better-auth
 description: |
-  Production-ready authentication framework for TypeScript with Cloudflare D1 support via Drizzle ORM or Kysely. Use this skill when building auth systems as a self-hosted alternative to Clerk or Auth.js, particularly for Cloudflare Workers projects. CRITICAL: better-auth requires Drizzle ORM or Kysely as database adapters - there is NO direct D1 adapter. Supports social providers (Google, GitHub, Microsoft, Apple), email/password, magic links, 2FA, passkeys, organizations, and RBAC. Includes comprehensive API reference for 80+ auto-generated endpoints, server-side methods, and complete plugin documentation (multiSession, genericOAuth, apiKey, TanStack Start integration). Prevents 14+ common authentication errors including D1 adapter misconfiguration, schema generation issues, session serialization, CORS, OAuth flows, JWT token handling, and API usage patterns.
+  Production-ready authentication framework for TypeScript with Cloudflare D1 support via Drizzle ORM or Kysely. Use this skill when building auth systems as a self-hosted alternative to Clerk or Auth.js, particularly for Cloudflare Workers projects. CRITICAL: better-auth requires Drizzle ORM or Kysely as database adapters - there is NO direct D1 adapter. Supports social providers (Google, GitHub, Microsoft, Apple), email/password, magic links, 2FA, passkeys, organizations, and RBAC. Includes comprehensive API reference for 80+ auto-generated endpoints, server-side methods, and complete plugin documentation (multiSession, genericOAuth, apiKey, TanStack Start integration). Prevents 13 common authentication errors including D1 adapter misconfiguration, schema generation issues, session serialization, CORS, OAuth flows, JWT token handling, API usage patterns, and nanostore state invalidation.
 
-  Keywords: better-auth, authentication, cloudflare d1 auth, drizzle orm auth, kysely auth, self-hosted auth, typescript auth, clerk alternative, auth.js alternative, social login, oauth providers, session management, jwt tokens, 2fa, two-factor, passkeys, webauthn, multi-tenant auth, organizations, teams, rbac, role-based access, google auth, github auth, microsoft auth, apple auth, magic links, email password, better-auth setup, drizzle d1, kysely d1, session serialization error, cors auth, d1 adapter, better-auth endpoints, better-auth api, auth.api methods, auto-generated endpoints, server-side api, tanstack start, reactStartCookies, multiSession, multi-session, genericOAuth, custom oauth, apiKey, api-key auth
+  Keywords: better-auth, authentication, cloudflare d1 auth, drizzle orm auth, kysely auth, self-hosted auth, typescript auth, clerk alternative, auth.js alternative, social login, oauth providers, session management, jwt tokens, 2fa, two-factor, passkeys, webauthn, multi-tenant auth, organizations, teams, rbac, role-based access, google auth, github auth, microsoft auth, apple auth, magic links, email password, better-auth setup, drizzle d1, kysely d1, session serialization error, cors auth, d1 adapter, better-auth endpoints, better-auth api, auth.api methods, auto-generated endpoints, server-side api, tanstack start, reactStartCookies, multiSession, multi-session, genericOAuth, custom oauth, apiKey, api-key auth, tanstack query, react query, nanostores, session invalidation, stale session
 license: MIT
 metadata:
-  version: 2.2.0
+  version: 2.2.1
   last_verified: 2025-11-18
   production_tested: multiple (zpg6/better-auth-cloudflare, zwily/example-react-router-cloudflare-d1-drizzle-better-auth, foxlau/react-router-v7-better-auth, matthewlynch/better-auth-react-router-cloudflare-d1)
   package_version: 1.3.34
   token_savings: ~75%
-  errors_prevented: 16
+  errors_prevented: 13
   official_docs: https://better-auth.com
   github: https://github.com/better-auth/better-auth
   breaking_changes: v2.0.0 - Corrected D1 adapter patterns (Drizzle/Kysely required)
@@ -1740,6 +1740,51 @@ wrangler d1 migrations apply my-app-db --local
 # Then run dev server
 wrangler dev
 ```
+
+---
+
+### Issue 13: User Data Updates Not Reflecting in UI (with TanStack Query)
+
+**Problem**: After updating user data (e.g., avatar, name), changes don't appear in `useSession()` despite calling `queryClient.invalidateQueries()`.
+
+**Symptoms**: Avatar image or user profile data appears stale after successful update. TanStack Query cache shows updated data, but better-auth session still shows old values.
+
+**Root Cause**: better-auth uses **nanostores** for session state management, not TanStack Query. Calling `queryClient.invalidateQueries()` only invalidates React Query cache, not the better-auth nanostore.
+
+**Solution**: Manually notify the nanostore after updating user data:
+
+```typescript
+// Update user data
+const { data, error } = await authClient.updateUser({
+  image: newAvatarUrl,
+  name: newName
+})
+
+if (!error) {
+  // Manually invalidate better-auth session state
+  authClient.$store.notify('$sessionSignal')
+
+  // Optional: Also invalidate React Query if using it for other data
+  queryClient.invalidateQueries({ queryKey: ['user-profile'] })
+}
+```
+
+**When to use**:
+- Using better-auth + TanStack Query together
+- Updating user profile fields (name, image, email)
+- Any operation that modifies session user data client-side
+
+**Alternative**: Call `refetch()` from `useSession()`, but `$store.notify()` is more direct:
+
+```typescript
+const { data: session, refetch } = authClient.useSession()
+// After update
+await refetch()
+```
+
+**Note**: `$store` is an undocumented internal API. This pattern is production-validated but may change in future better-auth versions.
+
+**Source**: Community-discovered pattern, production use verified
 
 ---
 

@@ -38,6 +38,8 @@ This skill should be automatically invoked when you mention:
 - **"multi-session"** - Account switching
 - **"genericOAuth"** - Custom OAuth providers
 - **"API key authentication"** - API-only auth
+- **"TanStack Query session"** - Session state with React Query
+- **"nanostores auth"** - Nanostore session invalidation
 
 ---
 
@@ -74,24 +76,21 @@ This skill should be automatically invoked when you mention:
 8. **Database Setup** - D1 and PostgreSQL schema patterns
 9. **API Reference** - Complete documentation for 80+ auto-generated endpoints
 
-### Errors Prevented (16 Common Issues)
+### Errors Prevented (13 Common Issues)
 
 - ✅ **D1 adapter misconfiguration** (no direct d1Adapter, must use Drizzle/Kysely)
 - ✅ **Schema generation failures** (using Drizzle Kit correctly)
 - ✅ **TanStack Start cookie issues** (reactStartCookies plugin required)
 - ✅ **Plugin ordering errors** (reactStartCookies must be last)
+- ✅ **Nanostore session invalidation** (TanStack Query won't refresh session state)
 - ✅ D1 eventual consistency causing stale session reads
 - ✅ CORS misconfiguration for SPA applications
 - ✅ Session serialization errors in Workers
 - ✅ OAuth redirect URI mismatch
 - ✅ Email verification not sending
 - ✅ JWT token expiration issues
-- ✅ Password hashing performance bottlenecks
 - ✅ Social provider scope issues (missing user data)
-- ✅ Multi-tenant data leakage
-- ✅ Rate limit false positives
-- ✅ Using wrong API approach (endpoints vs server methods)
-- ✅ Reinventing existing auto-generated endpoints
+- ✅ TypeScript errors with Drizzle schema
 
 ### Reference Files
 
