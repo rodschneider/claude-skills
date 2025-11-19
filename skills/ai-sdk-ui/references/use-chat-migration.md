@@ -3,7 +3,7 @@
 Complete guide to migrating from AI SDK v4 to v5 for UI hooks.
 
 **Last Updated**: 2025-10-22
-**Applies to**: AI SDK v5.0.76+
+**Applies to**: AI SDK v5.0+
 
 ---
 

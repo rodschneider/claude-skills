@@ -6,7 +6,7 @@ import { anthropic } from '@ai-sdk/anthropic';
 
 async function main() {
   const stream = streamText({
-    model: anthropic('claude-3-5-sonnet-20241022'),
+    model: anthropic('claude-sonnet-4-5'),
     messages: [
       {
         role: 'system',

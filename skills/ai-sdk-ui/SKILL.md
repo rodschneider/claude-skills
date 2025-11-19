@@ -13,15 +13,21 @@ description: |
   ai file attachments, message persistence, useChat error, streaming failed ui, parse stream error,
   useChat no response, react ai hooks, nextjs app router ai, nextjs pages router ai
 license: MIT
+metadata:
+  version: 1.0.1
+  last_verified: 2025-11-19
+  ai_sdk_version: 5.0.95+
+  breaking_changes: false
+  production_tested: true
 ---
 
 # AI SDK UI - Frontend React Hooks
 
 Frontend React hooks for AI-powered user interfaces with Vercel AI SDK v5.
 
-**Version**: AI SDK v5.0.76+ (Stable)
+**Version**: AI SDK v5.0.95+ (Stable)
 **Framework**: React 18+, Next.js 14+
-**Last Updated**: 2025-10-22
+**Last Updated**: 2025-11-19
 
 ---
 
@@ -962,8 +968,8 @@ See `references/streaming-patterns.md` for comprehensive best practices.
 ```json
 {
   "dependencies": {
-    "ai": "^5.0.76",
-    "@ai-sdk/openai": "^2.0.53",
+    "ai": "^5.0.95",
+    "@ai-sdk/openai": "^2.0.68",
     "react": "^18.2.0",
     "zod": "^3.23.8"
   }
@@ -982,10 +988,10 @@ See `references/streaming-patterns.md` for comprehensive best practices.
 ```
 
 **Version Notes:**
-- AI SDK v5.0.76+ (stable)
+- AI SDK v5.0.95+ (stable, latest as of November 2025)
 - React 18+ (React 19 supported)
 - Next.js 14+ recommended (13.4+ works)
-- Zod 3.23.8+ for schema validation
+- Zod 3.23.8+ for schema validation (templates use 3.x for compatibility)
 
 ---
 
@@ -1046,4 +1052,4 @@ See `references/` for:
 ---
 
 **Production Tested**: WordPress Auditor (https://wordpress-auditor.webfonts.workers.dev)
-**Last Updated**: 2025-10-22
+**Last Updated**: 2025-11-19

@@ -1,9 +1,9 @@
 # AI SDK UI - Frontend React Hooks
 
-**Version**: AI SDK v5.0.76+
+**Version**: AI SDK v5.0.95+
 **Status**: Production-Ready ✅
 **Framework**: React 18+, Next.js 14+
-**Last Updated**: 2025-10-22
+**Last Updated**: 2025-11-19
 
 ---
 
@@ -308,9 +308,18 @@ This skill documents and prevents 12 common UI errors:
 - ✅ All 11 templates work copy-paste
 - ✅ v5 breaking changes documented
 - ✅ 12 common errors prevented
-- ✅ Package versions current (2025-10-22)
+- ✅ Package versions current (2025-11-19)
 - ✅ Next.js App Router & Pages Router examples
 - ✅ Token savings: 55%
+
+---
+
+## Recent Updates (v1.0.1 - 2025-11-19)
+
+- **Updated Package Versions**: AI SDK 5.0.95, @ai-sdk/anthropic 2.0.45, @ai-sdk/openai 2.0.68, @ai-sdk/google 2.0.38
+- **Added Metadata**: YAML frontmatter now includes version tracking and last_verified date
+- **Clarified Engine Versions**: Added comment explaining minimum supported versions in package.json
+- **Zod 3.x for Compatibility**: Templates use Zod 3.23.8 for maximum compatibility
 
 ---
 

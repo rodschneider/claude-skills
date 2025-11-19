@@ -16,13 +16,21 @@ async function main() {
     apiKey: process.env.OPENAI_API_KEY,
   });
 
-  // Available models
+  // Available models (latest)
   const models = {
-    gpt4Turbo: openai('gpt-4-turbo'),
-    gpt4: openai('gpt-4'),
-    gpt35Turbo: openai('gpt-3.5-turbo'),
-    gpt5: openai('gpt-5'), // If available in your account
+    gpt51: openai('gpt-5.1'),            // Latest flagship model (Nov 2025)
+    gpt5Pro: openai('gpt-5-pro'),        // Advanced reasoning
+    gpt41: openai('gpt-4.1'),            // Latest GPT-4 series
+    o3: openai('o3'),                    // Reasoning model
+    gpt4Turbo: openai('gpt-4-turbo'),    // Previous generation (still excellent)
+    gpt35Turbo: openai('gpt-3.5-turbo'), // Fast, cost-effective
   };
+
+  // Older models (still functional)
+  // const olderModels = {
+  //   gpt5: openai('gpt-5'),      // Superseded by gpt-5.1
+  //   gpt4: openai('gpt-4'),      // Use gpt-4-turbo instead
+  // };
 
   // Example: Generate text with GPT-4
   console.log('Generating text with GPT-4 Turbo...\n');
@@ -62,10 +70,12 @@ async function main() {
 
   // Model selection guide
   console.log('\n=== Model Selection Guide ===');
-  console.log('- gpt-4-turbo: Best for complex reasoning, current model');
-  console.log('- gpt-4: High quality, slightly older');
+  console.log('- gpt-5.1: Latest flagship model (November 2025)');
+  console.log('- gpt-5-pro: Advanced reasoning and complex tasks');
+  console.log('- o3: Specialized reasoning model');
+  console.log('- gpt-4.1: Latest GPT-4 series, excellent quality');
+  console.log('- gpt-4-turbo: Previous generation, still very capable');
   console.log('- gpt-3.5-turbo: Fast and cost-effective for simple tasks');
-  console.log('- gpt-5: Latest model (if available)');
 }
 
 main().catch(console.error);

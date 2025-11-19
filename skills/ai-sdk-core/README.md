@@ -82,14 +82,22 @@ See `SKILL.md` for comprehensive documentation and examples.
 
 ## Version
 
-- **Skill Version**: 1.1.0
-- **AI SDK Version**: 5.0.81+
-- **Last Updated**: 2025-10-29
+- **Skill Version**: 1.1.1
+- **AI SDK Version**: 5.0.95+
+- **Last Updated**: 2025-11-19
 
-## Recent Updates (v1.1.0)
+## Recent Updates (v1.1.1 - 2025-11-19)
+
+- **Updated Package Versions**: AI SDK 5.0.95, @ai-sdk/anthropic 2.0.45, @ai-sdk/openai 2.0.68, @ai-sdk/google 2.0.38
+- **Updated Template Models**: anthropic-setup.ts and openai-setup.ts now use latest model IDs
+  - Claude: Sonnet 4.5, Opus 4.0, Haiku 4.5 (deprecated Claude 3.x models as commented examples)
+  - OpenAI: GPT-5.1, GPT-5-Pro, GPT-4.1, o3 reasoning model (previous gen as comments)
+- **Added Metadata**: YAML frontmatter now includes version tracking and last_verified date
+- **Zod 3.x for Compatibility**: Templates use Zod 3.23.8 for maximum compatibility (AI SDK supports both 3.x and 4.x)
+
+## Previous Updates (v1.1.0 - 2025-10-29)
 
 - **Updated Model Names**: Claude 4.x (Sonnet 4.5, Opus 4), GPT-5, Gemini 2.5 models now GA
-- **Updated Package Versions**: AI SDK 5.0.81, @ai-sdk/anthropic 2.0.38, @ai-sdk/openai 2.0.56, @ai-sdk/google 2.0.24
 - **Zod 4 Support Documented**: AI SDK 5 supports both Zod 3.x and 4.x (4.1.12 latest)
 - **Issue #4726 Resolved**: streamText now has onError callback (fixed in v4.1.22)
 - **Deprecated Claude 3.x**: Anthropic deprecated Claude 3.x models in favor of Claude 4.x family

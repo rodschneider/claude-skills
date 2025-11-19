@@ -1,32 +1,31 @@
 ## NPM Packages
 
-**Checked**: 2025-11-17 02:34:28 UTC
+**Checked**: 2025-11-19 12:32:11 UTC
 
 
-### ai-sdk-core
+### ai-sdk-ui
 
 | Package | Current | Latest | Status |
 |---------|---------|--------|--------|
+| node | 8.0.0 | 25.2.1 | ❌ **MAJOR** (breaking) |
+| npm | 9.0.0 | 11.6.2 | ❌ **MAJOR** (breaking) |
+| packageManager | 0.0.0 | _error_ | ⚠️ Could not fetch |
+| node | 8.0.0 | 25.2.1 | ❌ **MAJOR** (breaking) |
+| npm | 9.0.0 | 11.6.2 | ❌ **MAJOR** (breaking) |
+| packageManager | 0.0.0 | _error_ | ⚠️ Could not fetch |
 
 ---
 
 ## GitHub Releases
 
-**Checked**: 2025-11-17 02:34:28 UTC
+**Checked**: 2025-11-19 12:32:14 UTC
 
-
-### ai-sdk-core
-
-| Repository | Latest Release | Status |
-|------------|----------------|--------|
-| cloudflare/ai | ai-gateway-provider@2.0.1 | ⚠️ Check docs |
-| vercel/ai | @ai-sdk/black-forest-labs@0.0.1 | ⚠️ Check docs |
 
 ---
 
 ## Skill Metadata
 
-**Checked**: 2025-11-17 02:34:29 UTC
+**Checked**: 2025-11-19 12:32:14 UTC
 
 **Stale Threshold**: 90 days
 
@@ -35,27 +34,16 @@
 
 ## AI Models
 
-**Checked**: 2025-11-17 02:34:29 UTC
+**Checked**: 2025-11-19 12:32:14 UTC
 
 
-### ai-sdk-core
+### ai-sdk-ui
 
 | Model | Provider | Status | Notes |
 |-------|----------|--------|-------|
 | gpt-3 | OpenAI | ❓ Unknown | Not in known models list |
 | gpt-4 | OpenAI | ⚠️ **Deprecated** | Use gpt-4-turbo or gpt-5 |
 | gpt-4-turbo | OpenAI | ✅ Current | Previous generation |
-| gpt-5 | OpenAI | ✅ Current | Latest flagship model |
-| claude-3-5-sonnet-20241022 | Anthropic | ❓ Unknown | Not in known models list |
-| claude-3-haiku-20240307 | Anthropic | ❓ Unknown | Not in known models list |
-| claude-3-opus-20240229 | Anthropic | ❓ Unknown | Not in known models list |
-| claude-opus-4-20250522 | Anthropic | ❓ Unknown | Not in known models list |
-| claude-sonnet-4-20250522 | Anthropic | ❓ Unknown | Not in known models list |
-| claude-sonnet-4-5-20250929 | Anthropic | ✅ Current | Dated model ID |
-| gemini-2.5-flash | Google | ✅ Current | Fast model |
-| gemini-2.5-flash-lite | Google | ✅ Current | Lightweight (not in CLI) |
-| gemini-2.5-pro | Google | ✅ Current | Latest Pro model |
-| @cf/meta/llama-3.1-8b-instruct | Cloudflare | ✅ Current | Llama 3.1 8B |
 
 ---
 
@@ -63,6 +51,7 @@
 
 ### High Priority
 
+- ❌ **4 major (breaking) package update(s)** - Review migration guides before updating
 - ⚠️ **1 deprecated AI model reference(s)** - Update to current models
 
 ---

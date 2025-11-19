@@ -14,6 +14,12 @@ description: |
   google gemini sdk, workers-ai-provider, ai streaming backend, multi-provider ai, ai sdk errors,
   AI_APICallError, AI_NoObjectGeneratedError, streamText fails, worker startup limit ai
 license: MIT
+metadata:
+  version: 1.1.1
+  last_verified: 2025-11-19
+  ai_sdk_version: 5.0.95+
+  breaking_changes: false
+  production_tested: true
 ---
 
 # AI SDK Core
@@ -1709,10 +1715,10 @@ See Vercel's official deployment documentation: https://vercel.com/docs/function
 ```json
 {
   "dependencies": {
-    "ai": "^5.0.81",
-    "@ai-sdk/openai": "^2.0.56",
-    "@ai-sdk/anthropic": "^2.0.38",
-    "@ai-sdk/google": "^2.0.24",
+    "ai": "^5.0.95",
+    "@ai-sdk/openai": "^2.0.68",
+    "@ai-sdk/anthropic": "^2.0.45",
+    "@ai-sdk/google": "^2.0.38",
     "workers-ai-provider": "^2.0.0",
     "zod": "^3.23.8"
   },
@@ -1724,14 +1730,15 @@ See Vercel's official deployment documentation: https://vercel.com/docs/function
 ```
 
 **Version Notes:**
-- AI SDK v5.0.81+ (stable, latest as of October 2025)
+- AI SDK v5.0.95+ (stable, latest as of November 2025)
 - v6 is in beta - not covered in this skill
-- **Zod compatibility**: This skill uses Zod 3.x, but AI SDK 5 officially supports both Zod 3.x and Zod 4.x (4.1.12 latest)
-  - Zod 4 recommended for new projects (released August 2025)
+- **Zod compatibility**: This skill uses Zod 3.x for maximum compatibility, but AI SDK 5 officially supports both Zod 3.x and Zod 4.x (4.1.12 latest)
+  - Zod 3.23.8 recommended for templates (stable, maximum compatibility)
   - Zod 4 has breaking changes: error APIs, `.default()` behavior, `ZodError.errors` removed
   - Some peer dependency warnings may occur with `zod-to-json-schema` when using Zod 4
   - See https://zod.dev/v4/changelog for migration guide
 - Provider packages at 2.0+ for v5 compatibility
+- **Model updates (Nov 2025)**: Latest models include GPT-5.1, GPT-4.1, o3 (OpenAI); Claude Sonnet 4.5, Opus 4.0, Haiku 4.5 (Anthropic)
 
 **Check Latest Versions:**
 ```bash
@@ -1816,6 +1823,6 @@ All files are optimized for copy-paste into your project.
 
 ---
 
-**Last Updated:** 2025-10-29
-**Skill Version:** 1.1.0
-**AI SDK Version:** 5.0.81+
+**Last Updated:** 2025-11-19
+**Skill Version:** 1.1.1
+**AI SDK Version:** 5.0.95+

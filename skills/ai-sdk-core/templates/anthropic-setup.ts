@@ -9,25 +9,32 @@ async function main() {
 
   // Method 1: Use environment variable (recommended)
   // ANTHROPIC_API_KEY=sk-ant-...
-  const model1 = anthropic('claude-3-5-sonnet-20241022');
+  const model1 = anthropic('claude-sonnet-4-5');
 
   // Method 2: Explicit API key
-  const model2 = anthropic('claude-3-5-sonnet-20241022', {
+  const model2 = anthropic('claude-sonnet-4-5', {
     apiKey: process.env.ANTHROPIC_API_KEY,
   });
 
-  // Available models
+  // Available models (Claude 4.x family - current)
   const models = {
-    sonnet35: anthropic('claude-3-5-sonnet-20241022'), // Best balance
-    opus: anthropic('claude-3-opus-20240229'), // Highest intelligence
-    haiku: anthropic('claude-3-haiku-20240307'), // Fastest
+    sonnet45: anthropic('claude-sonnet-4-5'),  // Latest, recommended
+    opus4: anthropic('claude-opus-4-0'),       // Highest intelligence
+    haiku45: anthropic('claude-haiku-4-5'),    // Fastest
   };
 
+  // Legacy models (Claude 3.x - deprecated, use Claude 4.x instead)
+  // const legacyModels = {
+  //   sonnet35: anthropic('claude-3-5-sonnet-20241022'),
+  //   opus3: anthropic('claude-3-opus-20240229'),
+  //   haiku3: anthropic('claude-3-haiku-20240307'),
+  // };
+
   // Example: Generate text with Claude
-  console.log('Generating text with Claude 3.5 Sonnet...\n');
+  console.log('Generating text with Claude Sonnet 4.5...\n');
 
   const result = await generateText({
-    model: models.sonnet35,
+    model: models.sonnet45,
     prompt: 'Explain what makes Claude different from other AI assistants in 2 sentences.',
     maxOutputTokens: 150,
   });
@@ -42,7 +49,7 @@ async function main() {
   console.log('\n=== Long Context Example ===\n');
 
   const longContextResult = await generateText({
-    model: models.sonnet35,
+    model: models.sonnet45,
     messages: [
       {
         role: 'user',
@@ -60,10 +67,11 @@ async function main() {
 
   // Model selection guide
   console.log('\n=== Model Selection Guide ===');
-  console.log('- Claude 3.5 Sonnet: Best balance of intelligence, speed, and cost');
-  console.log('- Claude 3 Opus: Highest intelligence, best for complex reasoning');
-  console.log('- Claude 3 Haiku: Fastest and most cost-effective');
-  console.log('\nAll Claude models support 200K+ token context windows');
+  console.log('- Claude Sonnet 4.5: Latest model, best balance (recommended)');
+  console.log('- Claude Opus 4.0: Highest intelligence for complex reasoning');
+  console.log('- Claude Haiku 4.5: Fastest and most cost-effective');
+  console.log('\nAll Claude 4.x models support extended context windows');
+  console.log('Note: Claude 3.x models deprecated in 2025, use Claude 4.x instead');
 }
 
 main().catch(console.error);
