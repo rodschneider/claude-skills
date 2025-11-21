@@ -1,19 +1,9 @@
 ---
 name: vercel-kv
 description: |
-  This skill provides comprehensive knowledge for integrating Vercel KV (Redis-compatible key-value storage powered by Upstash) into Vercel applications. It should be used when setting up Vercel KV for Next.js applications, implementing caching patterns, managing sessions, or handling rate limiting in edge and serverless functions.
+  Integrate Redis-compatible Vercel KV for caching, session management, and rate limiting in Next.js applications. Powered by Upstash with strong consistency and TTL support.
 
-  Use this skill when:
-  - Setting up Vercel KV for Next.js applications
-  - Implementing caching strategies (page cache, API cache, data cache)
-  - Managing user sessions or authentication tokens in serverless environments
-  - Building rate limiting for APIs or features
-  - Storing temporary data with TTL (time-to-live)
-  - Migrating from Cloudflare KV to Vercel KV
-  - Encountering errors like "KV_REST_API_URL not set", "rate limit exceeded", or "JSON serialization errors"
-  - Need Redis-compatible API with strong consistency (vs eventual consistency)
-
-  Keywords: vercel kv, @vercel/kv, vercel redis, upstash vercel, kv vercel, redis vercel edge, key-value vercel, vercel cache, vercel sessions, vercel rate limit, redis upstash, kv storage, edge kv, serverless redis, vercel ttl, vercel expire, kv typescript, next.js kv, server actions kv, edge runtime kv
+  Use when implementing cache strategies, storing temporary data with expiration, building rate limiters, or troubleshooting missing environment variables, serialization errors, or rate limit issues.
 license: MIT
 ---
 

@@ -1,9 +1,9 @@
 ---
 name: typescript-mcp
 description: |
-  Use this skill when building MCP (Model Context Protocol) servers with TypeScript on Cloudflare Workers. This skill provides production-tested patterns for implementing tools, resources, and prompts using the official @modelcontextprotocol/sdk. It prevents 10+ common errors including export syntax issues, schema validation failures, memory leaks from unclosed transports, CORS misconfigurations, and authentication vulnerabilities. This skill should be used when developers need stateless MCP servers for API integrations, external tool exposure, or serverless edge deployments. For stateful agents with WebSockets and persistent storage, consider the Cloudflare Agents SDK instead. Supports multiple authentication methods (API keys, OAuth, Zero Trust), Cloudflare service integrations (D1, KV, R2, Vectorize), and comprehensive testing strategies. Production tested with token savings of ~70% vs manual implementation.
+  Build stateless MCP servers with TypeScript on Cloudflare Workers using @modelcontextprotocol/sdk. Provides patterns for tools, resources, prompts, and authentication (API keys, OAuth, Zero Trust).
 
-  Keywords: mcp, model context protocol, typescript mcp, cloudflare workers mcp, mcp server, mcp tools, mcp resources, mcp sdk, @modelcontextprotocol/sdk, hono mcp, streamablehttpservertransport, mcp authentication, mcp cloudflare, edge mcp server, serverless mcp, typescript mcp server, mcp api, llm tools, ai tools, cloudflare d1 mcp, cloudflare kv mcp, mcp testing, mcp deployment, wrangler mcp, export syntax error, schema validation error, memory leak mcp, cors mcp, rate limiting mcp
+  Use when exposing APIs to LLMs, integrating Cloudflare services (D1, KV, R2, Vectorize), or troubleshooting export syntax errors, unclosed transport leaks, or CORS misconfigurations.
 license: MIT
 metadata:
   version: 1.0.0

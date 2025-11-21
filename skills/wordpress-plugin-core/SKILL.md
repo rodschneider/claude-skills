@@ -1,11 +1,9 @@
 ---
 name: wordpress-plugin-core
 description: |
-  This skill provides comprehensive knowledge for WordPress plugin development, covering core patterns, security best practices, database interactions, hooks/filters, Settings API, custom post types, REST API, and AJAX. This skill should be used when creating WordPress plugins, troubleshooting security issues, implementing custom post types/taxonomies, building admin interfaces, or working with the WordPress database.
+  Build secure WordPress plugins with core patterns for hooks, database interactions, Settings API, custom post types, REST API, and AJAX. Covers three architecture patterns (Simple, OOP, PSR-4) and the Security Trinity.
 
-  Use when: Creating new WordPress plugins, implementing nonces/sanitization/escaping, working with $wpdb and prepared statements, building Settings API pages, registering custom post types or taxonomies, implementing REST API endpoints, handling AJAX requests, debugging plugin activation/deactivation issues, preventing SQL injection/XSS/CSRF vulnerabilities.
-
-  Keywords: wordpress plugin development, wordpress security, wordpress hooks, wordpress filters, wordpress database, wpdb prepare, sanitize_text_field, esc_html, wp_nonce, custom post type, register_post_type, settings api, rest api, admin-ajax, wordpress sql injection, wordpress xss, wordpress csrf, plugin header, activation hook, deactivation hook, wordpress coding standards, wordpress plugin architecture
+  Use when creating plugins, implementing nonces/sanitization/escaping, working with $wpdb prepared statements, or troubleshooting SQL injection, XSS, CSRF vulnerabilities, or plugin activation errors.
 license: MIT
 ---
 

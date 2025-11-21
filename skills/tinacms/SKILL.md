@@ -1,16 +1,9 @@
 ---
 name: tinacms
 description: |
-  Complete TinaCMS skill for building content-heavy sites with Git-backed CMS.
-  Use this skill when setting up blogs, documentation sites, or marketing sites
-  that require visual editing and content management for non-technical users.
-  Supports Next.js (App Router + Pages Router), Vite + React, Astro, and
-  framework-agnostic setups. Prevents 9+ common errors including ESbuild compilation
-  issues, module resolution problems, schema configuration errors, Docker binding
-  issues, and deployment problems. Self-hosting options for Cloudflare Workers,
-  Vercel Functions, and Netlify Functions included.
+  Build content-heavy sites with Git-backed TinaCMS. Provides visual editing and content management for blogs, documentation, and marketing sites with non-technical editors.
 
-  Keywords: TinaCMS, Tina CMS, Git-backed CMS, visual editing CMS, content management, Next.js CMS, App Router TinaCMS, Pages Router TinaCMS, Vite React TinaCMS, Astro TinaCMS, framework-agnostic CMS, TinaCloud, self-hosted TinaCMS, blog CMS, documentation site CMS, marketing site CMS, GraphQL CMS, tina schema, tina collections, tina templates, tinacli, @tinacms/cli, ESbuild compilation error, module resolution tina, schema configuration, Docker binding issues, Cloudflare Workers TinaCMS, Vercel Functions TinaCMS, Netlify Functions TinaCMS
+  Use when implementing Next.js, Vite+React, or Astro CMS setups, self-hosting on Cloudflare Workers, or troubleshooting ESbuild compilation errors, module resolution issues, or Docker binding problems.
 license: MIT
 allowed-tools: ['Read', 'Write', 'Edit', 'Bash', 'Glob', 'Grep']
 metadata:
