@@ -1,11 +1,9 @@
 ---
 name: tanstack-query
 description: |
-  This skill provides comprehensive knowledge for TanStack Query v5 (React Query) server state management in React applications. It should be used when setting up data fetching with useQuery, implementing mutations with useMutation, configuring QueryClient, managing caching strategies, migrating from v4 to v5, implementing optimistic updates, using infinite queries, or encountering query/mutation errors.
+  Manage server state in React with TanStack Query v5. Set up queries with useQuery, mutations with useMutation, configure QueryClient caching strategies, implement optimistic updates, and handle infinite scroll with useInfiniteQuery.
 
-  Use when: initializing TanStack Query in React projects, configuring QueryClient settings, creating custom query hooks, implementing mutations with error handling, setting up optimistic updates, using useInfiniteQuery for pagination, migrating from React Query v4 to v5, debugging stale data issues, fixing caching problems, resolving v5 breaking changes, implementing suspense queries, or setting up query devtools.
-
-  Keywords: TanStack Query, React Query, useQuery, useMutation, useInfiniteQuery, useSuspenseQuery, QueryClient, QueryClientProvider, data fetching, server state, caching, staleTime, gcTime, query invalidation, prefetching, optimistic updates, mutations, query keys, query functions, error boundaries, suspense, React Query DevTools, v5 migration, v4 to v5, request waterfalls, background refetching, cacheTime renamed, loading status renamed, pending status, initialPageParam required, keepPreviousData removed, placeholderData, query callbacks removed, onSuccess removed, onError removed, object syntax required
+  Use when: setting up data fetching in React projects, migrating from v4 to v5, or fixing object syntax required errors, query callbacks removed issues, cacheTime renamed to gcTime, isPending vs isLoading confusion, keepPreviousData removed problems.
 license: MIT
 ---
 

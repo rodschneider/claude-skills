@@ -1,13 +1,9 @@
 ---
 name: project-planning
-description: >
-  Generates comprehensive planning documentation for web application projects, structuring work
-  into context-safe phases with built-in verification criteria. Creates IMPLEMENTATION_PHASES.md,
-  DATABASE_SCHEMA.md, API_ENDPOINTS.md, ARCHITECTURE.md, and other planning docs based on project
-  needs. Optimized for Cloudflare Workers + Vite + React stack. Use when starting new projects,
-  adding major features, or restructuring existing work into manageable phases.
+description: |
+  Generate structured planning documentation for web projects with context-safe phases, verification criteria, and exit conditions. Creates IMPLEMENTATION_PHASES.md plus conditional docs (DATABASE_SCHEMA, API_ENDPOINTS, UI_COMPONENTS, CRITICAL_WORKFLOWS).
 
-  Keywords: project planning, planning documentation, IMPLEMENTATION_PHASES.md, DATABASE_SCHEMA.md, API_ENDPOINTS.md, ARCHITECTURE.md, UI_COMPONENTS.md, CRITICAL_WORKFLOWS.md, INSTALLATION_COMMANDS.md, ENV_VARIABLES.md, SESSION.md, TESTING.md, AGENTS_CONFIG.md, phased development, context-safe phases, verification criteria, exit criteria, planning docs generator, web app planning, Cloudflare Workers planning, Vite React planning, project structure, project phases, major features planning, new project setup, shadcn/ui installation, component planning, critical workflows, installation commands, environment variables, secrets configuration, compact session tracking
+  Use when: starting new Cloudflare Workers/React projects, adding major features to existing apps, breaking large work into manageable phases, or need verified planning before coding begins.
 license: MIT
 ---
 

@@ -1,9 +1,9 @@
 ---
 name: open-source-contributions
 description: |
-  Use this skill when contributing code to open source projects. The skill covers proper pull request creation, avoiding common mistakes that annoy maintainers, cleaning up personal development artifacts before submission, writing effective PR descriptions, following project conventions, and communicating professionally with maintainers. It prevents 16 common contribution mistakes including working on main branch, not testing before PR submission, including unrelated changes, submitting planning documents, session notes, temporary test files, screenshots, and other personal artifacts. Includes 3 Critical Workflow Rules that must NEVER be skipped: (1) Always work on feature branches, (2) Test thoroughly with evidence before PR, (3) Keep PRs focused on single feature. The skill includes automation scripts to validate PRs before submission, templates for PR descriptions and commit messages, and comprehensive checklists. This skill should be used whenever creating pull requests for public repositories, contributing to community projects, or submitting code to projects you don't own.
+  Create maintainer-friendly pull requests for open source projects with clean code submissions and professional communication. Prevents 16 common mistakes that cause PR rejection.
 
-  Keywords: open source contributions, github pull request, PR best practices, contribution guidelines, feature branch workflow, PR description, commit messages, open source etiquette, maintainer-friendly PR, PR checklist, clean PR, avoid personal artifacts, session notes cleanup, planning docs cleanup, test before PR, unrelated changes, working on main branch, focused PR, single feature PR, professional communication, community contributions, public repository contributions, fork workflow, upstream sync
+  Use when: contributing to public repositories, submitting PRs to community projects, migrating from contributor to maintainer workflows, or troubleshooting PR rejection, working on main branch errors, failing CI checks, or personal artifacts in commits.
 license: MIT
 metadata:
   version: "1.1.0"
