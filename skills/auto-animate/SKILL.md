@@ -1,20 +1,35 @@
 ---
 name: auto-animate
 description: |
-  Production-tested setup for AutoAnimate (@formkit/auto-animate) - a zero-config, drop-in animation library
-  that automatically adds smooth transitions when DOM elements are added, removed, or moved. This skill should
-  be used when building UIs that need simple, automatic animations for lists, accordions, toasts, or form validation
-  messages without the complexity of full animation libraries.
+  Add zero-config automatic animations to React UIs with AutoAnimate (@formkit/auto-animate).
+  Lightweight (2kb) with built-in accessibility support. Smooth transitions for DOM changes
+  (add/remove/move) without animation code.
 
-  Use when: Adding smooth animations to dynamic lists, building filter/sort interfaces, creating accordion components,
-  implementing toast notifications, animating form validation messages, needing simple transitions without animation code,
-  working with Vite + React + Tailwind, deploying to Cloudflare Workers Static Assets, or encountering SSR errors with
-  animation libraries.
-
-  Keywords: auto-animate, @formkit/auto-animate, formkit, zero-config animation, automatic animations, drop-in animation,
-  list animations, accordion animation, toast animation, form validation animation, lightweight animation, 2kb animation,
-  prefers-reduced-motion, accessible animations, vite react animation, cloudflare workers animation, ssr safe animation
+  Use when: animating dynamic lists, building accordions, implementing toast notifications,
+  adding form validation messages, or encountering SSR errors with animation libraries.
 license: MIT
+metadata:
+  keywords:
+    - auto-animate
+    - "@formkit/auto-animate"
+    - formkit
+    - zero-config-animation
+    - automatic-animations
+    - drop-in-animation
+    - list-animations
+    - accordion-animation
+    - toast-animation
+    - form-validation-animation
+    - lightweight-animation
+    - 2kb-animation
+    - prefers-reduced-motion
+    - accessible-animations
+    - vite-react-animation
+    - cloudflare-workers-animation
+    - ssr-safe-animation
+    - react-animations
+    - vite-animations
+    - tailwind-animations
 ---
 
 # AutoAnimate
