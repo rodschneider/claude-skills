@@ -1,12 +1,27 @@
 ---
 name: claude-agent-sdk
 description: |
-  This skill provides comprehensive knowledge for working with the Anthropic Claude Agent SDK. It should be used when building autonomous AI agents, creating multi-step reasoning workflows, orchestrating specialized subagents, integrating custom tools and MCP servers, or implementing production-ready agentic systems with Claude Code's capabilities.
-
-  Use when building coding agents, SRE systems, security auditors, incident responders, code review bots, or any autonomous system that requires programmatic interaction with Claude Code CLI, persistent sessions, tool orchestration, and fine-grained permission control.
-
-  Keywords: claude agent sdk, @anthropic-ai/claude-agent-sdk, query(), createSdkMcpServer, AgentDefinition, tool(), claude subagents, mcp servers, autonomous agents, agentic loops, session management, permissionMode, canUseTool, multi-agent orchestration, settingSources, CLI not found, context length exceeded
+  Build autonomous AI agents with Claude Agent SDK. Create multi-step reasoning workflows, orchestrate subagents, integrate MCP servers. Use when: building coding agents, SRE systems, security auditors, code review bots, or troubleshooting CLI not found, context length exceeded errors.
 license: MIT
+metadata:
+  keywords:
+    - claude agent sdk
+    - "@anthropic-ai/claude-agent-sdk"
+    - query()
+    - createSdkMcpServer
+    - AgentDefinition
+    - tool()
+    - claude subagents
+    - mcp servers
+    - autonomous agents
+    - agentic loops
+    - session management
+    - permissionMode
+    - canUseTool
+    - multi-agent orchestration
+    - settingSources
+    - CLI not found
+    - context length exceeded
 ---
 
 # Claude Agent SDK
