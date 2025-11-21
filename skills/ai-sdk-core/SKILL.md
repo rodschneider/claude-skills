@@ -1,18 +1,11 @@
 ---
 name: ai-sdk-core
 description: |
-  Backend AI functionality with Vercel AI SDK v5 - text generation, structured output with Zod,
-  tool calling, and agents. Multi-provider support for OpenAI, Anthropic, Google, and Cloudflare Workers AI.
+  Build backend AI features with Vercel AI SDK v5: text generation, structured output (Zod schemas),
+  tool calling, and agents. Multi-provider support (OpenAI, Anthropic, Google, Cloudflare).
 
-  Use when: implementing server-side AI features, generating text/chat completions, creating structured
-  AI outputs with Zod schemas, building AI agents with tools, streaming AI responses, integrating
-  OpenAI/Anthropic/Google/Cloudflare providers, or encountering AI SDK errors like AI_APICallError,
-  AI_NoObjectGeneratedError, streaming failures, or worker startup limits.
-
-  Keywords: ai sdk core, vercel ai sdk, generateText, streamText, generateObject, streamObject,
-  ai sdk node, ai sdk server, zod ai schema, ai tools calling, ai agent class, openai sdk, anthropic sdk,
-  google gemini sdk, workers-ai-provider, ai streaming backend, multi-provider ai, ai sdk errors,
-  AI_APICallError, AI_NoObjectGeneratedError, streamText fails, worker startup limit ai
+  Use when: implementing server-side AI, generating text/structured data, building AI agents, streaming
+  responses, or troubleshooting AI_APICallError, AI_NoObjectGeneratedError.
 license: MIT
 metadata:
   version: 1.1.1
@@ -20,6 +13,34 @@ metadata:
   ai_sdk_version: 5.0.95+
   breaking_changes: false
   production_tested: true
+  keywords:
+    - ai sdk core
+    - vercel ai sdk
+    - ai sdk v5
+    - generateText
+    - streamText
+    - generateObject
+    - streamObject
+    - ai sdk node
+    - ai sdk server
+    - zod ai schema
+    - ai schema validation
+    - ai tool calling
+    - ai agent class
+    - openai sdk
+    - anthropic sdk
+    - google gemini sdk
+    - cloudflare workers ai
+    - workers-ai-provider
+    - ai streaming backend
+    - multi-provider ai
+    - ai provider abstraction
+    - AI_APICallError
+    - AI_NoObjectGeneratedError
+    - ai sdk errors
+    - structured ai output
+    - backend llm integration
+    - server-side ai generation
 ---
 
 # AI SDK Core
