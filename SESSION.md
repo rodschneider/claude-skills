@@ -488,9 +488,7 @@ Remove "obvious knowledge" that LLMs with Jan 2025 cutoff already know.
 ## Last Checkpoint
 
 **Date**: 2025-11-22
-**Commit**: f0a7a3d
-**Message**: "feat: Add react-native-expo skill for RN 0.76-0.82+ / Expo SDK 52+"
+**Commit**: 3163b90
+**Message**: "checkpoint: Phase 2 In Progress - Knowledge-Gap Skills Audit"
 
-**Uncommitted Changes**: 57 plugin.json files (manifest regeneration)
-
-**Status**: Phase 2 in progress - react-native-expo complete, nextjs audited
+**Status**: Phase 2 in progress - react-native-expo complete, nextjs audited, findings documented
