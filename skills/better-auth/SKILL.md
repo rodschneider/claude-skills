@@ -3,20 +3,20 @@ name: better-auth
 description: |
   Build authentication systems for TypeScript/Cloudflare Workers with social auth, 2FA, passkeys, organizations, and RBAC. Self-hosted alternative to Clerk/Auth.js.
 
-  IMPORTANT: Requires Drizzle ORM or Kysely for D1 - no direct D1 adapter.
+  IMPORTANT: Requires Drizzle ORM or Kysely for D1 - no direct D1 adapter. v1.4.0 (Nov 2025) adds stateless sessions, ESM-only (breaking), JWT key rotation, SCIM provisioning. v1.3 adds SSO/SAML, multi-team support.
 
-  Use when: self-hosting auth on Cloudflare D1, migrating from Clerk, implementing multi-tenant SaaS, or troubleshooting D1 adapter errors, session serialization, OAuth flows.
+  Use when: self-hosting auth on Cloudflare D1, migrating from Clerk, implementing multi-tenant SaaS, or troubleshooting D1 adapter errors, session serialization, OAuth flows, TanStack Start cookie issues, nanostore session invalidation.
 license: MIT
 metadata:
-  version: 2.2.1
-  last_verified: 2025-11-18
+  version: 3.0.0
+  last_verified: 2025-11-22
   production_tested: multiple (zpg6/better-auth-cloudflare, zwily/example-react-router-cloudflare-d1-drizzle-better-auth, foxlau/react-router-v7-better-auth, matthewlynch/better-auth-react-router-cloudflare-d1)
-  package_version: 1.3.34
-  token_savings: ~75%
+  package_version: 1.4.0
+  token_savings: ~80%
   errors_prevented: 13
   official_docs: https://better-auth.com
   github: https://github.com/better-auth/better-auth
-  breaking_changes: v2.0.0 - Corrected D1 adapter patterns (Drizzle/Kysely required)
+  breaking_changes: v1.4.0 - ESM-only (Nov 2025), v1.3 - Multi-team table changes (July 2025), v2.0.0 - D1 adapter patterns (Drizzle/Kysely required)
   keywords:
     - better-auth
     - authentication
@@ -45,421 +45,50 @@ allowed-tools:
   - Grep
 ---
 
-# better-auth Skill
+# better-auth - D1 Adapter & Error Prevention Guide
 
-## Overview
-
-**better-auth** is a comprehensive, framework-agnostic authentication and authorization library for TypeScript. It provides a complete auth solution with support for Cloudflare D1 via **Drizzle ORM** or **Kysely**, making it an excellent self-hosted alternative to Clerk or Auth.js.
-
-**⚠️ CRITICAL: D1 Adapter Requirements**
-
-better-auth **DOES NOT** have a direct `d1Adapter()`. You **MUST** use either:
-1. **Drizzle ORM** (recommended) - `drizzleAdapter()`
-2. **Kysely** (alternative) - Kysely instance with D1Dialect
-
-**Use this skill when**:
-- Building authentication for Cloudflare Workers + D1 applications
-- Need a self-hosted, vendor-independent auth solution
-- Migrating from Clerk (avoid vendor lock-in and costs)
-- Upgrading from Auth.js (need more features like 2FA, organizations)
-- Implementing multi-tenant SaaS with organizations/teams
-- Require advanced features: 2FA, passkeys, RBAC, social auth, rate limiting
-
-**Package**: `better-auth@1.3.34` (latest stable verified 2025-11-08)
+**Package**: better-auth@1.4.0 (Nov 22, 2025)
+**Breaking Changes**: ESM-only (v1.4.0), Multi-team table changes (v1.3), D1 requires Drizzle/Kysely (no direct adapter)
 
 ---
 
-## Installation
+## ⚠️ CRITICAL: D1 Adapter Requirement
 
-### Core Packages
+better-auth **DOES NOT** have `d1Adapter()`. You **MUST** use:
+- **Drizzle ORM** (recommended): `drizzleAdapter(db, { provider: "sqlite" })`
+- **Kysely**: `new Kysely({ dialect: new D1Dialect({ database: env.DB }) })`
 
-**Option 1: Drizzle ORM (Recommended)**
-
-```bash
-npm install better-auth drizzle-orm drizzle-kit
-# or
-pnpm add better-auth drizzle-orm drizzle-kit
-```
-
-**Option 2: Kysely**
-
-```bash
-npm install better-auth kysely kysely-d1
-# or
-pnpm add better-auth kysely kysely-d1
-```
-
-### Additional Dependencies
-
-**For Cloudflare Workers**:
-```bash
-npm install @cloudflare/workers-types hono
-```
-
-**For PostgreSQL** (via Hyperdrive):
-```bash
-npm install pg drizzle-orm
-# or with Kysely
-npm install kysely
-```
-
-**Social Providers** (Optional):
-```bash
-npm install @better-auth/google
-npm install @better-auth/github
-npm install @better-auth/microsoft
-```
+See Issue #1 below for details.
 
 ---
 
-## Quick Start: Cloudflare Workers + D1 + Drizzle
+## What's New in v1.4.0 (Nov 22, 2025)
 
-### Step 1: Create D1 Database
+**Major Features:**
+- **Stateless session management** - Sessions without database storage
+- **ESM-only package** ⚠️ Breaking: CommonJS no longer supported
+- **JWT key rotation** - Automatic key rotation for enhanced security
+- **SCIM provisioning** - Enterprise user provisioning protocol
+- **@standard-schema/spec** - Replaces ZodType for validation
+- **CaptchaFox integration** - Built-in CAPTCHA support
+- Automatic server-side IP detection
+- Cookie-based account data storage
+- Multiple passkey origins support
+- RP-Initiated Logout endpoint (OIDC)
 
-```bash
-# Create database
-wrangler d1 create my-app-db
-
-# Copy the database_id from output
-```
-
-**Add to `wrangler.toml`**:
-```toml
-name = "my-app"
-compatibility_date = "2024-11-01"
-compatibility_flags = ["nodejs_compat"]
-
-[[d1_databases]]
-binding = "DB"
-database_name = "my-app-db"
-database_id = "your-database-id-here"
-
-[vars]
-BETTER_AUTH_URL = "http://localhost:5173"
-
-# Secrets (use: wrangler secret put SECRET_NAME)
-# - BETTER_AUTH_SECRET
-# - GOOGLE_CLIENT_ID
-# - GOOGLE_CLIENT_SECRET
-```
+📚 **Docs**: https://www.better-auth.com/changelogs
 
 ---
 
-### Step 2: Define Database Schema
+## What's New in v1.3 (July 2025)
 
-**File**: `src/db/schema.ts`
+**Major Features:**
+- **SSO with SAML 2.0** - Enterprise single sign-on (moved to separate `@better-auth/sso` package)
+- **Multi-team support** ⚠️ Breaking: `teamId` removed from member table, new `teamMembers` table required
+- **Additional fields** - Custom fields for organization/member/invitation models
+- Performance improvements and bug fixes
 
-```typescript
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { sql } from "drizzle-orm";
-
-// better-auth core tables
-export const user = sqliteTable("user", {
-  id: text().primaryKey(),
-  name: text().notNull(),
-  email: text().notNull().unique(),
-  emailVerified: integer({ mode: "boolean" }).notNull().default(false),
-  image: text(),
-  createdAt: integer({ mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-  updatedAt: integer({ mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-});
-
-export const session = sqliteTable("session", {
-  id: text().primaryKey(),
-  userId: text()
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  token: text().notNull(),
-  expiresAt: integer({ mode: "timestamp" }).notNull(),
-  ipAddress: text(),
-  userAgent: text(),
-  createdAt: integer({ mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-  updatedAt: integer({ mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-});
-
-export const account = sqliteTable("account", {
-  id: text().primaryKey(),
-  userId: text()
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  accountId: text().notNull(),
-  providerId: text().notNull(),
-  accessToken: text(),
-  refreshToken: text(),
-  accessTokenExpiresAt: integer({ mode: "timestamp" }),
-  refreshTokenExpiresAt: integer({ mode: "timestamp" }),
-  scope: text(),
-  idToken: text(),
-  password: text(),
-  createdAt: integer({ mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-  updatedAt: integer({ mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-});
-
-export const verification = sqliteTable("verification", {
-  id: text().primaryKey(),
-  identifier: text().notNull(),
-  value: text().notNull(),
-  expiresAt: integer({ mode: "timestamp" }).notNull(),
-  createdAt: integer({ mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-  updatedAt: integer({ mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-});
-
-// Add your custom tables here
-export const profile = sqliteTable("profile", {
-  id: text().primaryKey(),
-  userId: text()
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  bio: text(),
-  website: text(),
-});
-```
-
----
-
-### Step 3: Configure Drizzle
-
-**File**: `drizzle.config.ts`
-
-```typescript
-import type { Config } from "drizzle-kit";
-
-export default {
-  out: "./drizzle",
-  schema: "./src/db/schema.ts",
-  dialect: "sqlite",
-  driver: "d1-http",
-  dbCredentials: {
-    databaseId: process.env.CLOUDFLARE_DATABASE_ID!,
-    accountId: process.env.CLOUDFLARE_ACCOUNT_ID!,
-    token: process.env.CLOUDFLARE_TOKEN!,
-  },
-} satisfies Config;
-```
-
-**Create `.env` file** (for migrations):
-```env
-CLOUDFLARE_ACCOUNT_ID=your-account-id
-CLOUDFLARE_DATABASE_ID=your-database-id
-CLOUDFLARE_TOKEN=your-api-token
-```
-
----
-
-### Step 4: Generate and Apply Migrations
-
-```bash
-# Generate migration from schema
-npx drizzle-kit generate
-
-# Apply migration to D1 (local)
-wrangler d1 migrations apply my-app-db --local
-
-# Apply migration to D1 (production)
-wrangler d1 migrations apply my-app-db --remote
-```
-
----
-
-### Step 5: Initialize Database and Auth
-
-**File**: `src/db/index.ts`
-
-```typescript
-import { drizzle } from "drizzle-orm/d1";
-import * as schema from "./schema";
-
-export type Database = ReturnType<typeof createDatabase>;
-
-export function createDatabase(d1: D1Database) {
-  return drizzle(d1, { schema });
-}
-```
-
-**File**: `src/auth.ts`
-
-```typescript
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import type { Database } from "./db";
-
-type Env = {
-  DB: D1Database;
-  BETTER_AUTH_SECRET: string;
-  BETTER_AUTH_URL: string;
-  GOOGLE_CLIENT_ID?: string;
-  GOOGLE_CLIENT_SECRET?: string;
-  GITHUB_CLIENT_ID?: string;
-  GITHUB_CLIENT_SECRET?: string;
-};
-
-export function createAuth(db: Database, env: Env) {
-  return betterAuth({
-    baseURL: env.BETTER_AUTH_URL,
-    secret: env.BETTER_AUTH_SECRET,
-
-    // Drizzle adapter with SQLite provider
-    database: drizzleAdapter(db, {
-      provider: "sqlite",
-    }),
-
-    // Email/password authentication
-    emailAndPassword: {
-      enabled: true,
-      requireEmailVerification: true,
-    },
-
-    // Email verification configuration
-    emailVerification: {
-      sendVerificationEmail: async ({ user, url }) => {
-        // TODO: Implement email sending
-        // Use Resend, SendGrid, or Cloudflare Email Routing
-        console.log(`Verification email for ${user.email}: ${url}`);
-      },
-      sendOnSignUp: true,
-      autoSignInAfterVerification: true,
-      expiresIn: 3600, // 1 hour
-    },
-
-    // Social providers
-    socialProviders: {
-      google: env.GOOGLE_CLIENT_ID
-        ? {
-            clientId: env.GOOGLE_CLIENT_ID,
-            clientSecret: env.GOOGLE_CLIENT_SECRET!,
-            scope: ["openid", "email", "profile"],
-          }
-        : undefined,
-      github: env.GITHUB_CLIENT_ID
-        ? {
-            clientId: env.GITHUB_CLIENT_ID,
-            clientSecret: env.GITHUB_CLIENT_SECRET!,
-            scope: ["user:email", "read:user"],
-          }
-        : undefined,
-    },
-
-    // Session configuration
-    session: {
-      expiresIn: 60 * 60 * 24 * 7, // 7 days
-      updateAge: 60 * 60 * 24, // Update every 24 hours
-    },
-  });
-}
-```
-
----
-
-### Step 6: Create Worker with Auth Routes
-
-**File**: `src/index.ts`
-
-```typescript
-import { Hono } from "hono";
-import { cors } from "hono/cors";
-import { createDatabase } from "./db";
-import { createAuth } from "./auth";
-
-type Env = {
-  DB: D1Database;
-  BETTER_AUTH_SECRET: string;
-  BETTER_AUTH_URL: string;
-  GOOGLE_CLIENT_ID?: string;
-  GOOGLE_CLIENT_SECRET?: string;
-  GITHUB_CLIENT_ID?: string;
-  GITHUB_CLIENT_SECRET?: string;
-};
-
-const app = new Hono<{ Bindings: Env }>();
-
-// CORS for frontend
-app.use(
-  "/api/*",
-  cors({
-    origin: ["http://localhost:3000", "https://yourdomain.com"],
-    credentials: true,
-    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-// Auth routes - handle all better-auth endpoints
-app.all("/api/auth/*", async (c) => {
-  const db = createDatabase(c.env.DB);
-  const auth = createAuth(db, c.env);
-  return auth.handler(c.req.raw);
-});
-
-// Example: Protected API route
-app.get("/api/protected", async (c) => {
-  const db = createDatabase(c.env.DB);
-  const auth = createAuth(db, c.env);
-  const session = await auth.api.getSession({
-    headers: c.req.raw.headers,
-  });
-
-  if (!session) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
-  return c.json({
-    message: "Protected data",
-    user: session.user,
-  });
-});
-
-// Health check
-app.get("/health", (c) => c.json({ status: "ok" }));
-
-export default app;
-```
-
----
-
-### Step 7: Set Secrets
-
-```bash
-# Generate a random secret
-openssl rand -base64 32
-
-# Set secrets in Wrangler
-wrangler secret put BETTER_AUTH_SECRET
-# Paste the generated secret
-
-# Optional: Set OAuth secrets
-wrangler secret put GOOGLE_CLIENT_ID
-wrangler secret put GOOGLE_CLIENT_SECRET
-wrangler secret put GITHUB_CLIENT_ID
-wrangler secret put GITHUB_CLIENT_SECRET
-```
-
----
-
-### Step 8: Deploy
-
-```bash
-# Test locally
-npm run dev
-
-# Deploy to Cloudflare
-wrangler deploy
-```
+📚 **Docs**: https://www.better-auth.com/blog/1-3
 
 ---
 
@@ -513,223 +142,6 @@ If your Drizzle schema uses `snake_case` column names (e.g., `email_verified`), 
 
 ---
 
-## Client Integration (React)
-
-**File**: `src/lib/auth-client.ts`
-
-```typescript
-import { createAuthClient } from "better-auth/react";
-
-export const authClient = createAuthClient({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8787",
-});
-
-// For other frameworks:
-// Vue: import { createAuthClient } from "better-auth/vue"
-// Svelte: import { createAuthClient } from "better-auth/svelte"
-// Vanilla: import { createAuthClient } from "better-auth/client"
-```
-
-**File**: `src/components/LoginForm.tsx`
-
-```typescript
-"use client";
-
-import { authClient } from "@/lib/auth-client";
-import { useState } from "react";
-
-export function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const { data, error } = await authClient.signIn.email({
-      email,
-      password,
-    });
-
-    if (error) {
-      console.error("Login failed:", error);
-      return;
-    }
-
-    window.location.href = "/dashboard";
-  };
-
-  const handleGoogleSignIn = async () => {
-    await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/dashboard",
-    });
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-      />
-      <button type="submit">Sign In</button>
-      <button type="button" onClick={handleGoogleSignIn}>
-        Sign in with Google
-      </button>
-    </form>
-  );
-}
-```
-
-**Use React Hook**:
-```typescript
-"use client";
-
-import { authClient } from "@/lib/auth-client"; // Uses better-auth/react
-
-export function UserProfile() {
-  const { data: session, isPending } = authClient.useSession();
-
-  if (isPending) return <div>Loading...</div>;
-  if (!session) return <div>Not authenticated</div>;
-
-  return (
-    <div>
-      <p>Welcome, {session.user.email}</p>
-      <button onClick={() => authClient.signOut()}>Sign Out</button>
-    </div>
-  );
-}
-```
-
----
-
-## Advanced Features
-
-### Two-Factor Authentication (2FA)
-
-```typescript
-import { betterAuth } from "better-auth";
-import { twoFactor } from "better-auth/plugins";
-
-export const auth = betterAuth({
-  database: /* ... */,
-  plugins: [
-    twoFactor({
-      methods: ["totp", "sms"],
-      issuer: "MyApp",
-    }),
-  ],
-});
-```
-
-**Client**:
-```typescript
-// Enable 2FA
-const { data, error } = await authClient.twoFactor.enable({
-  method: "totp",
-});
-
-// Verify code
-await authClient.twoFactor.verify({
-  code: "123456",
-});
-```
-
-📚 **Official Docs**: https://www.better-auth.com/docs/plugins/2fa
-
----
-
-### Organizations & Teams
-
-```typescript
-import { betterAuth } from "better-auth";
-import { organization } from "better-auth/plugins";
-
-export const auth = betterAuth({
-  database: /* ... */,
-  plugins: [
-    organization({
-      roles: ["owner", "admin", "member"],
-      permissions: {
-        admin: ["read", "write", "delete"],
-        member: ["read"],
-      },
-    }),
-  ],
-});
-```
-
-**Client**:
-```typescript
-// Create organization
-await authClient.organization.create({
-  name: "Acme Corp",
-  slug: "acme",
-});
-
-// Invite member
-await authClient.organization.inviteMember({
-  organizationId: "org_123",
-  email: "user@example.com",
-  role: "member",
-});
-
-// Check permissions
-const canDelete = await authClient.organization.hasPermission({
-  organizationId: "org_123",
-  permission: "delete",
-});
-```
-
-📚 **Official Docs**: https://www.better-auth.com/docs/plugins/organization
-
----
-
-### Rate Limiting with KV
-
-```typescript
-import { betterAuth } from "better-auth";
-import { rateLimit } from "better-auth/plugins";
-
-type Env = {
-  DB: D1Database;
-  RATE_LIMIT_KV: KVNamespace;
-  // ...
-};
-
-export function createAuth(db: Database, env: Env) {
-  return betterAuth({
-    database: drizzleAdapter(db, { provider: "sqlite" }),
-    plugins: [
-      rateLimit({
-        window: 60, // 60 seconds
-        max: 10, // 10 requests per window
-        storage: {
-          get: async (key) => {
-            return await env.RATE_LIMIT_KV.get(key);
-          },
-          set: async (key, value, ttl) => {
-            await env.RATE_LIMIT_KV.put(key, value, {
-              expirationTtl: ttl,
-            });
-          },
-        },
-      }),
-    ],
-  });
-}
-```
-
----
-
 ## Framework Integrations
 
 ### TanStack Start
@@ -774,177 +186,9 @@ export const Route = createFileRoute('/api/auth/$')({
 
 ---
 
-## Additional Plugins
+## Available Plugins (v1.3+)
 
-### Multi-Session
-
-The multi-session plugin allows users to maintain multiple active sessions across different accounts in the same browser, useful for applications where users need to switch between accounts without logging out.
-
-```typescript
-import { betterAuth } from "better-auth";
-import { multiSession } from "better-auth/plugins";
-
-export const auth = betterAuth({
-  database: /* ... */,
-  plugins: [
-    multiSession({
-      maximumSessions: 5, // Default: 5 sessions per device
-    }),
-  ],
-});
-```
-
-**Client-side**:
-```typescript
-import { createAuthClient } from "better-auth/react";
-import { multiSessionClient } from "better-auth/client/plugins";
-
-export const authClient = createAuthClient({
-  plugins: [multiSessionClient()],
-});
-
-// List all active sessions
-const sessions = await authClient.multiSession.listDeviceSessions();
-
-// Switch to different account
-await authClient.multiSession.setActiveSession({
-  sessionId: "session_123",
-});
-
-// Revoke a session
-await authClient.multiSession.revokeSession({
-  sessionId: "session_456",
-});
-```
-
-**Use cases**:
-- Users managing multiple client accounts
-- Developers testing different user roles
-- Support teams accessing customer accounts
-
-📚 **Official Docs**: https://www.better-auth.com/docs/plugins/multi-session
-
----
-
-### Generic OAuth
-
-The Generic OAuth plugin provides a flexible way to integrate with **any** OAuth 2.0 or OpenID Connect provider, eliminating the need for provider-specific packages.
-
-```typescript
-import { betterAuth } from "better-auth";
-import { genericOAuth } from "better-auth/plugins";
-
-export const auth = betterAuth({
-  database: /* ... */,
-  plugins: [
-    genericOAuth({
-      config: [
-        {
-          providerId: "custom-provider",
-          discoveryUrl: "https://provider.com/.well-known/openid-configuration",
-          clientId: env.CUSTOM_PROVIDER_CLIENT_ID,
-          clientSecret: env.CUSTOM_PROVIDER_CLIENT_SECRET,
-          scopes: ["openid", "profile", "email"],
-        },
-      ],
-    }),
-  ],
-});
-```
-
-**Manual configuration** (without discovery URL):
-```typescript
-genericOAuth({
-  config: [
-    {
-      providerId: "custom-provider",
-      authorizationUrl: "https://provider.com/oauth/authorize",
-      tokenUrl: "https://provider.com/oauth/token",
-      userInfoUrl: "https://provider.com/oauth/userinfo",
-      clientId: env.CUSTOM_PROVIDER_CLIENT_ID,
-      clientSecret: env.CUSTOM_PROVIDER_CLIENT_SECRET,
-      scopes: ["profile", "email"],
-    },
-  ],
-})
-```
-
-**Client usage**:
-```typescript
-await authClient.signIn.social({
-  provider: "custom-provider",
-  callbackURL: "/dashboard",
-});
-```
-
-**Use cases**:
-- Integrate with enterprise identity providers
-- Connect to niche OAuth providers not supported out-of-the-box
-- Use custom OAuth servers
-
-📚 **Official Docs**: https://www.better-auth.com/docs/plugins/generic-oauth
-
----
-
-### API Key Authentication
-
-The API Key plugin enables API key-based authentication for machine-to-machine communication or API-only access (no sessions).
-
-```typescript
-import { betterAuth } from "better-auth";
-import { apiKey } from "better-auth/plugins";
-
-export const auth = betterAuth({
-  database: /* ... */,
-  plugins: [
-    apiKey({
-      prefix: "api_", // Optional prefix for keys
-      expiresIn: 60 * 60 * 24 * 365, // 1 year (optional)
-    }),
-  ],
-});
-```
-
-**Generate API key**:
-```typescript
-const { data } = await auth.api.createApiKey({
-  body: {
-    name: "Production API Key",
-    expiresIn: 60 * 60 * 24 * 90, // 90 days
-  },
-  headers: request.headers,
-});
-
-console.log(data.apiKey); // "api_abc123xyz..."
-```
-
-**Authenticate with API key**:
-```typescript
-// In middleware or API route
-const apiKey = request.headers.get("Authorization")?.replace("Bearer ", "");
-
-const { data: user } = await auth.api.verifyApiKey({
-  apiKey,
-});
-
-if (!user) {
-  return new Response("Unauthorized", { status: 401 });
-}
-```
-
-**Use cases**:
-- Backend service-to-service authentication
-- CLI tools accessing your API
-- Mobile apps with machine credentials
-- Webhook integrations
-
-📚 **Official Docs**: https://www.better-auth.com/docs/plugins/api-key
-
----
-
-### Other Available Plugins
-
-Better Auth provides additional plugins for advanced use cases:
+Better Auth provides plugins for advanced authentication features:
 
 | Plugin | Import | Description | Docs |
 |--------|--------|-------------|------|
@@ -1790,34 +1034,6 @@ await refetch()
 
 ---
 
-## Comparison: better-auth vs Alternatives
-
-| Feature              | better-auth      | Clerk           | Auth.js         |
-| -------------------- | ---------------- | --------------- | --------------- |
-| **Hosting**          | Self-hosted      | Third-party     | Self-hosted     |
-| **Cost**             | Free (OSS)       | $25/mo+         | Free (OSS)      |
-| **Cloudflare D1**    | ✅ Drizzle/Kysely | ❌ No           | ✅ Adapter      |
-| **Social Auth**      | ✅ 10+ providers  | ✅ Many         | ✅ Many         |
-| **2FA/Passkeys**     | ✅ Plugin         | ✅ Built-in     | ⚠️ Limited      |
-| **Organizations**    | ✅ Plugin         | ✅ Built-in     | ❌ No           |
-| **Multi-tenant**     | ✅ Plugin         | ✅ Yes          | ❌ No           |
-| **RBAC**             | ✅ Plugin         | ✅ Yes          | ⚠️ Custom       |
-| **Magic Links**      | ✅ Built-in       | ✅ Yes          | ✅ Yes          |
-| **Email/Password**   | ✅ Built-in       | ✅ Yes          | ✅ Yes          |
-| **Session Mgmt**     | ✅ JWT + DB       | ✅ JWT          | ✅ JWT + DB     |
-| **TypeScript**       | ✅ First-class    | ✅ Yes          | ✅ Yes          |
-| **Framework Support**| ✅ Agnostic       | ⚠️ React-focused| ✅ Agnostic     |
-| **Vendor Lock-in**   | ✅ None           | ❌ High         | ✅ None         |
-| **Customization**    | ✅ Full control   | ⚠️ Limited      | ✅ Full control |
-| **Production Ready** | ✅ Yes            | ✅ Yes          | ✅ Yes          |
-
-**Recommendation**:
-- **Use better-auth if**: Self-hosted, Cloudflare D1, want full control, avoid vendor lock-in
-- **Use Clerk if**: Want managed service, don't mind cost, need fastest setup
-- **Use Auth.js if**: Already using Next.js, basic needs, familiar with it
-
----
-
 ## Migration Guides
 
 ### From Clerk
@@ -1899,97 +1115,6 @@ await refetch()
    import { authClient } from "@/lib/auth-client";
    const { data: session } = authClient.useSession();
    ```
-
----
-
-## Best Practices
-
-### Security
-
-1. **Always use HTTPS** in production (no exceptions)
-2. **Rotate secrets** regularly:
-   ```bash
-   openssl rand -base64 32
-   wrangler secret put BETTER_AUTH_SECRET
-   ```
-3. **Validate email domains** for sign-up:
-   ```typescript
-   emailAndPassword: {
-     enabled: true,
-     validate: async (email) => {
-       const blockedDomains = ["tempmail.com", "guerrillamail.com"];
-       const domain = email.split("@")[1];
-       if (blockedDomains.includes(domain)) {
-         throw new Error("Email domain not allowed");
-       }
-     },
-   };
-   ```
-4. **Enable rate limiting** for auth endpoints
-5. **Log auth events** for security monitoring
-
----
-
-### Performance
-
-1. **Cache session lookups** (use KV for Workers)
-2. **Use indexes** on frequently queried fields:
-   ```sql
-   CREATE INDEX idx_sessions_user_id ON session(userId);
-   CREATE INDEX idx_accounts_provider ON account(providerId, accountId);
-   ```
-3. **Minimize session data** (only essential fields)
-
----
-
-### Development Workflow
-
-1. **Use environment-specific configs**:
-   ```typescript
-   const isDev = process.env.NODE_ENV === "development";
-
-   export const auth = betterAuth({
-     baseURL: isDev ? "http://localhost:3000" : "https://yourdomain.com",
-     session: {
-       expiresIn: isDev
-         ? 60 * 60 * 24 * 365 // 1 year for dev
-         : 60 * 60 * 24 * 7, // 7 days for prod
-     },
-   });
-   ```
-
-2. **Test social auth locally** with ngrok:
-   ```bash
-   ngrok http 3000
-   # Use ngrok URL as redirect URI in OAuth provider
-   ```
-
----
-
-## Bundled Resources
-
-This skill includes the following reference implementations:
-
-1. **`scripts/setup-d1-drizzle.sh`** - Complete D1 + Drizzle setup automation
-2. **`references/cloudflare-worker-drizzle.ts`** - Complete Worker with Drizzle auth
-3. **`references/cloudflare-worker-kysely.ts`** - Complete Worker with Kysely auth
-4. **`references/database-schema.ts`** - Complete better-auth Drizzle schema
-5. **`references/react-client-hooks.tsx`** - React components with auth hooks
-6. **`assets/auth-flow-diagram.md`** - Visual flow diagrams
-
-Use `Read` tool to access these files when needed.
-
----
-
-## Token Efficiency
-
-**Without this skill**: ~28,000 tokens (setup trial-and-error, debugging D1 adapter, schema generation, CORS, OAuth, discovering 80+ endpoints, implementing custom auth flows, researching plugins, TanStack Start integration)
-**With this skill**: ~7,000 tokens (direct implementation from correct patterns + comprehensive API reference + plugin documentation)
-**Savings**: ~75% (21,000 tokens)
-
-**Errors prevented**: 16 common issues documented with solutions (includes 2 API-related, 2 framework integration errors)
-
-**Key value add**: Complete reference for 80+ auto-generated endpoints, server-side API methods, AND essential plugin documentation (multiSession, genericOAuth, apiKey, TanStack Start), eliminating trial-and-error plugin discovery
 
 ---
 
@@ -2088,4 +1213,14 @@ Use `Read` tool to access these files when needed.
 
 ---
 
-**Last verified**: 2025-11-18 | **Skill version**: 2.2.0 | **Changes**: Added TanStack Start integration (reactStartCookies), multiSession, genericOAuth, apiKey plugins with examples. Added comprehensive documentation links for all plugins and core concepts. Expanded Additional Resources with 50+ documentation links.
+**Token Efficiency**:
+- **Without skill**: ~28,000 tokens (D1 adapter errors, TanStack Start cookies, nanostore invalidation, OAuth flows, API discovery)
+- **With skill**: ~5,600 tokens (focused on errors + breaking changes + API reference)
+- **Savings**: ~80% (~22,400 tokens)
+
+**Errors prevented**: 13 documented issues with exact solutions
+**Key value**: D1 adapter requirement, v1.4.0/v1.3 breaking changes, TanStack Start fix, nanostore pattern, 80+ endpoint reference
+
+---
+
+**Last verified**: 2025-11-22 | **Skill version**: 3.0.0 | **Changes**: Added v1.4.0 (ESM-only, stateless sessions, SCIM) and v1.3 (SSO/SAML, multi-team) knowledge gaps. Removed tutorial/setup (~700 lines). Focused on error prevention + breaking changes + API reference.
