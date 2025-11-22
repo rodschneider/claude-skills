@@ -1309,6 +1309,179 @@ Build autonomous AI agents with Claude Agent SDK. Structured outputs (v0.1.45, N
 
 ---
 
+## Claude API Skill Audit ✅
+
+**Analysis Date**: 2025-11-22
+**Skill Size**: 1,219 lines (~4,000 tokens)
+**Status**: **COMPLETE** - Trimmed to 530 lines (~1,750 tokens)
+**Actual Savings**: **56.5%** (~2,250 tokens)
+
+### Research Phase Findings ✅
+
+**Claude API & SDK Updates (Oct 25 - Nov 22, 2025):**
+
+1. **Structured Outputs (v0.69.0, Nov 14, 2025) - CRITICAL FEATURE:**
+   - Guaranteed JSON schema conformance for Claude responses
+   - Two modes: JSON outputs (`output_format`) and strict tool use (`strict: true`)
+   - Beta header required: `structured-outputs-2025-11-13`
+   - Supported models: Claude Sonnet 4.5, Claude Opus 4.1 only
+   - SDK v0.69.0+ required
+   - Limitations: No recursive schemas, numerical constraints, limited regex
+   - Incompatible with citations and message prefilling
+   - Grammar compilation adds latency on first request (cached 24hrs)
+
+2. **Model Changes (Oct 28, 2025) - BREAKING:**
+   - Claude 3.5 Sonnet: **RETIRED** (all versions return errors)
+   - Claude 3.7 Sonnet: **DEPRECATED**
+   - Skill had outdated models table showing retired/deprecated models
+
+3. **Claude Haiku 4.5 (Oct 15, 2025):**
+   - Near-frontier performance
+   - Fastest Haiku model
+   - Model ID: `claude-3-5-haiku-20241022`
+   - Missing from skill entirely
+
+4. **Context Management (Oct 28, 2025):**
+   - Clear thinking blocks capability
+   - Beta header: `clear_thinking_20251015`
+   - Automatic thinking block management
+
+5. **Agent Skills API (Oct 16, 2025):**
+   - Pre-built skills for Office files (PowerPoint, Excel, Word, PDF)
+   - Beta header: `skills-2025-10-02`
+   - Requires code execution tool
+
+6. **SDK Version Updates:**
+   - Skill had: v0.67.0 (Oct 16, 2025)
+   - Latest: v0.70.1 (Nov 20, 2025)
+   - v0.69.0: Structured outputs support
+   - v0.70.0: Foundry SDK support
+
+7. **Documentation Platform Migration (Nov 19, 2025):**
+   - docs.claude.com → platform.claude.com/docs
+   - Skill had old URLs throughout
+
+**Skill Coverage**: ALL v0.69.0+ features MISSING, models table OUTDATED
+
+### Audit Phase Analysis ✅
+
+**Content REMOVED (~689 lines, 56.5%):**
+
+**Tutorial/Setup Sections** (~380 lines):
+- ✅ Quick Start 5-minute tutorial (~70 lines) - API key setup, SDK install, basic usage
+- ✅ Basic message creation examples (~40 lines) - Simple queries, multi-turn, system prompts
+- ✅ Basic streaming examples (~80 lines) - Event listeners, manual iteration, event types table
+- ✅ Basic tool use examples (~150 lines) - Tool definition, execution loop, beta tool runner
+- ✅ Basic vision examples (~100 lines) - Single/multiple images, vision with tools
+- ✅ Extended thinking verbose examples (~50 lines) - How it works, comparison examples
+- ✅ Rate limits tier table and basics (~80 lines) - Token bucket explanation, tier progression
+- ✅ Platform integration examples (~120 lines) - Cloudflare Workers, Next.js (App/Pages routers)
+
+**Additional Removals** (~309 lines):
+- ✅ Dependencies section (~10 lines)
+- ✅ Production examples (~10 lines)
+- ✅ Troubleshooting section (~30 lines) - Duplicates Known Issues
+- ✅ Complete setup checklist (~20 lines)
+- ✅ Questions/resources (~10 lines)
+- ✅ Critical Rules do/don't lists (~40 lines)
+- ✅ Comprehensive error handler examples (~60 lines)
+- ✅ Streaming error handler examples (~40 lines)
+- ✅ Cloudflare Workers streaming (~30 lines)
+- ✅ Next.js App Router example (~30 lines)
+- ✅ Next.js Pages Router example (~30 lines)
+
+**Why Removed**: All pre-Nov 2025 content well-covered by LLM training + official docs
+
+### Content Retained (100%)
+
+**Knowledge Gaps:**
+- ✅ **Structured Outputs (v0.69.0)** (~120 lines) - Complete examples for both modes
+  - JSON outputs with `output_format` parameter
+  - Strict tool use with `strict: true`
+  - Beta header usage
+  - Model compatibility
+  - Limitations (recursive schemas, numerical constraints, regex)
+  - Incompatibility with citations/prefilling
+  - Performance notes (grammar caching)
+- ✅ **Updated Models Table** (~15 lines) - Active models only, deprecated/retired marked
+- ✅ **Context Management** (~30 lines) - Clear thinking blocks, beta header
+- ✅ **Agent Skills API** (~40 lines) - Overview, beta header, pre-built skills
+- ✅ **Documentation Links** (~10 lines) - All migrated to platform.claude.com
+- ✅ **Package Versions** (~5 lines) - SDK v0.70.1
+
+**Error Prevention:**
+- ✅ **12 Known Issues** (~75 lines) - All with exact error messages + solutions
+  - Issue 1: Rate limit 429 errors without backoff
+  - Issue 2: Streaming SSE parsing errors
+  - Issue 3: Prompt caching not activating (updated URL)
+  - Issue 4: Tool use response format errors
+  - Issue 5: Vision image format issues
+  - Issue 6: Token counting mismatches for billing
+  - Issue 7: System prompt ordering issues
+  - Issue 8: Context window exceeded (200k)
+  - Issue 9: Extended thinking on wrong model (updated for deprecations)
+  - Issue 10: API key exposure in client code
+  - Issue 11: Rate limit tier confusion
+  - Issue 12: Message batches beta headers missing
+
+**Advanced Patterns (Non-Obvious):**
+- ✅ **Streaming Error Handling** (~30 lines) - Post-200 error pattern
+- ✅ **Prompt Caching LAST Block Rule** (~30 lines) - Critical placement requirement
+- ✅ **Tool Result ID Matching** (~20 lines) - `tool_use_id` must match pattern
+- ✅ **Tool Execution Error Handling** (~20 lines) - `is_error` flag usage
+- ✅ **Rate Limit Retry with Backoff** (~30 lines) - Respect `retry-after` header
+- ✅ **Vision Format Validation** (~10 lines) - Pre-encoding checks
+- ✅ **Error Codes Table** (~10 lines) - All common codes with solutions
+
+### Updated Description
+
+**Before** (189 chars):
+```
+Integrate Claude API with streaming, prompt caching, tool use, vision, and extended thinking. Use when: building chatbots, AI assistants, content tools in Node.js/Workers/Next.js, or troubleshooting rate_limit_error, overloaded_error, invalid_request_error, 429 errors.
+```
+
+**After** (366 chars, knowledge-gap focused):
+```
+Build with Claude Messages API using structured outputs (v0.69.0+, Nov 2025) for guaranteed JSON schema validation. Covers prompt caching (90% savings), streaming SSE, tool use, model deprecations (3.5/3.7 retired Oct 2025). Use when: building chatbots/agents with validated JSON responses, or troubleshooting rate_limit_error, structured output validation, prompt caching not activating, streaming SSE parsing.
+```
+
+### Metadata Updates
+
+- **Version**: 1.0.0 → 2.0.0
+- **Last verified**: 2025-10-25 → 2025-11-22
+- **SDK version**: 0.67.0 → 0.70.1
+- **Token savings**: ~62% → ~48%
+- **Breaking changes**: Added Oct 2025 (models retired), Nov 2025 (structured outputs)
+- **Keywords added**: structured outputs, output_format, strict tool use, json schema validation, claude haiku 4.5, agent skills api, context management, clear thinking, streaming sse parsing, structured output validation, model deprecated, model retired
+
+### Key Learnings
+
+**Skill now exclusively focuses on:**
+1. Structured outputs (v0.69.0) - JSON outputs and strict tool use with complete examples
+2. Model deprecations (Oct 2025) - Claude 3.5/3.7 retired/deprecated
+3. Claude Haiku 4.5 (Oct 2025)
+4. Context management (clear thinking blocks)
+5. Agent Skills API
+6. 12 Known Issues with exact error messages + solutions
+7. Advanced patterns: streaming post-200 errors, prompt caching LAST block rule, rate limit retry logic
+
+**All tutorials removed** - users can reference official Claude API docs for setup patterns.
+
+**Unique Value Preserved**:
+- Structured outputs complete implementation examples (v0.69.0 knowledge gap)
+- Model deprecation warnings (Oct 2025 breaking changes)
+- Streaming post-200 error pattern (non-obvious)
+- Prompt caching LAST block requirement (common mistake)
+- Rate limit retry with `retry-after` header (best practice)
+- Error prevention (12 documented issues)
+
+**Before**: 1,219 lines (~4,000 tokens)
+**After**: 530 lines (~1,750 tokens)
+**Removed**: 689 lines (~2,250 tokens)
+**Savings**: **56.5%**
+
+---
+
 ## Phase 2 Summary So Far
 
 **Skills Completed:**
@@ -1320,18 +1493,19 @@ Build autonomous AI agents with Claude Agent SDK. Structured outputs (v0.1.45, N
 6. ✅ auto-animate (411→199 lines, 51.5% reduction, Solid/Preact support added)
 7. ✅ better-auth (2,092→1,226 lines, 41.4% reduction, v1.3/v1.4.0 breaking changes added)
 8. ✅ claude-agent-sdk (1,573→595 lines, 62.2% reduction, v0.1.45 structured outputs + plugins + hooks added)
+9. ✅ claude-api (1,219→530 lines, 56.5% reduction, v0.69.0 structured outputs + model deprecations + Haiku 4.5 added)
 
 **Documents Created:**
 1. ✅ KNOWLEDGE_GAP_AUDIT_CHECKLIST.md (comprehensive 12-step process)
 
 **Cumulative Impact:**
-- Skills audited: 8 of 59 (14%)
-- Lines removed: ~4,882 lines
-- Tokens saved: ~16,215 tokens per invocation (across these 8 skills)
-- Average reduction: 48.2% (excluding new skill)
-- Annual savings (5 uses/month): ~973,000 tokens across these 8 skills
+- Skills audited: 9 of 59 (15%)
+- Lines removed: ~5,571 lines
+- Tokens saved: ~18,465 tokens per invocation (across these 9 skills)
+- Average reduction: 49.6% (excluding new skill)
+- Annual savings (5 uses/month): ~1,107,900 tokens across these 9 skills
 
-**Next:** Continue A-Z systematic audit (next: claude-api)
+**Next:** Continue A-Z systematic audit (next: clerk-auth)
 
 ---
 
@@ -1354,12 +1528,14 @@ Build autonomous AI agents with Claude Agent SDK. Structured outputs (v0.1.45, N
 14. ✅ Trimmed better-auth (1,226 lines, 41.4% reduction, v1.3/v1.4.0 breaking changes added)
 15. ✅ Audited claude-agent-sdk (research phase + trim)
 16. ✅ Trimmed claude-agent-sdk (595 lines, 62.2% reduction, v0.1.45 structured outputs + plugins + hooks added)
+17. ✅ Audited claude-api (research phase + trim)
+18. ✅ Trimmed claude-api (530 lines, 56.5% reduction, v0.69.0 structured outputs + model deprecations + Haiku 4.5 added)
 
 **Next Session:**
-1. Continue A-Z systematic audit (next: claude-api)
+1. Continue A-Z systematic audit (next: clerk-auth)
 2. Follow KNOWLEDGE_GAP_AUDIT_CHECKLIST.md process
 3. Research → Audit → Trim → Commit (one skill per session)
-4. Pattern validated: ~48% average reduction across 8 skills (excluding new skill)
+4. Pattern validated: ~50% average reduction across 9 skills (excluding new skill)
 
 **Long Term:**
 - Audit remaining 53 skills alphabetically
@@ -1372,7 +1548,7 @@ Build autonomous AI agents with Claude Agent SDK. Structured outputs (v0.1.45, N
 ## Last Checkpoint
 
 **Date**: 2025-11-22
-**Commit**: [pending]
-**Message**: "checkpoint: Phase 2 In Progress - Claude Agent SDK audit complete (8/59 skills)"
+**Commit**: 0066472
+**Message**: "refactor(claude-api): Knowledge-gap audit - Add v0.69.0+, trim tutorial"
 
-**Status**: Phase 2 in progress - 8 skills complete (claude-agent-sdk 62.2%, ai-sdk-core 54%, ai-sdk-ui 53%, auto-animate 51.5%, nextjs 43%, better-auth 41.4%, vectorize 37%, react-native-expo NEW), audit process documented, A-Z systematic audits continuing
+**Status**: Phase 2 in progress - 9 skills complete (claude-agent-sdk 62.2%, claude-api 56.5%, ai-sdk-core 54%, ai-sdk-ui 53%, auto-animate 51.5%, nextjs 43%, better-auth 41.4%, vectorize 37%, react-native-expo NEW), audit process documented, A-Z systematic audits continuing
