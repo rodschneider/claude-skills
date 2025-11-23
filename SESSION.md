@@ -1716,6 +1716,80 @@ Build with Claude Messages API using structured outputs (v0.69.0+, Nov 2025) for
 
 ---
 
+## Cloudflare-D1 Skill Audit ✅
+
+**Analysis Date**: 2025-11-23
+**Skill Size**: 885 lines (~2,950 tokens)
+**Status**: **COMPLETE** - Trimmed to 505 lines (~1,683 tokens)
+**Actual Savings**: **42.9%** (~1,267 tokens)
+
+### Research Phase Findings ✅
+
+**Cloudflare D1 Updates (2025):**
+
+1. **Jurisdiction Support** (Nov 5, 2025):
+   - Data localization compliance via `jurisdiction` parameter at database creation
+   - Guarantee where database runs and stores data (GDPR compliance)
+
+2. **Remote Bindings GA** (Sept 16, 2025):
+   - Connect local Worker code to deployed D1 databases
+   - Available in wrangler@4.37.0+
+   - Set `"remote": true` in binding config
+
+3. **Automatic Read-Only Query Retries** (Sept 11, 2025):
+   - D1 auto-retries SELECT/EXPLAIN/WITH queries up to 2 times on retryable errors
+   - Check `meta.total_attempts` in response
+
+4. **Storage Limits Increased** (July 1, 2025):
+   - Max storage per account: 250GB → 1TB (Workers Paid plan)
+
+5. **Alpha Database Backup Access Removed** (July 1, 2025):
+   - `wrangler d1 backup` command deprecated
+
+6. **REST API Latency Reduction** (May 30, 2025):
+   - 50-500ms faster by moving auth to nearest datacenter
+
+7. **HTTP API Permissions Security Fix** (May 2, 2025):
+   - `D1:Edit` now required for all write operations via HTTP API
+
+8. **Read Replication Public Beta** (April 10, 2025):
+   - Read-only replica databases across supported regions
+
+9. **PRAGMA optimize Support** (Feb 19, 2025):
+   - Improve query performance after schema modifications
+
+10. **Read-Only Access Permission Bug Fix** (Feb 4, 2025):
+    - Fixed UI/REST API write vulnerability
+
+11. **Free Tier Limits Enforcement** (Jan 13, 2025):
+    - Started Feb 10, 2025
+
+12. **Worker API Latency Improvement** (Jan 7, 2025):
+    - 40-60% faster queries
+
+13. **Automatic Resource Provisioning** (2025):
+    - Databases auto-created during deploy if in wrangler.jsonc
+
+### Trim Strategy (885 → 505 lines, 42.9% reduction)
+
+**Removed (~380 lines)**:
+- D1 Workers API verbose examples → condensed to essential patterns (156 → 41 lines)
+- Query Patterns verbose CRUD examples → condensed (151 → 67 lines)
+- Error Handling verbose retry logic → condensed with automatic retries note (117 → 22 lines)
+- Performance Optimization verbose examples → bullet points (79 → 24 lines)
+- Local Development → condensed, added remote bindings (36 → 23 lines)
+- Drizzle ORM section → removed entirely (16 lines, separate drizzle-orm-d1 skill exists)
+
+**Kept**:
+✅ All 6 Known Issues Prevention patterns (statement too long, transaction conflicts, foreign key violations, rate limiting, memory limit, type mismatch)
+✅ Quick Start (5-minute setup)
+✅ Migrations System (complete workflow)
+✅ Workers API (prepare/bind/batch patterns)
+✅ Best Practices summary
+✅ Wrangler commands reference
+
+---
+
 ## Phase 2 Summary So Far
 
 **Skills Completed:**
@@ -1731,6 +1805,7 @@ Build with Claude Messages API using structured outputs (v0.69.0+, Nov 2025) for
 10. ✅ clerk-auth (791→420 lines, 47% reduction, API v2025-11-10 breaking changes + PKCE + Client Trust defense added)
 11. ✅ cloudflare-agents (2,564→1,403 lines, 45% reduction, agents@0.2.23 + AI SDK v5 + MCP + architectural guidance)
 12. ✅ cloudflare-browser-rendering (1,572→783 lines, 50.2% reduction, Playwright v1.55 GA + MCP + REST API enhancements)
+13. ✅ cloudflare-d1 (885→505 lines, 42.9% reduction, jurisdiction support + remote bindings + automatic retries)
 
 **Skills Deleted:**
 1. ✅ claude-code-bash-patterns (1,186 lines removed - redundant with official Claude Code docs)
@@ -1739,12 +1814,12 @@ Build with Claude Messages API using structured outputs (v0.69.0+, Nov 2025) for
 1. ✅ KNOWLEDGE_GAP_AUDIT_CHECKLIST.md (comprehensive 12-step process)
 
 **Cumulative Impact:**
-- Skills audited: 12 of 59 (20%)
+- Skills audited: 13 of 59 (22%)
 - Skills deleted: 1
-- Lines removed: ~7,892 lines (6,731 from audits + 1,161 from cloudflare-agents)
-- Tokens saved: ~26,168 tokens per invocation (across 12 audited skills)
-- Average reduction: 47.9% (excluding new skill)
-- Annual savings (5 uses/month): ~1,570,080 tokens across these 12 skills
+- Lines removed: ~8,272 lines (7,111 from audits + 1,161 from cloudflare-agents)
+- Tokens saved: ~27,435 tokens per invocation (across 13 audited skills)
+- Average reduction: 47.5% (excluding new skill)
+- Annual savings (5 uses/month): ~1,646,100 tokens across these 13 skills
 
 **Next:** Continue A-Z systematic audit (next skill after cloudflare-agents)
 
