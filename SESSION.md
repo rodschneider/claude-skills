@@ -1595,6 +1595,67 @@ Build with Claude Messages API using structured outputs (v0.69.0+, Nov 2025) for
 
 ---
 
+## Cloudflare-Agents Skill Audit ✅
+
+**Analysis Date**: 2025-11-23
+**Skill Size**: 2,564 lines (~8,550 tokens) - **LARGEST skill in library**
+**Status**: **COMPLETE** - Trimmed to 1,403 lines (~4,677 tokens)
+**Actual Savings**: **45%** (~3,873 tokens)
+
+### Research Phase Findings ✅
+
+**Cloudflare Agents SDK Updates (Sept-Nov 2025):**
+
+1. **Latest Package Version** (Nov 13, 2025):
+   - agents@0.2.23 (current version in npm)
+   - Skill had: "agents@latest" (non-specific)
+
+2. **AI SDK v5 Compatibility** (Sept 2025):
+   - Full compatibility with AI SDK v5
+   - Automatic message migration (handles legacy formats transparently)
+
+3. **MCP Support** (April 2025):
+   - New MCPAgent class for building Model Context Protocol servers
+   - `import { context } from "agents"` for accessing agent/request/WebSocket context
+
+4. **Package Rename** (March 2025):
+   - Package renamed from "agents-sdk" → "agents"
+   - All future updates pushed to "agents" package
+
+### Unique Value Preserved ⭐
+
+**Lines 67-201**: "Do You Need Agents SDK?" architectural guidance - **NOT found in official Cloudflare docs**
+- Decision flowchart (Agents SDK vs AI SDK choice)
+- Architecture comparison table
+- Recommended combinations (Option A/B/C)
+- When to use what (80/20 rule)
+
+**This guidance prevents** over-engineering simple chat apps with Durable Objects when AI SDK alone would suffice.
+
+### Trim Strategy (2,564 → 1,403 lines, 45% reduction)
+
+**Removed (~1,161 lines)**:
+- Agent Class API section → condensed to key patterns (280 lines removed)
+- WebSockets → brief mention only (90 lines removed)
+- Browse the Web → refer to cloudflare-browser-rendering skill (100 lines removed)
+- Using AI Models → refer to ai-sdk-core skill (70 lines removed)
+- Calling Agents → condensed patterns (110 lines removed)
+- Client APIs → brief mention only (137 lines removed)
+- Patterns & Concepts → generic examples removed (152 lines removed)
+- RAG section → refer to cloudflare-vectorize skill (116 lines removed)
+- State Management → condensed to essentials (103 lines removed)
+- Configuration → critical rules only (126 lines removed)
+
+**Kept**:
+✅ Unique architectural guidance (Agents SDK vs AI SDK)
+✅ All 16 Known Issues Prevention patterns with exact error messages
+✅ Critical configuration rules (migrations, bindings)
+✅ Schedule Tasks, Workflows, MCP sections (unique to Agents SDK)
+✅ Multi-agent communication patterns
+✅ All Sept/April 2025 knowledge gaps
+
+---
+
 ## Phase 2 Summary So Far
 
 **Skills Completed:**
@@ -1608,18 +1669,23 @@ Build with Claude Messages API using structured outputs (v0.69.0+, Nov 2025) for
 8. ✅ claude-agent-sdk (1,573→595 lines, 62.2% reduction, v0.1.45 structured outputs + plugins + hooks added)
 9. ✅ claude-api (1,219→530 lines, 56.5% reduction, v0.69.0 structured outputs + model deprecations + Haiku 4.5 added)
 10. ✅ clerk-auth (791→420 lines, 47% reduction, API v2025-11-10 breaking changes + PKCE + Client Trust defense added)
+11. ✅ cloudflare-agents (2,564→1,403 lines, 45% reduction, agents@0.2.23 + AI SDK v5 + MCP + architectural guidance)
+
+**Skills Deleted:**
+1. ✅ claude-code-bash-patterns (1,186 lines removed - redundant with official Claude Code docs)
 
 **Documents Created:**
 1. ✅ KNOWLEDGE_GAP_AUDIT_CHECKLIST.md (comprehensive 12-step process)
 
 **Cumulative Impact:**
-- Skills audited: 10 of 59 (17%)
-- Lines removed: ~5,942 lines
-- Tokens saved: ~19,665 tokens per invocation (across these 10 skills)
-- Average reduction: 48.9% (excluding new skill)
-- Annual savings (5 uses/month): ~1,179,900 tokens across these 10 skills
+- Skills audited: 11 of 59 (19%)
+- Skills deleted: 1
+- Lines removed: ~7,103 lines (5,942 from audits + 1,161 from cloudflare-agents)
+- Tokens saved: ~23,538 tokens per invocation (across 11 audited skills)
+- Average reduction: 47.6% (excluding new skill)
+- Annual savings (5 uses/month): ~1,412,280 tokens across these 11 skills
 
-**Next:** Continue A-Z systematic audit (next: cloudflare-agents)
+**Next:** Continue A-Z systematic audit (next skill after cloudflare-agents)
 
 ---
 
@@ -1648,9 +1714,11 @@ Build with Claude Messages API using structured outputs (v0.69.0+, Nov 2025) for
 20. ✅ Trimmed clerk-auth (420 lines, 47% reduction, API v2025-11-10 breaking changes + PKCE + Client Trust defense added)
 21. ✅ Evaluated claude-code-bash-patterns (research phase)
 22. ✅ DELETED claude-code-bash-patterns (1,186 lines removed - redundant with official docs, hooks buggy, minimal knowledge gaps)
+23. ✅ Audited cloudflare-agents (research phase + trim)
+24. ✅ Trimmed cloudflare-agents (1,403 lines, 45% reduction, agents@0.2.23 + AI SDK v5 + MCP + architectural guidance)
 
 **Next Session:**
-1. Continue A-Z systematic audit (next: cloudflare-agents)
+1. Continue A-Z systematic audit (next skill alphabetically after cloudflare-agents)
 2. Follow KNOWLEDGE_GAP_AUDIT_CHECKLIST.md process
 3. Research → Audit → Trim → Commit (one skill per session)
 4. Pattern validated: ~49% average reduction across 10 skills (excluding new skill)
@@ -1665,8 +1733,8 @@ Build with Claude Messages API using structured outputs (v0.69.0+, Nov 2025) for
 
 ## Last Checkpoint
 
-**Date**: 2025-11-22
-**Commit**: 4b6df99
-**Message**: "refactor(clerk-auth): Knowledge-gap audit - Add API v2025-11-10, trim tutorials"
+**Date**: 2025-11-23
+**Commit**: 1e11f15
+**Message**: "refactor(cloudflare-agents): Knowledge-gap audit - Add Sept/April 2025 updates, trim tutorials"
 
-**Status**: Phase 2 in progress - 10 skills complete (claude-agent-sdk 62.2%, claude-api 56.5%, ai-sdk-core 54%, ai-sdk-ui 53%, auto-animate 51.5%, clerk-auth 47%, nextjs 43%, better-auth 41.4%, vectorize 37%, react-native-expo NEW), audit process documented, A-Z systematic audits continuing
+**Status**: Phase 2 in progress - 11 skills complete (claude-agent-sdk 62.2%, claude-api 56.5%, ai-sdk-core 54%, ai-sdk-ui 53%, auto-animate 51.5%, clerk-auth 47%, cloudflare-agents 45%, nextjs 43%, better-auth 41.4%, vectorize 37%, react-native-expo NEW), 1 skill deleted (claude-code-bash-patterns), audit process documented, A-Z systematic audits continuing
