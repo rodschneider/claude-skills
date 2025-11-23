@@ -1,476 +1,189 @@
 ---
 name: clerk-auth
 description: |
-  Add Clerk authentication to React, Next.js, and Cloudflare Workers. Features: JWT templates, protected routes, shadcn/ui integration, E2E testing support.
-
-  Use when: setting up auth, configuring custom JWT claims/middleware, or troubleshooting "Missing Clerk Secret Key", JWKS errors, Core 2 migration, authorizedParties issues.
+  Clerk auth with API version 2025-11-10 breaking changes (billing endpoints, payment_source→payment_method), Next.js v6 async auth(), PKCE for custom OAuth, credential stuffing defense. Use when: troubleshooting "Missing Clerk Secret Key", JWKS errors, authorizedParties CSRF, JWT size limits (1.2KB), 431 header errors (Vite dev mode), or testing with 424242 OTP.
 license: MIT
 metadata:
+  version: 2.0.0
+  last_verified: 2025-11-22
+  sdk_versions:
+    nextjs: 6.35.4
+    backend: 2.23.2
+    clerk_react: 5.56.2
+    testing: 1.13.18
+  token_savings: ~52%
+  errors_prevented: 11
+  breaking_changes: Nov 2025 - API version 2025-11-10 (billing endpoints), Oct 2024 - Next.js v6 async auth()
   keywords:
     - clerk
     - clerk auth
+    - api version 2025-11-10
+    - billing api breaking changes
+    - commerce to billing migration
+    - payment_source to payment_method
     - "@clerk/nextjs"
     - "@clerk/backend"
     - "@clerk/clerk-react"
-    - clerkMiddleware
-    - createRouteMatcher
+    - next.js v6 async auth
+    - next.js 16 support
+    - pkce custom oauth
+    - credential stuffing defense
+    - client trust
     - verifyToken
-    - useUser
-    - useAuth
+    - authorizedParties csrf
     - JWT template
-    - JWT claims
-    - JWT shortcodes
-    - session claims
-    - protected routes
-    - Cloudflare Workers auth
-    - shadcn/ui auth
-    - "@hono/clerk-auth"
-    - "Missing Clerk Secret Key"
-    - JWKS error
-    - authorizedParties
+    - JWT size limit 1.2kb
+    - 431 request header too large
+    - vite dev mode clerk
     - "@clerk/testing"
-    - playwright testing
-    - E2E testing
-    - clerk test mode
     - 424242 OTP
-    - session token
-    - test users
+    - test credentials
+    - session token script
+    - "Missing Clerk Secret Key"
+    - JWKS cache race condition
+    - core 2 migration
 ---
 
-# Clerk Authentication
+# Clerk Auth - Breaking Changes & Error Prevention Guide
 
-**Status**: Production Ready ✅
-**Last Updated**: 2025-10-28
-**Dependencies**: None
-**Latest Versions**: @clerk/nextjs@6.33.3, @clerk/backend@2.17.2, @clerk/clerk-react@5.51.0, @clerk/testing@1.4.4
-
----
-
-## Quick Start (10 Minutes)
-
-Choose your framework:
-- [React (Vite)](#react-vite-setup) - ClerkProvider + hooks
-- [Next.js App Router](#nextjs-app-router-setup) - Middleware + async auth()
-- [Cloudflare Workers](#cloudflare-workers-setup) - Backend verification
+**Package Versions**: @clerk/nextjs@6.35.4, @clerk/backend@2.23.2, @clerk/clerk-react@5.56.2, @clerk/testing@1.13.18
+**Breaking Changes**: Nov 2025 - API version 2025-11-10, Oct 2024 - Next.js v6 async auth()
+**Last Updated**: 2025-11-22
 
 ---
 
-## React (Vite) Setup
+## What's New in v6.35.x & API 2025-11-10 (Nov 2025)
 
-### 1. Install Clerk
+### 1. API Version 2025-11-10 (Nov 10, 2025) - BREAKING CHANGES ⚠️
 
-\`\`\`bash
-npm install @clerk/clerk-react
-\`\`\`
+**Affects:** Applications using Clerk Billing/Commerce APIs
 
-**Latest Version**: @clerk/clerk-react@5.51.0 (verified 2025-10-22)
+**Critical Changes:**
+- **Endpoint URLs:** `/commerce/` → `/billing/` (30+ endpoints)
+  ```
+  GET /v1/commerce/plans → GET /v1/billing/plans
+  GET /v1/commerce/statements → GET /v1/billing/statements
+  POST /v1/me/commerce/checkouts → POST /v1/me/billing/checkouts
+  ```
 
-### 2. Configure ClerkProvider
+- **Field Terminology:** `payment_source` → `payment_method`
+  ```typescript
+  // OLD (deprecated)
+  { payment_source_id: "...", payment_source: {...} }
 
-Update \`src/main.tsx\`:
+  // NEW (required)
+  { payment_method_id: "...", payment_method: {...} }
+  ```
 
-\`\`\`typescript
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { ClerkProvider } from '@clerk/clerk-react'
-import App from './App.tsx'
-import './index.css'
+- **Removed Fields:** Plans responses no longer include:
+  - `amount`, `amount_formatted` (use `fee.amount` instead)
+  - `currency`, `currency_symbol` (use fee objects)
+  - `payer_type` (use `for_payer_type`)
+  - `annual_monthly_amount`, `annual_amount`
 
-// Get publishable key from environment
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+- **Removed Endpoints:**
+  - Invoices endpoint (use statements)
+  - Products endpoint
 
-if (!PUBLISHABLE_KEY) {
-  throw new Error('Missing Publishable Key')
-}
+- **Null Handling:** Explicit rules - `null` means "doesn't exist", omitted means "not asserting existence"
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-      <App />
-    </ClerkProvider>
-  </React.StrictMode>,
-)
-\`\`\`
+**Migration:** Update SDK to v6.35.0+ which includes support for API version 2025-11-10.
 
-**CRITICAL**:
-- Use \`VITE_\` prefix for environment variables in Vite
-- ClerkProvider must wrap your entire app
-- Source: https://clerk.com/docs/references/react/clerk-provider
+**Official Guide:** https://clerk.com/docs/guides/development/upgrading/upgrade-guides/2025-11-10
 
-### 3. Add Environment Variables
+### 2. Next.js v6 Async auth() (Oct 2024) - BREAKING CHANGE ⚠️
 
-Create \`.env.local\`:
+**Affects:** All Next.js Server Components using `auth()`
 
-\`\`\`bash
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
-\`\`\`
+```typescript
+// ❌ OLD (v5 - synchronous)
+const { userId } = auth()
 
-**Security Note**: Only \`VITE_\` prefixed vars are exposed to client code.
+// ✅ NEW (v6 - asynchronous)
+const { userId } = await auth()
+```
 
-### 4. Use Authentication Hooks
+**Also affects:** `auth.protect()` is now async in middleware
 
-\`\`\`typescript
-import { useUser, useAuth, useClerk } from '@clerk/clerk-react'
+```typescript
+// ❌ OLD (v5)
+auth.protect()
 
-function App() {
-  // Get user object (includes email, metadata, etc.)
-  const { isLoaded, isSignedIn, user } = useUser()
+// ✅ NEW (v6)
+await auth.protect()
+```
 
-  // Get auth state and session methods
-  const { userId, sessionId, getToken } = useAuth()
+**Compatibility:** Next.js 15, 16 supported. Static rendering by default.
 
-  // Get Clerk instance for advanced operations
-  const { openSignIn, signOut } = useClerk()
+### 3. PKCE Support for Custom OAuth (Nov 12, 2025)
 
-  // Always check isLoaded before rendering auth-dependent UI
-  if (!isLoaded) {
-    return <div>Loading...</div>
-  }
+Custom OIDC providers and social connections now support PKCE (Proof Key for Code Exchange) for enhanced security in native/mobile applications where client secrets cannot be safely stored.
 
-  if (!isSignedIn) {
-    return <button onClick={() => openSignIn()}>Sign In</button>
-  }
+**Use case:** Mobile apps, native apps, public clients that can't securely store secrets.
 
-  return (
-    <div>
-      <h1>Welcome {user.firstName}!</h1>
-      <p>Email: {user.primaryEmailAddress?.emailAddress}</p>
-      <button onClick={() => signOut()}>Sign Out</button>
-    </div>
-  )
-}
-\`\`\`
+### 4. Client Trust: Credential Stuffing Defense (Nov 14, 2025)
 
-**Why This Matters**:
-- \`isLoaded\` prevents flash of wrong content
-- \`useUser()\` provides full user object with metadata
-- \`useAuth()\` provides session tokens and auth state
-- Source: https://clerk.com/docs/references/react/use-user
+Automatic secondary authentication when users sign in from unrecognized devices:
+- Activates for users with valid passwords but no 2FA
+- No configuration required
+- Included in all Clerk plans
+
+**How it works:** Clerk automatically prompts for additional verification (email code, backup code) when detecting sign-in from new device.
+
+### 5. Next.js 16 Support (Nov 2025)
+
+**@clerk/nextjs v6.35.2+** includes cache invalidation improvements for Next.js 16 during sign-out.
 
 ---
 
-## Next.js App Router Setup
+## Critical Patterns & Error Prevention
 
-### 1. Install Clerk
+### Next.js v6: Async auth() Helper
 
-\`\`\`bash
-npm install @clerk/nextjs
-\`\`\`
+**Pattern:**
+```typescript
+import { auth } from '@clerk/nextjs/server'
 
-**Latest Version**: @clerk/nextjs@6.33.3 (verified 2025-10-22)
-- **New in v6**: Async auth() helper, Next.js 15 support, static rendering by default
-- Source: https://clerk.com/changelog/2024-10-22-clerk-nextjs-v6
-
-### 2. Configure Environment Variables
-
-Create \`.env.local\`:
-
-\`\`\`bash
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-
-# Optional: Customize sign-in/up pages
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/onboarding
-\`\`\`
-
-**CRITICAL**:
-- \`CLERK_SECRET_KEY\` must NEVER be exposed to client
-- Use \`NEXT_PUBLIC_\` prefix for client-side vars only
-- Source: https://clerk.com/docs/guides/development/clerk-environment-variables
-
-### 3. Add Middleware for Route Protection
-
-Create \`middleware.ts\` in project root:
-
-\`\`\`typescript
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
-
-// Define which routes are public (everything else requires auth)
-const isPublicRoute = createRouteMatcher([
-  '/',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/api/webhooks(.*)', // Clerk webhooks should be public
-])
-
-export default clerkMiddleware(async (auth, request) => {
-  // Protect all routes except public ones
-  if (!isPublicRoute(request)) {
-    await auth.protect()
-  }
-})
-
-export const config = {
-  matcher: [
-    // Skip Next.js internals and static files
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
-    '/(api|trpc)(.*)',
-  ],
-}
-\`\`\`
-
-**CRITICAL**:
-- \`auth.protect()\` is async in v6 (breaking change from v5)
-- \`createRouteMatcher()\` accepts glob patterns
-- Alternative: protect specific routes instead of inverting logic
-- Source: https://clerk.com/docs/reference/nextjs/clerk-middleware
-
-### 4. Wrap App with ClerkProvider
-
-Update \`app/layout.tsx\`:
-
-\`\`\`typescript
-import { ClerkProvider } from '@clerk/nextjs'
-import './globals.css'
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <ClerkProvider>
-      <html lang="en">
-        <body>{children}</body>
-      </html>
-    </ClerkProvider>
-  )
-}
-\`\`\`
-
-### 5. Use auth() in Server Components
-
-\`\`\`typescript
-import { auth, currentUser } from '@clerk/nextjs/server'
-
-export default async function DashboardPage() {
-  // Get auth state (lightweight)
-  const { userId, sessionId } = await auth()
-
-  // Get full user object (heavier, fewer calls)
-  const user = await currentUser()
+export default async function Page() {
+  const { userId } = await auth()  // ← Must await
 
   if (!userId) {
     return <div>Unauthorized</div>
   }
 
-  return (
-    <div>
-      <h1>Dashboard</h1>
-      <p>User ID: {userId}</p>
-      <p>Email: {user?.primaryEmailAddress?.emailAddress}</p>
-    </div>
-  )
+  return <div>User ID: {userId}</div>
 }
-\`\`\`
+```
 
-**CRITICAL**:
-- \`auth()\` is async in v6 (breaking change)
-- Use \`auth()\` for lightweight checks
-- Use \`currentUser()\` when you need full user object
+### Cloudflare Workers: authorizedParties (CSRF Prevention)
 
----
+**CRITICAL:** Always set `authorizedParties` to prevent CSRF attacks
 
-## Cloudflare Workers Setup
-
-### 1. Install Dependencies
-
-\`\`\`bash
-npm install @clerk/backend hono
-\`\`\`
-
-**Latest Versions**:
-- @clerk/backend@2.17.2 (verified 2025-10-22)
-- hono@4.10.1
-
-### 2. Configure Environment Variables
-
-Create \`.dev.vars\` for local development:
-
-\`\`\`bash
-CLERK_SECRET_KEY=sk_test_...
-CLERK_PUBLISHABLE_KEY=pk_test_...
-\`\`\`
-
-**Production**: Use \`wrangler secret put CLERK_SECRET_KEY\`
-
-### 3. Implement Token Verification
-
-Create \`src/index.ts\`:
-
-\`\`\`typescript
-import { Hono } from 'hono'
+```typescript
 import { verifyToken } from '@clerk/backend'
 
-type Bindings = {
-  CLERK_SECRET_KEY: string
-  CLERK_PUBLISHABLE_KEY: string
-}
-
-type Variables = {
-  userId: string | null
-  sessionClaims: any | null
-}
-
-const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
-
-// Middleware: Verify Clerk token
-app.use('/api/*', async (c, next) => {
-  const authHeader = c.req.header('Authorization')
-
-  if (!authHeader) {
-    c.set('userId', null)
-    c.set('sessionClaims', null)
-    return next()
-  }
-
-  const token = authHeader.replace('Bearer ', '')
-
-  try {
-    const { data, error } = await verifyToken(token, {
-      secretKey: c.env.CLERK_SECRET_KEY,
-      // IMPORTANT: Set authorizedParties to prevent CSRF attacks
-      authorizedParties: ['https://yourdomain.com'],
-    })
-
-    if (error) {
-      console.error('Token verification failed:', error)
-      c.set('userId', null)
-      c.set('sessionClaims', null)
-    } else {
-      c.set('userId', data.sub)
-      c.set('sessionClaims', data)
-    }
-  } catch (err) {
-    console.error('Token verification error:', err)
-    c.set('userId', null)
-    c.set('sessionClaims', null)
-  }
-
-  return next()
+const { data, error } = await verifyToken(token, {
+  secretKey: c.env.CLERK_SECRET_KEY,
+  // REQUIRED: Prevent CSRF attacks
+  authorizedParties: ['https://yourdomain.com'],
 })
+```
 
-// Protected route
-app.get('/api/protected', (c) => {
-  const userId = c.get('userId')
+**Why:** Without `authorizedParties`, attackers can use valid tokens from other domains.
 
-  if (!userId) {
-    return c.json({ error: 'Unauthorized' }, 401)
-  }
-
-  return c.json({
-    message: 'This is protected',
-    userId,
-    sessionClaims: c.get('sessionClaims'),
-  })
-})
-
-export default app
-\`\`\`
-
-**CRITICAL**:
-- Always set \`authorizedParties\` to prevent CSRF attacks
-- Use \`secretKey\`, not deprecated \`apiKey\`
-- Source: https://clerk.com/docs/reference/backend/verify-token
+**Source:** https://clerk.com/docs/reference/backend/verify-token
 
 ---
 
-## JWT Templates & Custom Claims
+## JWT Templates - Size Limits & Shortcodes
 
-Clerk allows customizing JWT (JSON Web Token) structure using templates. This enables integration with third-party services, role-based access control, and multi-tenant applications.
-
-### Quick Start: Create a JWT Template
-
-**1. Navigate to Clerk Dashboard**:
-- Go to **Sessions** page
-- Click **Customize session token**
-- Click **Create template**
-
-**2. Define Template**:
-```json
-{
-  "user_id": "{{user.id}}",
-  "email": "{{user.primary_email_address}}",
-  "role": "{{user.public_metadata.role || 'user'}}"
-}
-```
-
-**3. Use Template in Code**:
-```typescript
-// Frontend (React/Next.js)
-const { getToken } = useAuth()
-const token = await getToken({ template: 'my-template' })
-
-// Backend (Cloudflare Workers)
-const sessionClaims = c.get('sessionClaims')
-const role = sessionClaims?.role
-```
-
-### Available Shortcodes
-
-| Category | Shortcodes | Example |
-|----------|-----------|---------|
-| **User ID & Name** | `{{user.id}}`, `{{user.first_name}}`, `{{user.last_name}}`, `{{user.full_name}}` | `"John Doe"` |
-| **Contact** | `{{user.primary_email_address}}`, `{{user.primary_phone_address}}` | `"john@example.com"` |
-| **Profile** | `{{user.image_url}}`, `{{user.username}}`, `{{user.created_at}}` | `"https://..."` |
-| **Verification** | `{{user.email_verified}}`, `{{user.phone_number_verified}}` | `true` |
-| **Metadata** | `{{user.public_metadata}}`, `{{user.public_metadata.FIELD}}` | `{"role": "admin"}` |
-| **Organization** | `org_id`, `org_slug`, `org_role` (in sessionClaims) | `"org:admin"` |
-
-### Advanced Features
-
-**String Interpolation**:
-```json
-{
-  "full_name": "{{user.last_name}} {{user.first_name}}",
-  "greeting": "Hello, {{user.first_name}}!"
-}
-```
-
-**Conditional Fallbacks**:
-```json
-{
-  "role": "{{user.public_metadata.role || 'user'}}",
-  "age": "{{user.public_metadata.age || 18}}",
-  "verified": "{{user.email_verified || user.phone_number_verified}}"
-}
-```
-
-**Nested Metadata with Dot Notation**:
-```json
-{
-  "interests": "{{user.public_metadata.profile.interests}}",
-  "department": "{{user.public_metadata.department}}"
-}
-```
-
-### Default Claims (Auto-Included)
-
-Every JWT includes these claims automatically (cannot be overridden):
-
-```json
-{
-  "azp": "http://localhost:3000",              // Authorized party
-  "exp": 1639398300,                            // Expiration time
-  "iat": 1639398272,                            // Issued at
-  "iss": "https://your-app.clerk.accounts.dev", // Issuer
-  "jti": "10db7f531a90cb2faea4",               // JWT ID
-  "nbf": 1639398220,                            // Not before
-  "sub": "user_1deJLArSTiWiF1YdsEWysnhJLLY"    // User ID
-}
-```
-
-### Size Limitation: 1.2KB for Custom Claims
+### JWT Size Limitation: 1.2KB for Custom Claims ⚠️
 
 **Problem**: Browser cookies limited to 4KB. Clerk's default claims consume ~2.8KB, leaving **1.2KB for custom claims**.
 
-**⚠️ Development Note**: When testing custom claims in Vite dev mode, you may encounter **"431 Request Header Fields Too Large"** error. This is caused by Clerk's handshake token in the URL exceeding Vite's 8KB limit. See [Issue #11](#issue-11-431-request-header-fields-too-large-vite-dev-mode) for solution.
+**⚠️ Development Note**: When testing custom JWT claims in Vite dev mode, you may encounter **"431 Request Header Fields Too Large"** error. This is caused by Clerk's handshake token in the URL exceeding Vite's 8KB limit. See [Issue #11](#issue-11-431-request-header-fields-too-large-vite-dev-mode) for solution.
 
-**Solution**:
+**Solution:**
 ```json
 // ✅ GOOD: Minimal claims
 {
@@ -488,72 +201,29 @@ Every JWT includes these claims automatically (cannot be overridden):
 
 **Best Practice**: Store large data in database, include only identifiers/roles in JWT.
 
-### TypeScript Type Safety
+### Available Shortcodes Reference
 
-Add global type declarations for auto-complete:
+| Category | Shortcodes | Example |
+|----------|-----------|---------|
+| **User ID & Name** | `{{user.id}}`, `{{user.first_name}}`, `{{user.last_name}}`, `{{user.full_name}}` | `"John Doe"` |
+| **Contact** | `{{user.primary_email_address}}`, `{{user.primary_phone_address}}` | `"john@example.com"` |
+| **Profile** | `{{user.image_url}}`, `{{user.username}}`, `{{user.created_at}}` | `"https://..."` |
+| **Verification** | `{{user.email_verified}}`, `{{user.phone_number_verified}}` | `true` |
+| **Metadata** | `{{user.public_metadata}}`, `{{user.public_metadata.FIELD}}` | `{"role": "admin"}` |
+| **Organization** | `org_id`, `org_slug`, `org_role` (in sessionClaims) | `"org:admin"` |
 
-**Create `types/globals.d.ts`**:
-```typescript
-export {}
+**Advanced Features:**
+- **String Interpolation**: `"{{user.last_name}} {{user.first_name}}"`
+- **Conditional Fallbacks**: `"{{user.public_metadata.role || 'user'}}"`
+- **Nested Metadata**: `"{{user.public_metadata.profile.interests}}"`
 
-declare global {
-  interface CustomJwtSessionClaims {
-    metadata: {
-      role?: 'admin' | 'moderator' | 'user'
-      onboardingComplete?: boolean
-      organizationId?: string
-    }
-  }
-}
-```
-
-### Common Use Cases
-
-**Role-Based Access Control**:
-```json
-{
-  "email": "{{user.primary_email_address}}",
-  "role": "{{user.public_metadata.role || 'user'}}",
-  "permissions": "{{user.public_metadata.permissions}}"
-}
-```
-
-**Multi-Tenant Applications**:
-```json
-{
-  "user_id": "{{user.id}}",
-  "org_id": "{{user.public_metadata.org_id}}",
-  "org_role": "{{user.public_metadata.org_role}}"
-}
-```
-
-**Supabase Integration**:
-```json
-{
-  "email": "{{user.primary_email_address}}",
-  "app_metadata": {
-    "provider": "clerk"
-  },
-  "user_metadata": {
-    "full_name": "{{user.full_name}}"
-  }
-}
-```
-
-### See Also
-
-- **Complete Reference**: See `references/jwt-claims-guide.md` for comprehensive documentation
-- **Template Examples**: See `templates/jwt/` directory for working examples
-- **TypeScript Types**: See `templates/typescript/custom-jwt-types.d.ts`
-- **Official Docs**: https://clerk.com/docs/guides/sessions/jwt-templates
+**Official Docs**: https://clerk.com/docs/guides/sessions/jwt-templates
 
 ---
 
-## Testing
+## Testing with Clerk
 
-Clerk provides comprehensive testing tools for local development and CI/CD pipelines.
-
-### Quick Start: Test Credentials
+### Test Credentials (Fixed OTP: 424242)
 
 **Test Emails** (no emails sent, fixed OTP):
 ```
@@ -569,12 +239,11 @@ jane+clerk_test@gmail.com
 
 **Fixed OTP Code**: `424242` (works for all test credentials)
 
-### Generate Session Tokens
+### Generate Session Tokens (60-second lifetime)
 
-For testing API endpoints, generate valid session tokens (60-second lifetime):
-
+**Script** (`scripts/generate-session-token.js`):
 ```bash
-# Using the provided script
+# Generate token
 CLERK_SECRET_KEY=sk_test_... node scripts/generate-session-token.js
 
 # Create new test user
@@ -629,36 +298,7 @@ test('sign up', async ({ page }) => {
 })
 ```
 
-### Testing Tokens (Bot Detection Bypass)
-
-Testing Tokens bypass bot detection in test suites.
-
-**Obtain Token**:
-```bash
-curl -X POST https://api.clerk.com/v1/testing_tokens \
-  -H "Authorization: Bearer sk_test_..."
-```
-
-**Use in Frontend API Requests**:
-```
-POST https://your-app.clerk.accounts.dev/v1/client/sign_ups?__clerk_testing_token=TOKEN
-```
-
-**Note**: `@clerk/testing` handles this automatically for Playwright/Cypress.
-
-### Production Limitations
-
-Testing Tokens work in both development and production, but:
-- ❌ Code-based auth (SMS/Email OTP) not supported in production
-- ✅ Email + password authentication supported
-- ✅ Magic links supported
-
-### See Also
-
-- **Complete Guide**: See `references/testing-guide.md` for comprehensive testing documentation
-- **Session Token Script**: See `scripts/generate-session-token.js`
-- **Demo Repository**: https://github.com/clerk/clerk-playwright-nextjs
-- **Official Docs**: https://clerk.com/docs/guides/development/testing/overview
+**Official Docs**: https://clerk.com/docs/guides/development/testing/overview
 
 ---
 
@@ -669,12 +309,12 @@ This skill prevents **11 documented issues**:
 ### Issue #1: Missing Clerk Secret Key
 **Error**: "Missing Clerk Secret Key or API Key"
 **Source**: https://stackoverflow.com/questions/77620604
-**Prevention**: Always set in \`.env.local\` or via \`wrangler secret put\`
+**Prevention**: Always set in `.env.local` or via `wrangler secret put`
 
 ### Issue #2: API Key → Secret Key Migration
 **Error**: "apiKey is deprecated, use secretKey"
 **Source**: https://clerk.com/docs/upgrade-guides/core-2/backend
-**Prevention**: Replace \`apiKey\` with \`secretKey\` in all calls
+**Prevention**: Replace `apiKey` with `secretKey` in all calls
 
 ### Issue #3: JWKS Cache Race Condition
 **Error**: "No JWK available"
@@ -684,7 +324,7 @@ This skill prevents **11 documented issues**:
 ### Issue #4: Missing authorizedParties (CSRF)
 **Error**: No error, but CSRF vulnerability
 **Source**: https://clerk.com/docs/reference/backend/verify-token
-**Prevention**: Always set \`authorizedParties: ['https://yourdomain.com']\`
+**Prevention**: Always set `authorizedParties: ['https://yourdomain.com']`
 
 ### Issue #5: Import Path Changes (Core 2)
 **Error**: "Cannot find module"
@@ -699,21 +339,21 @@ This skill prevents **11 documented issues**:
 ### Issue #7: Deprecated API Version v1
 **Error**: "API version v1 is deprecated"
 **Source**: https://clerk.com/docs/upgrade-guides/core-2/backend
-**Prevention**: Use latest SDK versions (API v2025-04-10)
+**Prevention**: Use latest SDK versions (API v2025-11-10)
 
 ### Issue #8: ClerkProvider JSX Component Error
 **Error**: "cannot be used as a JSX component"
 **Source**: https://stackoverflow.com/questions/79265537
-**Prevention**: Ensure React 19 compatibility with @clerk/clerk-react@5.51.0+
+**Prevention**: Ensure React 19 compatibility with @clerk/clerk-react@5.56.2+
 
 ### Issue #9: Async auth() Helper Confusion
 **Error**: "auth() is not a function"
 **Source**: https://clerk.com/changelog/2024-10-22-clerk-nextjs-v6
-**Prevention**: Always await: \`const { userId } = await auth()\`
+**Prevention**: Always await: `const { userId } = await auth()`
 
 ### Issue #10: Environment Variable Misconfiguration
 **Error**: "Missing Publishable Key" or secret leaked
-**Prevention**: Use correct prefixes (\`NEXT_PUBLIC_\`, \`VITE_\`), never commit secrets
+**Prevention**: Use correct prefixes (`NEXT_PUBLIC_`, `VITE_`), never commit secrets
 
 ### Issue #11: 431 Request Header Fields Too Large (Vite Dev Mode)
 **Error**: "431 Request Header Fields Too Large" when signing in
@@ -722,46 +362,19 @@ This skill prevents **11 documented issues**:
 **Prevention**:
 
 Add to `package.json`:
-\`\`\`json
+```json
 {
   "scripts": {
     "dev": "NODE_OPTIONS='--max-http-header-size=32768' vite"
   }
 }
-\`\`\`
+```
 
 **Temporary Workaround**: Clear browser cache, sign out, sign back in
 
 **Why**: Clerk dev tokens are larger than production; custom JWT claims increase handshake token size
 
 **Note**: This is different from Issue #6 (session token size). Issue #6 is about cookies (1.2KB), this is about URL parameters in dev mode (8KB → 32KB).
-
----
-
-## Critical Rules
-
-### Always Do
-
-✅ Set \`authorizedParties\` when verifying tokens
-✅ Use \`CLERK_SECRET_KEY\` environment variable
-✅ Check \`isLoaded\` before rendering auth UI
-✅ Use \`getToken()\` fresh for each request
-✅ Await \`auth()\` in Next.js v6+
-✅ Use \`NEXT_PUBLIC_\` prefix for client vars only
-✅ Store secrets via \`wrangler secret put\`
-✅ Implement middleware for route protection
-✅ Use API version 2025-04-10 or later
-
-### Never Do
-
-❌ Store \`CLERK_SECRET_KEY\` in client code
-❌ Use deprecated \`apiKey\` parameter
-❌ Store tokens in localStorage
-❌ Skip \`authorizedParties\` check
-❌ Exceed 1.2KB for custom JWT claims
-❌ Forget to check \`isLoaded\`
-❌ Expose secrets with \`NEXT_PUBLIC_\` prefix
-❌ Use API version v1
 
 ---
 
@@ -772,19 +385,36 @@ Add to `package.json`:
 - **React Guide**: https://clerk.com/docs/references/react/overview
 - **Backend SDK**: https://clerk.com/docs/reference/backend/overview
 - **JWT Templates**: https://clerk.com/docs/guides/sessions/jwt-templates
-- **shadcn/ui Integration**: https://clerk.com/docs/guides/development/shadcn-cli
-- **Context7 Library ID**: \`/clerk/clerk-docs\`
+- **API Version 2025-11-10 Upgrade**: https://clerk.com/docs/guides/development/upgrading/upgrade-guides/2025-11-10
+- **Testing Guide**: https://clerk.com/docs/guides/development/testing/overview
+- **Context7 Library ID**: `/clerk/clerk-docs`
 
 ---
 
-## Package Versions (Verified 2025-10-22)
+## Package Versions
 
-\`\`\`json
+**Latest (Nov 22, 2025):**
+```json
 {
   "dependencies": {
-    "@clerk/nextjs": "^6.33.3",
-    "@clerk/clerk-react": "^5.51.0",
-    "@clerk/backend": "^2.17.2"
+    "@clerk/nextjs": "^6.35.4",
+    "@clerk/clerk-react": "^5.56.2",
+    "@clerk/backend": "^2.23.2",
+    "@clerk/testing": "^1.13.18"
   }
 }
-\`\`\`
+```
+
+---
+
+**Token Efficiency**:
+- **Without skill**: ~5,200 tokens (setup tutorials, JWT templates, testing setup)
+- **With skill**: ~2,500 tokens (breaking changes + critical patterns + error prevention)
+- **Savings**: ~52% (~2,700 tokens)
+
+**Errors prevented**: 11 documented issues with exact solutions
+**Key value**: API 2025-11-10 breaking changes, Next.js v6 async auth(), PKCE for custom OAuth, credential stuffing defense, JWT size limits, 431 header error workaround
+
+---
+
+**Last verified**: 2025-11-22 | **Skill version**: 2.0.0 | **Changes**: Added API version 2025-11-10 breaking changes (billing endpoints), PKCE support, Client Trust defense, Next.js 16 support. Removed tutorials (~480 lines). Updated SDK versions. Focused on breaking changes + error prevention + critical patterns.
