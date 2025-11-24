@@ -2674,6 +2674,126 @@ grep -n "^| \*\*" skills/cloudflare-r2/SKILL.md
 
 ---
 
+## Cloudflare-Worker-Base Skill Audit ✅
+
+**Analysis Date**: 2025-11-24
+**Skill Size**: 771 lines (~2,570 tokens)
+**Status**: **COMPLETE** - Trimmed to 195 lines (~650 tokens)
+**Actual Savings**: **74.7%** (~1,920 tokens)
+
+### Research Phase Findings ✅
+
+**Package Version Updates (6):**
+- hono: 4.10.1 → 4.10.6
+- @cloudflare/vite-plugin: 1.13.13 → 1.15.2
+- vite: 7.0.0 → 7.2.4
+- @cloudflare/workers-types: 4.20251011.0 → 4.20251121.0
+- wrangler: 4.43.0 → 4.50.0
+- typescript: 5.9.0 → 5.9.3
+
+**Major Knowledge Gaps (16 from 2025):**
+
+**Cloudflare Platform (8):**
+1. **Wrangler v4 Release** (March 2025) - Major version with minimal breaking changes
+   - v3 supported until Q1 2026 (bug/security fixes)
+   - v3 critical security updates until Q1 2027
+   - Smaller changeset than previous major versions
+
+2. **Native Integrations Removed** (June 2025) - Dashboard Integrations tab eliminated
+   - Now CLI-based approach using wrangler secrets
+   - Existing integrations continue working (no changes required)
+
+3. **Workers VPC Services** (2025) - New feature for private network access
+   - Secure connections to internal APIs, databases, services
+   - Familiar Worker binding syntax, multi-cloud support
+
+4. **Durable Objects Data Studio** (2025) - New UI editor
+   - View and write to each DO's storage directly in dashboard
+
+5. **Environment Variables Increased** (2025) - Up to 64 vars (5KB each)
+   - Previously more limited capacity
+
+6. **Cron Triggers Limit Removed** (2025) - 3 per Worker limit eliminated
+   - Account-level limits still apply
+
+7. **WebSocket Message Size** (2025) - 1 MiB → 32 MiB (32x increase)
+   - Enables larger real-time data transfers
+
+8. **Node.js Compatibility** (2025) - node:fs and Web File System APIs
+   - Expanded compatibility for Node.js code
+
+**Static Assets (4):**
+9. **Gradual Rollouts Asset Mismatch** (2025) - New documented issue
+   - Modern frameworks (React/Vue/Angular with Vite) generate fingerprinted filenames
+   - During gradual rollouts: Version A HTML → Version B assets = 404s
+   - Prevention: Avoid gradual deployments with fingerprinted assets
+
+10. **Free Tier 429 Errors** (2025) - New billing behavior
+    - `run_worker_first` patterns ALWAYS invoke Worker (count toward free tier)
+    - After exceeding limits: 429 instead of falling back to free static assets
+    - Prevention: Upgrade to Paid ($5/mo) or use negative patterns (`!/pattern`)
+
+11. **Vite Plugin Auto-Detection** (2025) - Automatic asset inclusion
+    - Detects based on: index.html, rollupOptions.input, public dir, asset imports
+    - No need to manually specify assets field
+
+12. **Assets Billing Clarification** (2025) - Pricing model
+    - Static asset requests: Free and unlimited
+    - Storage: Free
+    - Worker invocations: Billed normally
+
+**Hono Framework (4):**
+13. **Enhanced TypeScript RPC** (v4.10.0) - Fixed long-standing type inference issue
+    - Now correctly infers responses from middleware
+    - RPC client type safety improved
+
+14. **cloneRawRequest Utility** (v4.10.0) - New utility from 'hono/request'
+    - For cloning consumed requests
+    - Useful when passing requests to external libraries after consuming body
+
+15. **JWT Security** (v4.10.2+) - Added audience validation
+    - New `verification.aud` configuration option
+    - RFC 7519-compliant audience validation
+    - Prevents token mix-up attacks
+
+16. **Auth Middleware Changes** (v4.10.6) - Deprecated message options
+    - New structured format for auth messages
+    - Deprecation warnings for old options
+
+### Audit Results
+
+**Metrics:**
+- Before: 771 lines (~2,570 tokens)
+- After: 195 lines (~650 tokens)
+- Savings: 576 lines (74.7% reduction), ~1,920 tokens
+- Target: 54.6% ✅ **Exceeded by 20%**
+- Errors prevented: 8 documented errors (6 original + 2 new 2025 issues)
+- Knowledge gaps: 16 major 2025 updates added
+
+**What Makes This Unique:**
+1. **Error prevention for 8 documented issues** (all with GitHub sources)
+   - Export syntax error (honojs/hono #3955) - "Cannot read properties of undefined"
+   - Static Assets routing conflicts (workers-sdk #8879) - API routes return HTML
+   - Scheduled/cron not exported (honojs/vite-plugins #275) - Handler error
+   - HMR race condition (workers-sdk #9518) - "A hanging Promise was canceled"
+   - Static Assets upload race (workers-sdk #7555) - Non-deterministic CI/CD failures
+   - Service Worker format confusion - Deprecated format usage
+   - **NEW**: Gradual rollouts asset mismatch (2025) - Fingerprinted asset 404s
+   - **NEW**: Free tier 429 errors with run_worker_first (2025) - Billing behavior
+
+2. **Critical configuration patterns**
+   - `run_worker_first: ["/api/*"]` for API route priority
+   - `export default app` (NOT `{ fetch: app.fetch }`)
+   - Module Worker format for scheduled handlers
+
+3. **2025 Knowledge Gaps** (16 updates: 8 platform, 4 static assets, 4 Hono)
+
+4. **Production validation** - Live at cloudflare-worker-base-test.webfonts.workers.dev
+
+**Commit**: 3e562b7
+
+---
+
 ## Phase 2 Summary So Far
 
 **Skills Completed:**
@@ -2698,6 +2818,7 @@ grep -n "^| \*\*" skills/cloudflare-r2/SKILL.md
 19. ✅ cloudflare-queues (1,250→558 lines, 55.4% reduction, 4 major 2025 updates, pull consumer limits 5000msg/s, pause/purge APIs, 4 errors + 4 troubleshooting issues preserved)
 20. ✅ cloudflare-r2 (1,166→385 lines, 67.0% reduction, 14 major 2025 updates, R2 SQL + Pipelines + Remote Bindings + bucket limit 1M, 6 errors preserved)
 21. ✅ cloudflare-turnstile (908→432 lines, 52.4% reduction, 6 major 2025 updates, Analytics upgrade + WCAG + Free/Enterprise limits + Any hostname + Ephemeral IDs + Offlabel, 12 errors preserved)
+22. ✅ cloudflare-worker-base (771→195 lines, 74.7% reduction, 16 major 2025 updates, Wrangler v4 + VPC Services + DO Data Studio + Static Assets gradual rollouts + Free tier 429s + Hono 4.10.x, 8 errors preserved)
 
 **Skills Deleted:**
 1. ✅ claude-code-bash-patterns (1,186 lines removed - redundant with official Claude Code docs)
@@ -2706,14 +2827,14 @@ grep -n "^| \*\*" skills/cloudflare-r2/SKILL.md
 1. ✅ KNOWLEDGE_GAP_AUDIT_CHECKLIST.md (comprehensive 12-step process)
 
 **Cumulative Impact:**
-- Skills audited: 21 of 59 (36%)
+- Skills audited: 22 of 59 (37%)
 - Skills deleted: 1
-- Lines removed: ~13,876 lines (476 from cloudflare-turnstile)
-- Tokens saved: ~46,117 tokens per invocation (across 21 audited skills)
-- Average reduction: 50.3% (excluding new skill)
-- Annual savings (5 uses/month): ~2,767,020 tokens across these 21 skills
+- Lines removed: ~14,452 lines (576 from cloudflare-worker-base)
+- Tokens saved: ~48,037 tokens per invocation (across 22 audited skills)
+- Average reduction: 52.1% (excluding new skill)
+- Annual savings (5 uses/month): ~2,882,220 tokens across these 22 skills
 
-**Next:** Continue A-Z systematic audit (next skill: cloudflare-worker-base)
+**Next:** Continue A-Z systematic audit (next skill: cloudflare-workflows)
 
 ---
 
