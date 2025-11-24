@@ -2119,6 +2119,164 @@ Build with Claude Messages API using structured outputs (v0.69.0+, Nov 2025) for
 
 ---
 
+## Cloudflare-MCP-Server Skill Audit ✅
+
+**Analysis Date**: 2025-11-24
+**Skill Size**: 1,932 lines (~6,440 tokens)
+**Status**: **COMPLETE** - Trimmed to 1,001 lines (~3,340 tokens)
+**Actual Savings**: **48.2%** (~3,100 tokens)
+
+### Research Phase Findings ✅
+
+**Package Version Updates:**
+- @modelcontextprotocol/sdk: 1.21.0 → **1.22.0** (minor)
+- @cloudflare/workers-oauth-provider: 0.0.13 → **0.1.0** (BREAKING major version)
+- agents (Cloudflare Agents SDK): 0.2.20 → **0.2.23** (patch)
+
+**Major Knowledge Gaps (10 from 2025):**
+
+1. **MCP Elicitation & Interactive Workflows** (August 2025)
+   - MCP servers can request user input during tool execution
+   - Interactive workflows: confirmations, forms, multi-step processes
+   - Durable storage preserves elicitation state during hibernation
+   - Source: Cloudflare Agents SDK changelog (Aug 2025)
+
+2. **Code Mode** (September 2025)
+   - Agents SDK converts MCP schema → TypeScript API
+   - New paradigm: agents write code vs calling tools directly
+   - Auto-generated doc comments from schema
+   - Type-safe API with code completion
+   - Source: Cloudflare blog post (Sept 2025)
+
+3. **MCPClientManager** (July 2025)
+   - New class for MCP client capabilities
+   - Connection management (auto-reconnect)
+   - Capability discovery (tools, resources, prompts)
+   - Complete OAuth auth flow integrated
+   - Hibernation for McpAgent
+   - Source: Cloudflare Agents SDK changelog (July 2025)
+
+4. **Task Queues** (August 2025)
+   - Background job processing capabilities
+   - `await this.queue.send({ task: "process_data", data })`
+   - Source: Cloudflare Agents SDK changelog (Aug 2025)
+
+5. **Email Integration** (August 2025)
+   - Email adapter and onEmail lifecycle method
+   - Agents can receive/respond to emails
+   - `async onEmail(message: Email) { ... }`
+   - Source: Cloudflare Agents SDK changelog (Aug 2025)
+
+6. **Python MCP Support** (April 2025)
+   - First-class Python support on Workers
+   - Python SDK with regular function definitions
+   - Source: Cloudflare blog post (April 2025)
+
+7. **HTTP Streamable Transport Details** (April 2025)
+   - Single endpoint replaces separate connection/messaging endpoints
+   - Recommended over SSE
+   - Simplified architecture, better performance
+   - Source: Cloudflare blog post (April 2025)
+
+8. **Durable Objects Free Tier** (2025)
+   - Key component for agents now included in free tier
+   - Source: Cloudflare blog post (2025)
+
+9. **Remote MCP Adoption** (May 2025)
+   - Claude.ai added remote MCP support
+   - use-mcp React library (3-line integration)
+   - Major partnerships (Anthropic, Stripe, PayPal, etc.)
+   - Source: Cloudflare blog post (May 2025)
+
+10. **workers-oauth-provider 0.1.0** (Breaking)
+    - Major version bump with API changes
+    - Source: npm registry
+
+### Content Analysis ✅
+
+**Obvious Knowledge to Remove (~900 lines):**
+- Quick Start sections duplicate npm create templates (~400 lines)
+- Basic McpAgent/tool patterns (established March 2025, well-documented)
+- Durable Objects basics (2+ years old)
+- WebSocket hibernation basics (2023 feature)
+- Worker export patterns (2018)
+- Basic bindings config (2019)
+- CORS explanations (web standard)
+- Verbose configuration examples (duplicate wrangler docs)
+- Template command listings (always available via npm create)
+
+**Knowledge Gaps to Add (~150 lines):**
+- All 10 major 2025 updates above
+- Package version updates
+- Breaking changes in workers-oauth-provider 0.1.0
+
+**Error Prevention to Keep (100%):**
+- All 22 documented errors (~500 lines)
+- URL path configuration (Error #2 - cited as "most common!")
+- OAuth redirect URI mismatch
+- All CORS, WebSocket, env errors
+
+**Unique Value to Keep:**
+- Critical URL debugging workflows
+- Post-deployment checklist
+- Decision trees for template selection
+- HTTP transport fundamentals section (URL path debugging patterns)
+
+### Trim Strategy: Option 1 (Standard ~50%)
+
+**Target**: 1,932 → **960 lines** (~3,200 tokens)
+**Remove**:
+- Quick Start verbose sections (keep 5-minute TL;DR only)
+- Template command tables (keep decision tree + link to GitHub)
+- Basic McpAgent/tool/DO patterns (keep error prevention only)
+- WebSocket hibernation details (keep critical warning only)
+- Configuration reference (keep minimal wrangler.jsonc)
+- Worker basics section
+- Verbose authentication patterns (keep unique Cloudflare patterns)
+- Common patterns (keep rate limiting + caching only)
+
+**Add**:
+- All 10 knowledge gaps from 2025
+- Package version updates
+- workers-oauth-provider 0.1.0 breaking changes
+
+**Preserve 100%**:
+- All 22 errors with exact solutions
+- HTTP Transport Fundamentals (unique debugging value)
+- Post-deployment checklist
+- Critical warnings about URL paths
+
+### Audit Results
+
+**Metrics:**
+- Before: 1,932 lines (~6,440 tokens)
+- After: 1,001 lines (~3,340 tokens)
+- Savings: 931 lines (48.2% reduction), ~3,100 tokens
+- Target: 50% ✅ Nearly achieved (1.8% short)
+- Errors prevented: 22 documented issues (100% preserved, verified with grep)
+- Knowledge gaps: 10 major 2025 updates added
+
+**What Makes This Unique:**
+1. **Error Prevention for 22 documented issues** (100% preserved)
+   - Error #2 (Base Path Configuration Mismatch) cited as "Most Common!" in skill
+   - All 22 errors verified preserved with exact solutions
+2. **HTTP Transport Fundamentals** (unique debugging value unavailable elsewhere)
+   - URL path debugging workflows
+   - Transport lifecycle diagrams
+   - Post-deployment testing checklist
+3. **2025 Knowledge Gaps** (10 major updates from April-September 2025)
+   - MCP Elicitation, Code Mode, MCPClientManager
+   - Task Queues, Email Integration, Python support
+   - HTTP Streamable Transport, DO Free Tier, Remote MCP adoption
+   - workers-oauth-provider 0.1.0 breaking changes
+4. **Decision trees and checklists** for template selection
+5. **OAuth URL configuration warnings** (all URLs must use same domain)
+6. **Durable Objects migration requirements** (critical for first deployment)
+
+**Commit**: 9b6646e
+
+---
+
 ## Phase 2 Summary So Far
 
 **Skills Completed:**
@@ -2139,6 +2297,7 @@ Build with Claude Messages API using structured outputs (v0.69.0+, Nov 2025) for
 15. ✅ cloudflare-hyperdrive (1,060→493 lines, 53.5% reduction, Free plan, MySQL GA, 90% latency reduction, IP access control, FedRAMP, 5x cache hits, configurable connections)
 16. ✅ cloudflare-images (1,126→563 lines, 50.0% reduction, AI face cropping GA, Media Transformations origin restrictions, 13 error codes preserved)
 17. ✅ cloudflare-kv (1,042→429 lines, 58.8% reduction, Aug 2025 architecture redesign 40x perf gain, namespace limit 200→1,000, 4 error patterns preserved)
+18. ✅ cloudflare-mcp-server (1,932→1,001 lines, 48.2% reduction, 10 major 2025 updates, workers-oauth-provider 0.1.0 breaking, 22 error patterns preserved)
 
 **Skills Deleted:**
 1. ✅ claude-code-bash-patterns (1,186 lines removed - redundant with official Claude Code docs)
@@ -2147,14 +2306,14 @@ Build with Claude Messages API using structured outputs (v0.69.0+, Nov 2025) for
 1. ✅ KNOWLEDGE_GAP_AUDIT_CHECKLIST.md (comprehensive 12-step process)
 
 **Cumulative Impact:**
-- Skills audited: 17 of 59 (29%)
+- Skills audited: 18 of 59 (31%)
 - Skills deleted: 1
-- Lines removed: ~10,997 lines (9,836 from audits + 1,161 from cloudflare-agents)
-- Tokens saved: ~36,520 tokens per invocation (across 17 audited skills)
-- Average reduction: 49.5% (excluding new skill)
-- Annual savings (5 uses/month): ~2,191,200 tokens across these 17 skills
+- Lines removed: ~11,928 lines (10,767 from audits + 1,161 from cloudflare-agents)
+- Tokens saved: ~39,620 tokens per invocation (across 18 audited skills)
+- Average reduction: 49.2% (excluding new skill)
+- Annual savings (5 uses/month): ~2,377,200 tokens across these 18 skills
 
-**Next:** Continue A-Z systematic audit (next skill: cloudflare-mcp-server)
+**Next:** Continue A-Z systematic audit (next skill: cloudflare-queues)
 
 ---
 
