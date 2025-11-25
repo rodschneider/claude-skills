@@ -3235,19 +3235,20 @@ grep -n "^| \*\*" skills/cloudflare-r2/SKILL.md
 
 **Skills Deleted:**
 1. ✅ claude-code-bash-patterns (1,186 lines removed - redundant with official Claude Code docs)
+2. ✅ gemini-cli (692 lines removed - redundant with google-gemini-api skill, niche CLI tool use case)
 
 **Documents Created:**
 1. ✅ KNOWLEDGE_GAP_AUDIT_CHECKLIST.md (comprehensive 12-step process)
 
 **Cumulative Impact:**
 - Skills audited: 27 of 59 (46%)
-- Skills deleted: 1
+- Skills deleted: 2
 - Lines removed: ~20,137 lines (2,041 from fastmcp)
 - Tokens saved: ~67,029 tokens per invocation (across 27 audited skills)
 - Average reduction: 55.2% (excluding new skill)
 - Annual savings (5 uses/month): ~4,021,740 tokens across these 27 skills
 
-**Next:** Continue A-Z systematic audit (next skill: gemini-cli)
+**Next:** Continue A-Z systematic audit (next skill: github-project-automation)
 
 ---
 
@@ -3310,15 +3311,17 @@ grep -n "^| \*\*" skills/cloudflare-r2/SKILL.md
 54. ✅ Trimmed elevenlabs-agents (673 lines, 73.0% reduction, 5 package updates, 39 major 2025 knowledge gaps)
 55. ✅ Audited fastmcp (research phase + trim)
 56. ✅ Trimmed fastmcp (574 lines, 78.0% reduction, 1 package update, 11 major 2025 knowledge gaps, 25 errors preserved)
+57. ✅ Evaluated gemini-cli (deletion decision)
+58. ✅ DELETED gemini-cli (692 lines removed - redundant with google-gemini-api skill, niche CLI tool use case)
 
 **Next Session:**
-1. Continue A-Z systematic audit (next skill alphabetically: gemini-cli)
+1. Continue A-Z systematic audit (next skill alphabetically: github-project-automation)
 2. Follow KNOWLEDGE_GAP_AUDIT_CHECKLIST.md process
 3. Research → Audit → Trim → Commit (one skill per session)
 4. Pattern validated: ~55.2% average reduction across 27 skills (excluding new skill)
 
 **Long Term:**
-- Audit remaining 32 skills alphabetically (27 of 59 complete, 46%)
+- Audit remaining 30 skills alphabetically (27 audited + 2 deleted = 29 of 59 complete, 49%)
 - Update skill creation guidelines with "knowledge gap test"
 - Establish quarterly review process for skills
 - Target: Continue 50-70% token savings across all skills
@@ -3328,7 +3331,7 @@ grep -n "^| \*\*" skills/cloudflare-r2/SKILL.md
 ## Last Checkpoint
 
 **Date**: 2025-11-25
-**Commit**: cedaa07
-**Message**: "docs: Update SESSION.md with fastmcp audit results"
+**Commit**: [pending]
+**Message**: "refactor: Delete gemini-cli skill - redundant with google-gemini-api"
 
-**Status**: Phase 2 in progress - 27 skills audited (46% complete), 1 skill deleted (claude-code-bash-patterns), ~20,137 lines removed, ~67,029 tokens saved per invocation, 55.2% average reduction, fastmcp 78.0% reduction (exceptional - exceeded 57.6% target by 20.4%), all 25 errors preserved, ready for gemini-cli
+**Status**: Phase 2 in progress - 27 skills audited (46%), 2 skills deleted (claude-code-bash-patterns, gemini-cli), ~20,137 lines removed from audits, ~67,029 tokens saved per invocation, 55.2% average reduction, 29 of 59 complete (49%), ready for github-project-automation
