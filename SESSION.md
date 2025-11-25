@@ -2794,6 +2794,121 @@ grep -n "^| \*\*" skills/cloudflare-r2/SKILL.md
 
 ---
 
+## Cloudflare-Workflows Skill Audit ✅
+
+**Analysis Date**: 2025-11-25
+**Skill Size**: 1,339 lines (~4,465 tokens)
+**Status**: **COMPLETE** - Trimmed to 589 lines (~1,963 tokens)
+**Actual Savings**: **56.0%** (~2,502 tokens)
+
+### Research Phase Findings ✅
+
+**Package Version Updates (2):**
+- wrangler: 4.44.0 → 4.50.0
+- @cloudflare/workers-types: 4.20251014.0 → 4.20251121.0
+
+**Major Knowledge Gaps (14 from 2025):**
+
+**GA Release (April 2025):**
+1. **Workflows GA Status** - Moved from beta to production-ready
+2. **waitForEvent API** - Already documented, noted as GA 2025 feature
+3. **Vitest Testing Support** - Full testing integration with cloudflare:test module
+   - introspectWorkflowInstance() API
+   - Test modifiers: disableSleeps, mockStepResult, mockStepError, mockEvent
+   - forceStepTimeout, forceEventTimeout
+4. **CPU Time Metrics** - New observability for billing insights (GA April 2025)
+5. **Concurrency Increase** - 4,500 concurrent instances (April 2025)
+6. **CPU Limits** - Increased to 5 minutes per step (default: 30 seconds, configurable)
+
+**October 2025 - Performance Improvements:**
+7. **Instance Creation Rate** - 10x faster: 100 per 10 seconds → 100 per second
+8. **Max Concurrency** - 10,000 instances per account (from 4,500 in April)
+
+**2025 Limit Changes (6):**
+9. **Max Steps** - 1,024 per workflow (old docs incorrectly said 10,000)
+10. **State Persistence** - 1MB per step (was 128KB), 100MB (Free) / 1GB (Paid) per instance
+11. **Event Payload Size** - 1MB max (was 128KB)
+12. **Waiting Instances** - Don't count toward concurrency limits (sleeping, retrying, or waiting for events)
+13. **Retention** - 3 days (Free) / 30 days (Paid) for completed state
+14. **Subrequests** - 50 (Free) / 1,000 (Paid) per request
+
+### Audit Results
+
+**Metrics:**
+- Before: 1,339 lines (~4,465 tokens)
+- After: 589 lines (~1,963 tokens)
+- Savings: 750 lines (56.0% reduction), ~2,502 tokens
+- Target: 55.4% ✅ **Exceeded by 0.6%**
+- Errors prevented: 2 documented errors (with GitHub sources)
+- Knowledge gaps: 14 major 2025 updates added
+
+**What Makes This Unique:**
+1. **Vitest testing integration** (GA April 2025)
+   - cloudflare:test module with introspection API
+   - Full test modifier suite (disableSleeps, mockStepResult, mockStepError, mockEvent)
+   - NEW 40-line section with setup, examples, and official docs reference
+
+2. **Accurate 2025 limits** (14 corrections)
+   - Max steps 1,024 (NOT 10,000)
+   - State persistence 1MB/step (100MB-1GB per instance)
+   - Event payloads 1MB (was 128KB)
+   - Instance creation rate 100/sec (10x faster, Oct 2025)
+   - Max concurrency 10,000 (from 4,500)
+   - Waiting instances don't count toward concurrency
+
+3. **CPU time metrics and configuration** (GA 2025)
+   - CPU time observability for billing insights
+   - Configurable limits (30 sec default, 5 min max)
+   - wrangler.jsonc configuration example
+
+4. **Known issues with GitHub sources** (2 preserved)
+   - Issue #1: "Cannot perform I/O on behalf of a different request" error
+   - Issue #2: NonRetryableError dev vs production behavior (workers-sdk#10113)
+
+5. **Instance creation rate 10x improvement** (Oct 2025)
+   - 100 per 10 seconds → 100 per second
+   - Critical for high-throughput workflows
+
+**Content Removed (~750 lines):**
+
+**Removed Entirely (389 lines):**
+- WorkflowEntrypoint Class tutorial (61 lines) - well-documented in official docs
+- Pattern 1: Long-Running Process (53 lines) - obvious pattern
+- Pattern 2: Event-Driven Approval Flow (56 lines) - obvious pattern
+- Pattern 3: Scheduled Workflow (39 lines) - obvious pattern
+- Pattern 4: Workflow Chaining (42 lines) - obvious pattern
+- Wrangler Commands reference (38 lines) - standard CLI
+- Always Do / Never Do lists (26 lines) - standard best practices
+- Issue #3: Import Error (14 lines) - basic setup issue
+- Issue #4: Step Returns Undefined (21 lines) - obvious mistake
+- Issue #5: Instance Stuck Running (20 lines) - obvious debugging
+- Production Checklist (19 lines) - standard checklist
+
+**Condensed (361 lines net):**
+- Quick Start: 107→38 lines (-69 lines)
+- step.do(): 65→25 lines (-40 lines)
+- step.sleep(): 46→15 lines (-31 lines)
+- step.sleepUntil(): 42→12 lines (-30 lines)
+- step.waitForEvent(): 84→45 lines (-39 lines)
+- WorkflowStepConfig: 121→40 lines (-81 lines)
+- Catch Errors pattern: 55→20 lines (-35 lines)
+- Triggering Workflows: 91→30 lines (-61 lines)
+- State Persistence: 74→25 lines (-49 lines)
+
+**Content Added (+54 lines):**
+- Vitest Testing section (40 lines) - cloudflare:test module, introspectWorkflowInstance, test modifiers
+- Recent Updates (2025) in header (14 lines) - GA release, limits, testing, platform changes
+
+**Content Preserved (100%):**
+- 2 documented errors with GitHub sources
+- NonRetryableError usage pattern (42 lines)
+- Pricing details (18 lines)
+- Complete Limits table with 2025 accurate values (29 lines)
+
+**Commit**: f8d6bf4
+
+---
+
 ## Phase 2 Summary So Far
 
 **Skills Completed:**
@@ -2819,6 +2934,7 @@ grep -n "^| \*\*" skills/cloudflare-r2/SKILL.md
 20. ✅ cloudflare-r2 (1,166→385 lines, 67.0% reduction, 14 major 2025 updates, R2 SQL + Pipelines + Remote Bindings + bucket limit 1M, 6 errors preserved)
 21. ✅ cloudflare-turnstile (908→432 lines, 52.4% reduction, 6 major 2025 updates, Analytics upgrade + WCAG + Free/Enterprise limits + Any hostname + Ephemeral IDs + Offlabel, 12 errors preserved)
 22. ✅ cloudflare-worker-base (771→195 lines, 74.7% reduction, 16 major 2025 updates, Wrangler v4 + VPC Services + DO Data Studio + Static Assets gradual rollouts + Free tier 429s + Hono 4.10.x, 8 errors preserved)
+23. ✅ cloudflare-workflows (1,339→589 lines, 56.0% reduction, 14 major 2025 updates, Workflows GA + Vitest testing + CPU metrics + instance creation 10x + concurrency 10K + accurate limits, 2 errors preserved)
 
 **Skills Deleted:**
 1. ✅ claude-code-bash-patterns (1,186 lines removed - redundant with official Claude Code docs)
@@ -2827,14 +2943,14 @@ grep -n "^| \*\*" skills/cloudflare-r2/SKILL.md
 1. ✅ KNOWLEDGE_GAP_AUDIT_CHECKLIST.md (comprehensive 12-step process)
 
 **Cumulative Impact:**
-- Skills audited: 22 of 59 (37%)
+- Skills audited: 23 of 59 (39%)
 - Skills deleted: 1
-- Lines removed: ~14,452 lines (576 from cloudflare-worker-base)
-- Tokens saved: ~48,037 tokens per invocation (across 22 audited skills)
-- Average reduction: 52.1% (excluding new skill)
-- Annual savings (5 uses/month): ~2,882,220 tokens across these 22 skills
+- Lines removed: ~15,202 lines (750 from cloudflare-workflows)
+- Tokens saved: ~50,539 tokens per invocation (across 23 audited skills)
+- Average reduction: 52.4% (excluding new skill)
+- Annual savings (5 uses/month): ~3,032,340 tokens across these 23 skills
 
-**Next:** Continue A-Z systematic audit (next skill: cloudflare-workflows)
+**Next:** Continue A-Z systematic audit (next skill: cloudflare-workers-ai)
 
 ---
 
