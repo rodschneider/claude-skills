@@ -14,9 +14,10 @@ allowed-tools:
   - WebFetch
 metadata:
   version: "1.0.0"
-  last_verified: "2025-11-10"
+  last_verified: "2025-11-26"
   package_versions:
-    "@google/genai": "^0.21.0"
+    "@google/genai": "^1.30.0"
+  minimum_sdk_version: "1.29.0"
   supported_models:
     - gemini-2.5-pro
     - gemini-2.5-flash
@@ -138,7 +139,9 @@ pnpm add @google/genai
 yarn add @google/genai
 ```
 
-**Current Stable Version:** 0.21.0+ (verify with `npm view @google/genai version`)
+**Current Stable Version:** 1.30.0+ (verify with `npm view @google/genai version`)
+
+**⚠️ Important:** File Search API requires **@google/genai v1.29.0 or later**. Earlier versions do not support File Search. The API was added in v1.29.0 (November 5, 2025).
 
 ### 4. TypeScript Configuration (Optional but Recommended)
 
@@ -1153,7 +1156,7 @@ echo "GOOGLE_API_KEY=your-api-key-here" >> .env
 ---
 
 **Skill Version:** 1.0.0
-**Last Verified:** 2025-11-10
-**Package Version:** @google/genai ^0.21.0
+**Last Verified:** 2025-11-26
+**Package Version:** @google/genai ^1.30.0 (minimum 1.29.0 required)
 **Token Savings:** ~65%
 **Errors Prevented:** 8
