@@ -33,10 +33,8 @@ This skill provides comprehensive coverage of the `gemini-embedding-001` model f
 4. [Batch Embeddings](#4-batch-embeddings)
 5. [Task Types](#5-task-types)
 6. [RAG Patterns](#6-rag-patterns)
-7. [Semantic Search](#7-semantic-search)
-8. [Document Clustering](#8-document-clustering)
-9. [Error Handling](#9-error-handling)
-10. [Best Practices](#10-best-practices)
+7. [Error Handling](#7-error-handling)
+8. [Best Practices](#8-best-practices)
 
 ---
 
@@ -426,25 +424,6 @@ const embedding2 = await ai.models.embedContent({
 
 **RAG** (Retrieval Augmented Generation) combines vector search with LLM generation to create AI systems that answer questions using custom knowledge bases.
 
-### Complete RAG Workflow
-
-```
-1. Document Ingestion
-   ├── Chunk documents into smaller pieces
-   ├── Generate embeddings (RETRIEVAL_DOCUMENT)
-   └── Store in Vectorize
-
-2. Query Processing
-   ├── User submits query
-   ├── Generate query embedding (RETRIEVAL_QUERY)
-   └── Search Vectorize for similar documents
-
-3. Response Generation
-   ├── Retrieve top-k similar documents
-   ├── Pass documents as context to LLM
-   └── Stream response to user
-```
-
 ### Document Ingestion Pipeline
 
 ```typescript
@@ -452,19 +431,7 @@ import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-// 1. Chunk document into smaller pieces
-function chunkDocument(text: string, chunkSize: number = 500): string[] {
-  const words = text.split(' ');
-  const chunks: string[] = [];
-
-  for (let i = 0; i < words.length; i += chunkSize) {
-    chunks.push(words.slice(i, i + chunkSize).join(' '));
-  }
-
-  return chunks;
-}
-
-// 2. Generate embeddings for chunks
+// Generate embeddings for chunks
 async function embedChunks(chunks: string[]): Promise<number[][]> {
   const response = await ai.models.embedContent({
     model: 'gemini-embedding-001',
@@ -478,7 +445,7 @@ async function embedChunks(chunks: string[]): Promise<number[][]> {
   return response.embeddings.map(e => e.values);
 }
 
-// 3. Store in Cloudflare Vectorize
+// Store in Cloudflare Vectorize
 async function storeInVectorize(
   env: Env,
   chunks: string[],
@@ -491,15 +458,6 @@ async function storeInVectorize(
   }));
 
   await env.VECTORIZE.insert(vectors);
-}
-
-// Complete pipeline
-async function ingestDocument(env: Env, documentText: string) {
-  const chunks = chunkDocument(documentText, 500);
-  const embeddings = await embedChunks(chunks);
-  await storeInVectorize(env, chunks, embeddings);
-
-  console.log(`Ingested ${chunks.length} chunks`);
 }
 ```
 
@@ -572,190 +530,7 @@ See `templates/rag-with-vectorize.ts` for full implementation.
 
 ---
 
-## 7. Semantic Search
-
-Semantic search finds content based on **meaning**, not just keyword matching.
-
-### Cosine Similarity
-
-Cosine similarity measures how similar two embeddings are (range: -1 to 1, where 1 = identical):
-
-```typescript
-function cosineSimilarity(a: number[], b: number[]): number {
-  if (a.length !== b.length) {
-    throw new Error('Vectors must have same length');
-  }
-
-  let dotProduct = 0;
-  let magnitudeA = 0;
-  let magnitudeB = 0;
-
-  for (let i = 0; i < a.length; i++) {
-    dotProduct += a[i] * b[i];
-    magnitudeA += a[i] * a[i];
-    magnitudeB += b[i] * b[i];
-  }
-
-  if (magnitudeA === 0 || magnitudeB === 0) {
-    return 0;
-  }
-
-  return dotProduct / (Math.sqrt(magnitudeA) * Math.sqrt(magnitudeB));
-}
-```
-
-### Vector Normalization
-
-Normalize vectors to unit length for faster similarity calculations:
-
-```typescript
-function normalizeVector(vector: number[]): number[] {
-  const magnitude = Math.sqrt(vector.reduce((sum, val) => sum + val * val, 0));
-
-  if (magnitude === 0) {
-    return vector;
-  }
-
-  return vector.map(val => val / magnitude);
-}
-
-// Normalized vectors allow dot product instead of cosine similarity
-function dotProduct(a: number[], b: number[]): number {
-  return a.reduce((sum, val, i) => sum + val * b[i], 0);
-}
-```
-
-### Top-K Search
-
-Find the most similar documents to a query:
-
-```typescript
-interface Document {
-  id: string;
-  text: string;
-  embedding: number[];
-}
-
-function topKSimilar(
-  queryEmbedding: number[],
-  documents: Document[],
-  k: number = 5
-): Array<{ document: Document; similarity: number }> {
-  // Calculate similarity for each document
-  const similarities = documents.map(doc => ({
-    document: doc,
-    similarity: cosineSimilarity(queryEmbedding, doc.embedding)
-  }));
-
-  // Sort by similarity (descending) and return top K
-  return similarities
-    .sort((a, b) => b.similarity - a.similarity)
-    .slice(0, k);
-}
-
-// Usage
-const results = topKSimilar(queryEmbedding, documents, 5);
-
-results.forEach(result => {
-  console.log(`Similarity: ${result.similarity.toFixed(4)}`);
-  console.log(`Text: ${result.document.text}\n`);
-});
-```
-
-### Complete Semantic Search Example
-
-See `templates/semantic-search.ts` for full implementation with Gemini API.
-
----
-
-## 8. Document Clustering
-
-Clustering groups similar documents together automatically.
-
-### K-Means Clustering
-
-```typescript
-interface Cluster {
-  centroid: number[];
-  documents: number[][];
-}
-
-function kMeansClustering(
-  embeddings: number[][],
-  k: number = 3,
-  maxIterations: number = 100
-): Cluster[] {
-  // 1. Initialize centroids randomly
-  const centroids: number[][] = [];
-  for (let i = 0; i < k; i++) {
-    centroids.push(embeddings[Math.floor(Math.random() * embeddings.length)]);
-  }
-
-  // 2. Iterate until convergence
-  for (let iter = 0; iter < maxIterations; iter++) {
-    // Assign each embedding to nearest centroid
-    const clusters: number[][][] = Array(k).fill(null).map(() => []);
-
-    embeddings.forEach(embedding => {
-      let minDistance = Infinity;
-      let closestCluster = 0;
-
-      centroids.forEach((centroid, i) => {
-        const distance = 1 - cosineSimilarity(embedding, centroid);
-        if (distance < minDistance) {
-          minDistance = distance;
-          closestCluster = i;
-        }
-      });
-
-      clusters[closestCluster].push(embedding);
-    });
-
-    // Update centroids
-    let changed = false;
-    clusters.forEach((cluster, i) => {
-      if (cluster.length > 0) {
-        const newCentroid = cluster[0].map((_, dim) =>
-          cluster.reduce((sum, emb) => sum + emb[dim], 0) / cluster.length
-        );
-
-        if (cosineSimilarity(centroids[i], newCentroid) < 0.9999) {
-          changed = true;
-        }
-
-        centroids[i] = newCentroid;
-      }
-    });
-
-    if (!changed) break;
-  }
-
-  // Build final clusters
-  const finalClusters: Cluster[] = centroids.map((centroid, i) => ({
-    centroid,
-    documents: embeddings.filter(emb =>
-      cosineSimilarity(emb, centroid) === Math.max(
-        ...centroids.map(c => cosineSimilarity(emb, c))
-      )
-    )
-  }));
-
-  return finalClusters;
-}
-```
-
-See `templates/clustering.ts` for complete implementation with examples.
-
-### Use Cases
-
-1. **Content Organization**: Automatically group similar articles, products, or documents
-2. **Duplicate Detection**: Find near-duplicate content
-3. **Topic Modeling**: Discover themes in large text corpora
-4. **Customer Feedback Analysis**: Group similar customer complaints or feature requests
-
----
-
-## 9. Error Handling
+## 7. Error Handling
 
 ### Common Errors
 
@@ -829,7 +604,7 @@ See `references/top-errors.md` for all 8 documented errors with detailed solutio
 
 ---
 
-## 10. Best Practices
+## 8. Best Practices
 
 ### Always Do
 
@@ -945,8 +720,6 @@ const queryEmbedding = await ai.models.embedContent({
 - `embeddings-fetch.ts` - Fetch-based for Cloudflare Workers
 - `batch-embeddings.ts` - Batch processing with rate limiting
 - `rag-with-vectorize.ts` - Complete RAG implementation with Vectorize
-- `semantic-search.ts` - Cosine similarity and top-K search
-- `clustering.ts` - K-means clustering implementation
 
 ### References (references/)
 
