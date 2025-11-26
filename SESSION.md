@@ -3236,6 +3236,7 @@ grep -n "^| \*\*" skills/cloudflare-r2/SKILL.md
 29. ✅ google-gemini-embeddings (1,003→775 lines, 22.7% reduction, package update @google/genai 1.27.0→1.30.0, removed cosine similarity + k-means clustering + generic chunking (standard ML algorithms), retained 8 task types + Gemini-specific patterns + 8 errors, last verified 2025-11-26)
 30. ✅ google-gemini-file-search (1,163→1,018 lines, 12.5% reduction, CRITICAL FIX: package ^0.21.0→^1.30.0, removed generic RAG overview + comparison tables + standard troubleshooting, retained 8 File Search-specific errors + API patterns (only 3 weeks old Nov 5), last verified 2025-11-26)
 31. ✅ hono-routing (1,259→1,050 lines, 16.6% reduction, 5 package updates (hono 4.10.2→4.10.6, zod 4.1.12→4.1.13, valibot 1.1.0→1.2.0, @hono/zod-validator 0.7.4→0.7.5, @hono/valibot-validator 0.5.3→0.6.0), removed basic HTTP routing + generic middleware + generic error handling, retained Hono-specific APIs + RPC pattern + 8 errors, last verified 2025-11-26)
+32. ✅ motion (1,047→732 lines, 30.1% reduction, package motion@12.23.24 already latest (verified 2025-11-09), removed basic motion component + variants + FLIP + spring physics + generic Vite setup + accessibility basics + common UI patterns, retained Cloudflare Workers fix (Dec 2024 #2918) + Next.js patterns + Tailwind conflicts + AnimatePresence rules + LazyMotion + 10 errors, last verified 2025-11-26)
 
 **Skills Deleted:**
 1. ✅ claude-code-bash-patterns (1,186 lines removed - redundant with official Claude Code docs)
@@ -3246,14 +3247,14 @@ grep -n "^| \*\*" skills/cloudflare-r2/SKILL.md
 1. ✅ KNOWLEDGE_GAP_AUDIT_CHECKLIST.md (comprehensive 12-step process)
 
 **Cumulative Impact:**
-- Skills audited: 31 of 59 (52.5%)
+- Skills audited: 32 of 59 (54.2%)
 - Skills deleted: 3
-- Lines removed: ~20,642 lines (net after google-gemini-api +37 enhancement)
-- Tokens saved: ~68,972 tokens per invocation (across 30 reduction audits)
-- Average reduction: 51.6% (30 reduction audits, 1 enhancement update)
-- Annual savings (5 uses/month): ~4,138,320 tokens across reduction audits
+- Lines removed: ~20,957 lines (net after google-gemini-api +37 enhancement)
+- Tokens saved: ~70,024 tokens per invocation (across 31 reduction audits)
+- Average reduction: 50.9% (31 reduction audits, 1 enhancement update)
+- Annual savings (5 uses/month): ~4,201,440 tokens across reduction audits
 
-**Next:** Continue A-Z systematic audit (next skill: motion)
+**Next:** Continue A-Z systematic audit (next skill: neon-vercel-postgres)
 
 ---
 
@@ -3328,15 +3329,17 @@ grep -n "^| \*\*" skills/cloudflare-r2/SKILL.md
 66. ✅ REDUCTION: google-gemini-file-search (1,163→1,018 lines, -145 lines, -12.5%, removed generic RAG + comparison tables + standard troubleshooting)
 67. ✅ Audited hono-routing (package updates + reduction opportunity)
 68. ✅ REDUCTION: hono-routing (1,259→1,050 lines, -209 lines, -16.6%, removed basic HTTP routing + generic middleware + generic error handling, retained Hono-specific APIs + RPC pattern + 8 errors)
+69. ✅ Audited motion (package already latest + reduction opportunity)
+70. ✅ REDUCTION: motion (1,047→732 lines, -315 lines, -30.1%, removed basic motion component + variants + FLIP + spring physics + generic Vite setup + accessibility basics + common UI patterns, retained Cloudflare Workers fix Dec 2024 + Next.js patterns + 10 errors)
 
 **Next Session:**
-1. Continue A-Z systematic audit (next skill alphabetically: motion)
+1. Continue A-Z systematic audit (next skill alphabetically: neon-vercel-postgres)
 2. Follow KNOWLEDGE_GAP_AUDIT_CHECKLIST.md process
 3. Research → Audit → Trim → Commit (one skill per session)
-4. Pattern validated: ~51.6% average reduction across 30 skills (1 enhancement update)
+4. Pattern validated: ~50.9% average reduction across 31 skills (1 enhancement update)
 
 **Long Term:**
-- Audit remaining 25 skills alphabetically (31 audited + 3 deleted = 34 of 59 complete, 57.6%)
+- Audit remaining 24 skills alphabetically (32 audited + 3 deleted = 35 of 59 complete, 59.3%)
 - Update skill creation guidelines with "knowledge gap test"
 - Establish quarterly review process for skills
 - Target: Continue 50-70% token savings across all skills
@@ -3346,7 +3349,7 @@ grep -n "^| \*\*" skills/cloudflare-r2/SKILL.md
 ## Last Checkpoint
 
 **Date**: 2025-11-26
-**Commit**: 4b04600
-**Message**: "skill/hono-routing: Reduction audit + package updates"
+**Commit**: 19e113c
+**Message**: "skill/motion: Reduction audit - remove generic animation concepts"
 
-**Status**: Phase 2 in progress - 31 skills audited (52.5%), 3 skills deleted (claude-code-bash-patterns, gemini-cli, github-project-automation), ~20,642 lines removed from reduction audits (net after google-gemini-api +37 enhancement), 30 reduction audits complete, 1 enhancement update, ~68,972 tokens saved per invocation, 51.6% average reduction, 34 of 59 complete (57.6%), ready for motion
+**Status**: Phase 2 in progress - 32 skills audited (54.2%), 3 skills deleted (claude-code-bash-patterns, gemini-cli, github-project-automation), ~20,957 lines removed from reduction audits (net after google-gemini-api +37 enhancement), 31 reduction audits complete, 1 enhancement update, ~70,024 tokens saved per invocation, 50.9% average reduction, 35 of 59 complete (59.3%), ready for neon-vercel-postgres
