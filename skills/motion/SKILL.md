@@ -125,78 +125,7 @@ pnpm add framer-motion  # Same version, same API
 
 ## Core Concepts
 
-### 1. The `motion` Component
-
-Transform any HTML/SVG element into an animatable component:
-
-```tsx
-import { motion } from "motion/react"
-
-// Basic animation
-<motion.div
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.5 }}
->
-  Content fades in and slides up
-</motion.div>
-
-// Gesture controls
-<motion.button
-  whileHover={{ scale: 1.1 }}
-  whileTap={{ scale: 0.95 }}
->
-  Click me
-</motion.button>
-```
-
-**Props:**
-- `initial`: Starting state (object or variant name)
-- `animate`: Target state (object or variant name)
-- `exit`: Unmounting state (requires AnimatePresence)
-- `transition`: Timing/easing configuration
-- `whileHover`, `whileTap`, `whileFocus`: Gesture states
-- `whileInView`: Viewport-triggered animation
-- `drag`: Enable dragging ("x", "y", or true for both)
-- `layout`: Enable FLIP layout animations
-
-### 2. Variants (Animation Orchestration)
-
-Named animation states that propagate through component tree:
-
-```tsx
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1, // Delay between each child
-      delayChildren: 0.2,   // Initial delay before children
-    }
-  }
-}
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 }
-}
-
-<motion.ul variants={container} initial="hidden" animate="show">
-  {items.map(item => (
-    <motion.li key={item.id} variants={item}>
-      {item.text}
-    </motion.li>
-  ))}
-</motion.ul>
-```
-
-**Benefits:**
-- Clean, declarative API
-- Automatic choreography (stagger, delay, sequence)
-- Reusable animation states
-- Reduced prop drilling
-
-### 3. AnimatePresence (Exit Animations)
+### 1. AnimatePresence (Exit Animations)
 
 Enables animations when components unmount:
 
@@ -237,9 +166,13 @@ import { AnimatePresence } from "motion/react"
 </AnimatePresence>
 ```
 
-### 4. Layout Animations (FLIP)
+### 2. Layout Animations
 
-Automatically animate layout changes:
+**Special Props:**
+- `layout`: Enable FLIP layout animations
+- `layoutId`: Connect separate elements for shared transitions
+- `layoutScroll`: Fix animations in scrollable containers (see Issue #5)
+- `layoutRoot`: Fix animations in fixed-position elements (see Issue #7)
 
 ```tsx
 <motion.div layout>
@@ -247,18 +180,7 @@ Automatically animate layout changes:
 </motion.div>
 ```
 
-**How it works:**
-- Calculates **F**irst position before change
-- Applies change immediately (**L**ast position)
-- **I**nverts transform to match first position
-- **P**lays animation to last position
-
-**Special Props:**
-- `layoutId`: Connect separate elements for shared transitions
-- `layoutScroll`: Fix animations in scrollable containers
-- `layoutRoot`: Fix animations in fixed-position elements
-
-### 5. Scroll Animations
+### 3. Scroll Animations
 
 #### Viewport-Triggered (whileInView)
 ```tsx
@@ -285,83 +207,17 @@ const y = useTransform(scrollYProgress, [0, 1], [0, -300])
 
 **Performance**: Uses native ScrollTimeline API when available for hardware acceleration.
 
-### 6. Gestures
-
-```tsx
-<motion.div
-  drag="x"
-  dragConstraints={{ left: -200, right: 200 }}
-  dragElastic={0.2}
-  dragMomentum={false}
-  onDragEnd={(event, info) => console.log(info.offset.x)}
->
-  Drag me horizontally
-</motion.div>
-```
-
-**Available Gestures:**
-- `whileHover`: Mouse enter/leave (fixes sticky :hover on touch)
-- `whileTap`: Pointer down (works on touch and mouse)
-- `whileFocus`: Keyboard focus
-- `whileDrag`: While dragging
-- `whileInView`: While in viewport
-- `drag`: Enable dragging with constraints and momentum
-
-### 7. Spring Physics
-
-Natural, physics-based easing:
-
-```tsx
-<motion.div
-  animate={{ x: 100 }}
-  transition={{
-    type: "spring",
-    stiffness: 100,  // Higher = more sudden
-    damping: 10,     // Higher = less oscillation (0 = infinite)
-    mass: 1,         // Higher = more lethargic
-  }}
-/>
-```
-
-**Presets:**
-- Default: `{ stiffness: 100, damping: 10 }`
-- Bouncy: `{ stiffness: 300, damping: 10 }`
-- Smooth: `{ stiffness: 100, damping: 20 }`
-
 ---
 
 ## Integration Guides
 
 ### Vite + React + TypeScript
 
-**Installation:**
 ```bash
-pnpm create vite my-app --template react-ts
-cd my-app
 pnpm add motion
 ```
 
-**Import:**
-```tsx
-import { motion } from "motion/react"
-```
-
-**Example Component:**
-```tsx
-import { motion } from "motion/react"
-
-export function AnimatedButton() {
-  return (
-    <motion.button
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.95 }}
-      className="px-4 py-2 bg-blue-600 text-white rounded"
-    >
-      Hover and click me
-    </motion.button>
-  )
-}
-```
+Import: `import { motion } from "motion/react"`
 
 **No Vite configuration needed** - works out of the box.
 
@@ -578,13 +434,6 @@ Automatically animates layout changes without JavaScript calculation:
 
 ### Respect `prefers-reduced-motion`
 
-**User Settings Locations:**
-- macOS: System Settings → Accessibility → Display → Reduce motion
-- Windows: Settings → Ease of Access → Display → Show animations
-- iOS: Settings → Accessibility → Motion
-- Android 9+: Settings → Accessibility → Remove animations
-
-**Implementation:**
 ```tsx
 import { MotionConfig } from "motion/react"
 
@@ -593,188 +442,25 @@ import { MotionConfig } from "motion/react"
 </MotionConfig>
 ```
 
-**What it does:**
-- When user enables reduced motion, Motion uses instant transitions
-- `reducedMotion` value is `"user"` (respects OS setting)
-- Can override with `"always"` (force instant) or `"never"` (ignore setting)
+**Options:**
+- `"user"`: Respects OS setting (recommended)
+- `"always"`: Force instant transitions
+- `"never"`: Ignore user preference
 
-**Note**: The `reducedMotion` setting now works correctly with AnimatePresence (GitHub issue #1567 fixed in Jan 2023). If you need fine-grained control, you can still manually check the user preference:
-
-```tsx
-const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-
-<AnimatePresence>
-  {isVisible && (
-    <motion.div
-      initial={{ opacity: prefersReducedMotion ? 1 : 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: prefersReducedMotion ? 1 : 0 }}
-      transition={{ duration: prefersReducedMotion ? 0 : 0.3 }}
-    >
-      Content
-    </motion.div>
-  )}
-</AnimatePresence>
-```
-
-### Keyboard Support
-
-Motion gestures work with keyboard:
-```tsx
-<motion.button
-  whileFocus={{ scale: 1.1 }}
-  whileTap={{ scale: 0.95 }}
-  tabIndex={0}
->
-  Keyboard accessible
-</motion.button>
-```
-
-**Focus states:**
-- `whileFocus`: Triggered by Tab key or programmatic focus
-- Works with screen readers
-- Respects browser focus ring
+**Note**: ✅ Fixed in Jan 2023 (GitHub #1567) - MotionConfig now works correctly with AnimatePresence.
 
 ---
 
 ## Common Patterns
 
-### Pattern 1: Modal Dialog
+**5 Production-Ready Patterns:**
+1. **Modal Dialog** - AnimatePresence with backdrop + dialog exit animations
+2. **Accordion** - Animate height with `height: "auto"`
+3. **Drag Carousel** - `drag="x"` with `dragConstraints`
+4. **Scroll Reveal** - `whileInView` with viewport margin
+5. **Parallax Hero** - `useScroll` + `useTransform` for layered effects
 
-```tsx
-import { motion, AnimatePresence } from "motion/react"
-
-function Modal({ isOpen, onClose, children }) {
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            key="backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/50 z-40"
-          />
-
-          {/* Dialog */}
-          <motion.dialog
-            key="dialog"
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="fixed inset-0 m-auto w-96 h-64 bg-white rounded-lg shadow-xl z-50"
-          >
-            {children}
-          </motion.dialog>
-        </>
-      )}
-    </AnimatePresence>
-  )
-}
-```
-
-### Pattern 2: Accordion
-
-```tsx
-import { motion } from "motion/react"
-import { useState } from "react"
-
-function Accordion({ title, children }) {
-  const [isOpen, setIsOpen] = useState(false)
-
-  return (
-    <div>
-      <button onClick={() => setIsOpen(!isOpen)}>{title}</button>
-      <motion.div
-        initial={false}
-        animate={{ height: isOpen ? "auto" : 0 }}
-        style={{ overflow: "hidden" }}
-      >
-        <div className="p-4">{children}</div>
-      </motion.div>
-    </div>
-  )
-}
-```
-
-### Pattern 3: Drag-and-Drop Carousel
-
-```tsx
-import { motion } from "motion/react"
-import { useRef } from "react"
-
-function Carousel({ images }) {
-  const constraintsRef = useRef(null)
-
-  return (
-    <div ref={constraintsRef} className="overflow-hidden">
-      <motion.div
-        drag="x"
-        dragConstraints={constraintsRef}
-        dragElastic={0.1}
-        className="flex gap-4"
-      >
-        {images.map(img => (
-          <motion.img
-            key={img.id}
-            src={img.url}
-            className="w-64 h-64 object-cover rounded-lg"
-            whileHover={{ scale: 1.05 }}
-          />
-        ))}
-      </motion.div>
-    </div>
-  )
-}
-```
-
-### Pattern 4: Scroll-Triggered Reveal
-
-```tsx
-import { motion } from "motion/react"
-
-function FadeInSection({ children }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.5 }}
-    >
-      {children}
-    </motion.div>
-  )
-}
-```
-
-### Pattern 5: Parallax Hero
-
-```tsx
-import { useScroll, useTransform, motion } from "motion/react"
-
-function ParallaxHero() {
-  const { scrollYProgress } = useScroll()
-
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -300])
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, -150])
-
-  return (
-    <div className="relative h-screen overflow-hidden">
-      <motion.div style={{ y: y1 }} className="absolute inset-0">
-        <img src="/background.jpg" className="w-full h-full object-cover" />
-      </motion.div>
-      <motion.div style={{ y: y2 }} className="relative z-10">
-        <h1>Hero Title</h1>
-      </motion.div>
-    </div>
-  )
-}
-```
-
-See `references/common-patterns.md` for 10+ more patterns with full code.
+See `references/common-patterns.md` for full code (15+ patterns).
 
 ---
 
