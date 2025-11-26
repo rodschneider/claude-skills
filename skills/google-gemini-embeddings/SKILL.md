@@ -7,8 +7,8 @@ description: |
 license: MIT
 metadata:
   version: 1.0.0
-  last_updated: 2025-10-25
-  tested_package_version: "@google/genai@1.27.0"
+  last_updated: 2025-11-26
+  tested_package_version: "@google/genai@1.30.0"
   target_audience: "Developers building RAG, semantic search, or vector-based applications"
   complexity: intermediate
   estimated_reading_time: "15 minutes"
@@ -47,7 +47,7 @@ This skill provides comprehensive coverage of the `gemini-embedding-001` model f
 Install the Google Generative AI SDK:
 
 ```bash
-npm install @google/genai@^1.27.0
+npm install @google/genai@^1.30.0
 ```
 
 For TypeScript projects:
@@ -985,8 +985,8 @@ const queryEmbedding = await ai.models.embedContent({
 **Token Savings**: ~60% compared to manual implementation
 **Errors Prevented**: 8 documented errors with solutions
 **Production Tested**: ✅ Verified in RAG applications
-**Package Version**: @google/genai@1.27.0
-**Last Updated**: 2025-10-25
+**Package Version**: @google/genai@1.30.0
+**Last Updated**: 2025-11-26
 
 ---
 
