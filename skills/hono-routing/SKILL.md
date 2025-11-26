@@ -11,9 +11,9 @@ license: MIT
 # Hono Routing & Middleware
 
 **Status**: Production Ready ✅
-**Last Updated**: 2025-10-22
+**Last Updated**: 2025-11-26
 **Dependencies**: None (framework-agnostic)
-**Latest Versions**: hono@4.10.2, zod@4.1.12, valibot@1.1.0, @hono/zod-validator@0.7.4, @hono/valibot-validator@0.5.3
+**Latest Versions**: hono@4.10.6, zod@4.1.13, valibot@1.2.0, @hono/zod-validator@0.7.5, @hono/valibot-validator@0.6.0
 
 ---
 
@@ -22,7 +22,7 @@ license: MIT
 ### 1. Install Hono
 
 ```bash
-npm install hono@4.10.2
+npm install hono@4.10.6
 ```
 
 **Why Hono:**
@@ -53,7 +53,7 @@ export default app
 ### 3. Add Request Validation
 
 ```bash
-npm install zod@4.1.12 @hono/zod-validator@0.7.4
+npm install zod@4.1.13 @hono/zod-validator@0.7.5
 ```
 
 ```typescript
@@ -78,40 +78,9 @@ app.post('/user', zValidator('json', schema), (c) => {
 
 ---
 
-## The 6-Part Hono Mastery Guide
+## The 4-Part Hono Mastery Guide
 
 ### Part 1: Routing Patterns
-
-#### Basic Routes
-
-```typescript
-import { Hono } from 'hono'
-
-const app = new Hono()
-
-// GET request
-app.get('/posts', (c) => c.json({ posts: [] }))
-
-// POST request
-app.post('/posts', (c) => c.json({ created: true }))
-
-// PUT request
-app.put('/posts/:id', (c) => c.json({ updated: true }))
-
-// DELETE request
-app.delete('/posts/:id', (c) => c.json({ deleted: true }))
-
-// Multiple methods
-app.on(['GET', 'POST'], '/multi', (c) => c.text('GET or POST'))
-
-// All methods
-app.all('/catch-all', (c) => c.text('Any method'))
-```
-
-**Key Points:**
-- Always return a Response (c.json, c.text, c.html, etc.)
-- Routes are matched in order (first match wins)
-- Use specific routes before wildcard routes
 
 #### Route Parameters
 
@@ -162,22 +131,6 @@ app.get('/search', (c) => {
 - Provide defaults for optional params
 - Parse numbers/booleans from query strings
 
-#### Wildcard Routes
-
-```typescript
-// Match any path after /api/
-app.get('/api/*', (c) => {
-  const path = c.req.param('*')
-  return c.json({ catchAll: path })
-})
-
-// Named wildcard
-app.get('/files/:filepath{.+}', (c) => {
-  const filepath = c.req.param('filepath')
-  return c.json({ file: filepath })
-})
-```
-
 #### Route Grouping (Sub-apps)
 
 ```typescript
@@ -201,42 +154,20 @@ app.route('/api', api)
 
 ---
 
-### Part 2: Middleware Composition
+### Part 2: Middleware & Validation
 
-#### Middleware Flow
+**CRITICAL Middleware Rule:**
+- **Always call `await next()`** in middleware to continue the chain
+- Return early (without calling `next()`) to prevent handler execution
+- Check `c.error` AFTER `next()` for error handling
 
 ```typescript
-import { Hono } from 'hono'
-
-const app = new Hono()
-
-// Global middleware (runs for all routes)
-app.use('*', async (c, next) => {
-  console.log(`[${c.req.method}] ${c.req.url}`)
-  await next() // CRITICAL: Must call next()
-  console.log('Response sent')
-})
-
-// Route-specific middleware
 app.use('/admin/*', async (c, next) => {
-  // Auth check
   const token = c.req.header('Authorization')
-  if (!token) {
-    return c.json({ error: 'Unauthorized' }, 401)
-  }
-  await next()
-})
-
-app.get('/admin/dashboard', (c) => {
-  return c.json({ message: 'Admin Dashboard' })
+  if (!token) return c.json({ error: 'Unauthorized' }, 401)
+  await next() // Required!
 })
 ```
-
-**CRITICAL:**
-- **Always call `await next()`** in middleware
-- Middleware runs BEFORE the handler
-- Return early to prevent handler execution
-- Check `c.error` AFTER `next()` for error handling
 
 #### Built-in Middleware
 
@@ -277,82 +208,6 @@ app.use(
 ```
 
 **Built-in Middleware Reference**: See `references/middleware-catalog.md`
-
-#### Middleware Chaining
-
-```typescript
-// Multiple middleware in sequence
-app.get(
-  '/protected',
-  authMiddleware,
-  rateLimitMiddleware,
-  (c) => {
-    return c.json({ data: 'Protected data' })
-  }
-)
-
-// Middleware factory pattern
-const authMiddleware = async (c, next) => {
-  const token = c.req.header('Authorization')
-  if (!token) {
-    throw new HTTPException(401, { message: 'Unauthorized' })
-  }
-
-  // Set user in context
-  c.set('user', { id: 1, name: 'Alice' })
-
-  await next()
-}
-
-const rateLimitMiddleware = async (c, next) => {
-  // Rate limit logic
-  await next()
-}
-```
-
-**Why Chain Middleware:**
-- Separation of concerns
-- Reusable across routes
-- Clear execution order
-
-#### Custom Middleware
-
-```typescript
-// Timing middleware
-const timing = async (c, next) => {
-  const start = Date.now()
-  await next()
-  const elapsed = Date.now() - start
-  c.res.headers.set('X-Response-Time', `${elapsed}ms`)
-}
-
-// Request ID middleware
-const requestId = async (c, next) => {
-  const id = crypto.randomUUID()
-  c.set('requestId', id)
-  await next()
-  c.res.headers.set('X-Request-ID', id)
-}
-
-// Error logging middleware
-const errorLogger = async (c, next) => {
-  await next()
-  if (c.error) {
-    console.error('Error:', c.error)
-    // Send to error tracking service
-  }
-}
-
-app.use('*', timing)
-app.use('*', requestId)
-app.use('*', errorLogger)
-```
-
-**Best Practices:**
-- Keep middleware focused (single responsibility)
-- Use `c.set()` to share data between middleware
-- Check `c.error` AFTER `next()` for error handling
-- Return early to short-circuit execution
 
 ---
 
@@ -447,7 +302,7 @@ app.get('/', (c) => {
 #### Validation with Zod
 
 ```bash
-npm install zod@4.1.12 @hono/zod-validator@0.7.4
+npm install zod@4.1.13 @hono/zod-validator@0.7.5
 ```
 
 ```typescript
@@ -557,7 +412,7 @@ app.post(
 #### Validation with Valibot
 
 ```bash
-npm install valibot@1.1.0 @hono/valibot-validator@0.5.3
+npm install valibot@1.2.0 @hono/valibot-validator@0.6.0
 ```
 
 ```typescript
@@ -864,69 +719,6 @@ app.notFound((c) => {
 })
 ```
 
-#### Error Handling Best Practices
-
-```typescript
-import { Hono } from 'hono'
-import { HTTPException } from 'hono/http-exception'
-
-const app = new Hono()
-
-// Validation errors
-app.post('/users', zValidator('json', schema), (c) => {
-  // zValidator automatically returns 400 on validation failure
-  const data = c.req.valid('json')
-  return c.json({ data })
-})
-
-// Authorization errors
-app.use('/admin/*', async (c, next) => {
-  const token = c.req.header('Authorization')
-  if (!token) {
-    throw new HTTPException(401, { message: 'Unauthorized' })
-  }
-  await next()
-})
-
-// Not found errors
-app.get('/users/:id', async (c) => {
-  const id = c.req.param('id')
-  const user = await db.getUser(id)
-
-  if (!user) {
-    throw new HTTPException(404, { message: 'User not found' })
-  }
-
-  return c.json({ user })
-})
-
-// Server errors
-app.get('/data', async (c) => {
-  try {
-    const data = await fetchExternalAPI()
-    return c.json({ data })
-  } catch (error) {
-    // Let onError handle it
-    throw error
-  }
-})
-
-// Global error handler
-app.onError((err, c) => {
-  if (err instanceof HTTPException) {
-    return err.getResponse()
-  }
-
-  console.error('Unexpected error:', err)
-  return c.json({ error: 'Internal Server Error' }, 500)
-})
-
-// 404 handler
-app.notFound((c) => {
-  return c.json({ error: 'Not Found' }, 404)
-})
-```
-
 ---
 
 ## Critical Rules
@@ -1097,7 +889,7 @@ app.get('/', (c) => {
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "hono": "^4.10.2"
+    "hono": "^4.10.6"
   },
   "devDependencies": {
     "typescript": "^5.9.0",
@@ -1112,9 +904,9 @@ app.get('/', (c) => {
 ```json
 {
   "dependencies": {
-    "hono": "^4.10.2",
-    "zod": "^4.1.12",
-    "@hono/zod-validator": "^0.7.4"
+    "hono": "^4.10.6",
+    "zod": "^4.1.13",
+    "@hono/zod-validator": "^0.7.5"
   }
 }
 ```
@@ -1124,9 +916,9 @@ app.get('/', (c) => {
 ```json
 {
   "dependencies": {
-    "hono": "^4.10.2",
-    "valibot": "^1.1.0",
-    "@hono/valibot-validator": "^0.5.3"
+    "hono": "^4.10.6",
+    "valibot": "^1.2.0",
+    "@hono/valibot-validator": "^0.6.0"
   }
 }
 ```
@@ -1136,11 +928,11 @@ app.get('/', (c) => {
 ```json
 {
   "dependencies": {
-    "hono": "^4.10.2",
-    "zod": "^4.1.12",
-    "valibot": "^1.1.0",
-    "@hono/zod-validator": "^0.7.4",
-    "@hono/valibot-validator": "^0.5.3",
+    "hono": "^4.10.6",
+    "zod": "^4.1.13",
+    "valibot": "^1.2.0",
+    "@hono/zod-validator": "^0.7.5",
+    "@hono/valibot-validator": "^0.6.0",
     "@hono/typia-validator": "^0.1.2",
     "@hono/arktype-validator": "^2.0.1"
   }
@@ -1213,18 +1005,18 @@ For deeper understanding, see:
 
 ---
 
-## Dependencies (Latest Verified 2025-10-22)
+## Dependencies (Latest Verified 2025-11-26)
 
 ```json
 {
   "dependencies": {
-    "hono": "^4.10.2"
+    "hono": "^4.10.6"
   },
   "optionalDependencies": {
-    "zod": "^4.1.12",
-    "valibot": "^1.1.0",
-    "@hono/zod-validator": "^0.7.4",
-    "@hono/valibot-validator": "^0.5.3",
+    "zod": "^4.1.13",
+    "valibot": "^1.2.0",
+    "@hono/zod-validator": "^0.7.5",
+    "@hono/valibot-validator": "^0.6.0",
     "@hono/typia-validator": "^0.1.2",
     "@hono/arktype-validator": "^2.0.1"
   },
