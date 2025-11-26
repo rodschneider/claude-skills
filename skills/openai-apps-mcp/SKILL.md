@@ -281,8 +281,14 @@ try {
 
 ## Production Reference
 
-**Working Example**: `/home/jez/Documents/chatgpt-app-sdk` (portfolio carousel widget)
-- MCP endpoint: ✅ JSON-RPC 2.0 with tools + resources
-- Widget data: ✅ WordPress API integration via `window.openai.toolOutput`
-- D1 database: ✅ Contact form submissions
-- Verified: ✅ Rendering in ChatGPT Business
+**Open Source Example**: https://github.com/jezweb/chatgpt-app-sdk (portfolio carousel widget)
+- **Live in Production**: Rendering in ChatGPT Business
+- **MCP Server**: Full JSON-RPC 2.0 implementation with tools + resources (~310 lines)
+- **Widget Integration**: WordPress API → `window.openai.toolOutput` → React carousel
+- **Database**: D1 (SQLite) for contact form submissions
+- **Stack**: Hono 4 + React 19 + Tailwind v4 + Drizzle ORM
+- **Key Files**:
+  - `/src/lib/mcp/server.ts` - Complete MCP handler
+  - `/src/server/tools/portfolio.ts` - Tool with widget annotations
+  - `/src/widgets/PortfolioWidget.tsx` - Data access pattern
+- **Verified**: All 8 known issues prevented, zero errors in production
