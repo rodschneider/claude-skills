@@ -169,25 +169,26 @@
 85. ✅ Audited project-planning (0 package dependencies, template/workflow skill, expected lower reduction)
 86. ✅ REDUCTION: project-planning (1,620→1,122 lines, -498 lines, -30.7%, removed verbose workflow explanations + detailed automation command descriptions + lengthy planning workflow prose + File-Level Detail section (311→45 lines major reduction) + Enhanced Phase Template verbose example + Integration with SESSION.md verbose explanation + Token efficiency comparisons + Generation Logic verbose flow + Special Cases detailed explanations + Quality Checklist verbose items + Output Format lengthy example + Post-Generation Validation verbose checklist + Your Tone and Style explanations + Remember section verbose prose, retained ALL 11 template structures (IMPLEMENTATION_PHASES, DATABASE_SCHEMA, API_ENDPOINTS, ARCHITECTURE, UI_COMPONENTS, CRITICAL_WORKFLOWS, INSTALLATION_COMMANDS, ENV_VARIABLES, SESSION, plus examples) + Phase type definitions + Phase validation rules + Default stack knowledge + Automation command info + Complete phase example + Quality checklist condensed + Common mistakes condensed)
 87. ✅ REDUCTION: project-workflow (698→206 lines, -492 lines, -70.5%, workflow skill documenting 7 slash commands for project lifecycle automation (post-knowledge cutoff Nov 2025), removed verbose overview + lengthy installation + redundant command documentation (5-7 items → 2-3 lines) + verbose examples × 7 commands + Complete Workflow Examples verbose format (40→3 lines) + Configuration section + Best Practices generic advice + Advanced Usage verbose examples + FAQ generic Q&A + Related Skills duplicate + verbose Support, retained all 7 command specs: /explore-idea (pre-planning validation 10-15min) + /plan-project (generate docs 5-7min) + /plan-feature (add features 7-10min) + /wrap-session (checkpoint 2-3min) + /continue-session (context load 1-2min) + /workflow (interactive guide) + /release (8-phase safety checks 10-15min) + command relationships diagram + time savings breakdown (35-55min per lifecycle) + integration with project-planning/project-session-management + workflow patterns (full/quick/helpers) + prerequisites per command + troubleshooting, version 1.0.0 Nov 2025)
+88. ✅ REDUCTION: tanstack-query (1,586→503 lines, -1,083 lines, -68.3%, 1 package update @tanstack/react-query 5.90.5→5.90.11 Nov 25 2025 patch fixes, tech skill for TanStack Query v5 React Query, removed duplicate setup sections (Quick Start + 7-Step Setup → condensed Quick Setup 178→96 lines) + verbose configuration theory (staleTime vs gcTime explanations) + Configuration Files Reference (package.json/tsconfig/eslint generic React) + redundant Common Patterns (5 verbose examples 211→47 lines 78% reduction) + Using Bundled Resources meta-content + verbose Advanced Topics (select/waterfalls/server vs client → condensed) + Package Versions duplicate + Production Example meta-content + redundant Troubleshooting (duplicates Known Issues) + Complete Setup Checklist + Error Boundaries (standard React pattern 78 lines) + DevTools advanced options (20 lines standard config), retained all 8 v5 migration errors with GitHub sources + v4→v5 breaking changes (object syntax required + query callbacks removed + status loading→pending + cacheTime→gcTime + useSuspenseQuery+enabled incompatible + initialPageParam required + keepPreviousData→placeholderData + TypeScript Error type default) + v5-specific patterns (queryOptions factory, query key structure) + Critical Rules (Always Do/Never Do) + Key patterns (dependent queries, parallel queries, prefetching, infinite scroll, query cancellation, data transformation), latest @tanstack/react-query@5.90.11)
 
 **Cumulative Impact:**
-- Skills audited: 40 of 58 (69.0%)
+- Skills audited: 41 of 58 (70.7%)
 - Skills created: 2 (react-native-expo #1, ts-agent-sdk #58)
 - Skills deleted: 3
 - Total skills: 58 (58 from Phase 1 - 3 deletions + 2 new = 58 active)
-- Lines removed: ~26,914 lines (net after 2 enhancement updates: google-gemini-api +37, openai-apps-mcp +6)
-- Tokens saved: ~88,277 tokens per invocation (across 39 reduction audits)
-- Average reduction: 52.8% (39 reduction audits, 2 enhancement updates, 2 new skills)
-- Annual savings (5 uses/month): ~5,296,620 tokens across reduction audits
+- Lines removed: ~27,997 lines (net after 2 enhancement updates: google-gemini-api +37, openai-apps-mcp +6)
+- Tokens saved: ~91,894 tokens per invocation (across 40 reduction audits)
+- Average reduction: 53.2% (40 reduction audits, 2 enhancement updates, 2 new skills)
+- Annual savings (5 uses/month): ~5,513,640 tokens across reduction audits
 
 **Next Session:**
-1. Continue A-Z systematic audit (next skill alphabetically after project-workflow)
+1. Continue A-Z systematic audit (next skill alphabetically after tanstack-query)
 2. Follow KNOWLEDGE_GAP_AUDIT_CHECKLIST.md process
 3. Research → Audit → Trim → Commit (one skill per session)
-4. Pattern validated: ~52.8% average reduction across 39 skills (2 enhancement updates)
+4. Pattern validated: ~53.2% average reduction across 40 skills (2 enhancement updates)
 
 **Long Term:**
-- Audit remaining 18 skills alphabetically (40 audited of 58 total, 69.0% complete)
+- Audit remaining 17 skills alphabetically (41 audited of 58 total, 70.7% complete)
 - Update skill creation guidelines with "knowledge gap test"
 - Establish quarterly review process for skills
 - Target: Continue 50-70% token savings across all skills
@@ -197,7 +198,7 @@
 ## Last Checkpoint
 
 **Date**: 2025-11-28
-**Commit**: b6ee6a0
-**Message**: "skill/project-workflow: Phase 2 knowledge-gap audit (70.5% reduction)"
+**Commit**: a6d1885
+**Message**: "skill/tanstack-query: Phase 2 knowledge-gap audit (68.3% reduction)"
 
-**Status**: Phase 2 in progress - 40 skills audited (69.0%), 2 skills created (react-native-expo, ts-agent-sdk), 3 skills deleted (claude-code-bash-patterns, gemini-cli, github-project-automation), 58 total active skills, ~26,914 lines removed (net after 2 enhancement updates), 39 reduction audits complete (77.9% highest: openai-assistants, 72.6%: openai-responses, 70.5% latest workflow skill: project-workflow, 62.3%: open-source-contributions), 2 enhancement updates, ~88,277 tokens saved per invocation, 52.8% average reduction, ready for next skill alphabetically
+**Status**: Phase 2 in progress - 41 skills audited (70.7%), 2 skills created (react-native-expo, ts-agent-sdk), 3 skills deleted (claude-code-bash-patterns, gemini-cli, github-project-automation), 58 total active skills, ~27,997 lines removed (net after 2 enhancement updates), 40 reduction audits complete (77.9% highest: openai-assistants, 72.6%: openai-responses, 70.5%: project-workflow, 68.3% latest tech skill: tanstack-query, 62.3%: open-source-contributions), 2 enhancement updates, ~91,894 tokens saved per invocation, 53.2% average reduction, ready for next skill alphabetically
