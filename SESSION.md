@@ -1,9 +1,10 @@
 # Current Session
 
-**Project**: Claude Skills Repository  
+**Project**: Claude Skills Repository
 **Focus**: Phase 2 - Knowledge-Gap-Focused Skills & Content Audit
 **Started**: 2025-11-22
 **Last Updated**: 2025-11-28
+**Last Checkpoint**: 0447523 (2025-11-28)
 
 **Archives**: Detailed audit findings archived to `archive/session-logs/`:
 - `phase-1-description-optimization.md` - Phase 1 complete (all 58 skills optimized)
@@ -62,6 +63,7 @@
 46. ✅ tanstack-start (107→107 lines, MAINTENANCE UPDATE, package update @tanstack/react-start 1.136.9→1.139.10, draft placeholder skill awaiting v1.0 stable + issue #5734 resolution, last updated Nov 20 2025 with related PR #1866, last verified 2025-11-28)
 47. ✅ tanstack-table (726→213 lines, 70.7% reduction, no package updates (already current: @tanstack/react-table@8.21.3, @tanstack/react-virtual@3.13.12), removed verbose code examples + meta-content, retained all 6 error patterns (infinite re-renders, query state mismatch, manual flags, TypeScript imports, sorting, performance), server-side D1 pagination/filtering/sorting pattern + virtualization, last verified 2025-11-28)
 48. ✅ thesys-generative-ui (1,877→1,877 lines, MAINTENANCE UPDATE, package update @thesysai/genui-sdk 0.6.40→0.7.4, DEFERRED for full audit - exceptionally large skill (1,877 lines) requires dedicated reduction session, all 12 error patterns present, last verified 2025-11-28)
+49. ✅ tinacms (1,753→551 lines, 68.6% reduction, 2 package updates: tinacms 2.9.0→2.10.0, @tinacms/cli 1.11.0→1.12.5, removed verbose framework setups (Vite, Astro, framework-agnostic) + collection templates + deployment patterns + GraphQL/auth examples, retained all 9 error patterns (ESbuild compilation, module resolution, field naming, Docker binding, missing _template, path mismatch, build ordering, asset loading, reference 503) + schema config + Next.js integration, last verified 2025-11-28)
 
 **Skills Deferred:**
 1. ⏸️ thesys-generative-ui (1,877 lines) - Requires dedicated audit session, target ~550-600 lines (70% reduction)
@@ -75,15 +77,15 @@
 1. ✅ KNOWLEDGE_GAP_AUDIT_CHECKLIST.md (comprehensive 12-step process)
 
 **Cumulative Impact:**
-- Skills audited: 48 of 58 (82.8%)
+- Skills audited: 49 of 58 (84.5%)
 - Skills deferred: 1 (thesys-generative-ui - exceptionally large, needs dedicated session)
 - Skills deleted: 3
-- Lines removed: ~26,429 lines (net after google-gemini-api +37 enhancement)
-- Tokens saved: ~88,163 tokens per invocation (across 40 reduction audits)
-- Average reduction: 54.5% (40 reduction audits, 1 enhancement update, 2 maintenance updates)
-- Annual savings (5 uses/month): ~5,289,780 tokens across reduction audits
+- Lines removed: ~27,631 lines (net after google-gemini-api +37 enhancement)
+- Tokens saved: ~92,170 tokens per invocation (across 41 reduction audits)
+- Average reduction: 54.8% (41 reduction audits, 1 enhancement update, 2 maintenance updates)
+- Annual savings (5 uses/month): ~5,530,200 tokens across reduction audits
 
-**Next:** Continue A-Z systematic audit (next skill after thesys-generative-ui alphabetically)
+**Next:** Continue A-Z systematic audit (next skill after tinacms alphabetically)
 
 ---
 
