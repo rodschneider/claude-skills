@@ -6,10 +6,10 @@ description: |
   Use when building conversational UIs, AI assistants with rich interactions, or troubleshooting empty responses, theme application failures, streaming issues, or tool calling errors.
 license: MIT
 metadata:
-  version: "1.0.0"
+  version: "1.0.1"
   package: "@thesysai/genui-sdk"
-  package_version: "0.6.40"
-  last_verified: "2025-10-26"
+  package_version: "0.7.4"
+  last_verified: "2025-11-28"
   production_tested: true
   token_savings: "~65-70%"
   errors_prevented: 12
