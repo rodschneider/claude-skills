@@ -9,13 +9,13 @@ description: |
 license: MIT
 allowed-tools: [Bash, Read, Write, Edit]
 metadata:
-  version: 0.9.0
+  version: 0.9.1
   author: Jeremy Dawes | Jezweb
-  last-verified: 2025-11-18
+  last-verified: 2025-11-28
   production-tested: false
   status: draft
   package: "@tanstack/react-start"
-  current_version: "1.136.9"
+  current_version: "1.139.10"
   keywords:
     - tanstack start
     - tanstack react start
@@ -49,12 +49,12 @@ metadata:
 ⚠️ **Status: Release Candidate - Monitoring for Stability**
 
 This skill is prepared but NOT published. Waiting for:
-- ⏸️ v1.0 stable release (currently RC v1.136.9 as of 2025-11-18)
-- ❌ GitHub #5734 resolved (memory leak with TanStack Form - OPEN as of 2025-11-02)
+- ⏸️ v1.0 stable release (currently RC v1.139.10 as of 2025-11-28)
+- ❌ GitHub #5734 resolved (memory leak with TanStack Form - OPEN, last updated Nov 20, 2025, related PR #1866)
 - ⏸️ Critical bugs stabilization period
 - ⏸️ Template/reference content creation
 
-**Current Package:** `@tanstack/react-start@1.136.9` (Nov 18, 2025)
+**Current Package:** `@tanstack/react-start@1.139.10` (Nov 28, 2025)
 
 **DO NOT USE IN PRODUCTION YET** - RC status, active memory leak issue
 
@@ -101,6 +101,7 @@ npm create cloudflare@latest -- --framework=tanstack-start
 
 ---
 
-**Last Updated:** 2025-11-18
+**Last Updated:** 2025-11-28
 **RC Announced:** September 22, 2025
 **Expected Stable:** Pending issue #5734 resolution + final RC feedback
+**Monitoring:** Issue #5734 last updated Nov 20, 2025 (related PR #1866 in TanStack Form repo)
