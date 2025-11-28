@@ -61,6 +61,10 @@
 45. ✅ tanstack-router (333→160 lines, 51.9% reduction, 1 package update @tanstack/react-router 1.134.13→1.139.10, removed verbose examples + meta-content, retained all 5 error patterns (devtools dependency, plugin order CRITICAL, type registration, loader not running, TanStack Form memory leak #5734), Cloudflare Workers integration + TanStack Query pattern, last verified 2025-11-28)
 46. ✅ tanstack-start (107→107 lines, MAINTENANCE UPDATE, package update @tanstack/react-start 1.136.9→1.139.10, draft placeholder skill awaiting v1.0 stable + issue #5734 resolution, last updated Nov 20 2025 with related PR #1866, last verified 2025-11-28)
 47. ✅ tanstack-table (726→213 lines, 70.7% reduction, no package updates (already current: @tanstack/react-table@8.21.3, @tanstack/react-virtual@3.13.12), removed verbose code examples + meta-content, retained all 6 error patterns (infinite re-renders, query state mismatch, manual flags, TypeScript imports, sorting, performance), server-side D1 pagination/filtering/sorting pattern + virtualization, last verified 2025-11-28)
+48. ✅ thesys-generative-ui (1,877→1,877 lines, MAINTENANCE UPDATE, package update @thesysai/genui-sdk 0.6.40→0.7.4, DEFERRED for full audit - exceptionally large skill (1,877 lines) requires dedicated reduction session, all 12 error patterns present, last verified 2025-11-28)
+
+**Skills Deferred:**
+1. ⏸️ thesys-generative-ui (1,877 lines) - Requires dedicated audit session, target ~550-600 lines (70% reduction)
 
 **Skills Deleted:**
 1. ✅ claude-code-bash-patterns (1,186 lines removed - redundant with official Claude Code docs)
@@ -71,14 +75,15 @@
 1. ✅ KNOWLEDGE_GAP_AUDIT_CHECKLIST.md (comprehensive 12-step process)
 
 **Cumulative Impact:**
-- Skills audited: 47 of 58 (81.0%)
+- Skills audited: 48 of 58 (82.8%)
+- Skills deferred: 1 (thesys-generative-ui - exceptionally large, needs dedicated session)
 - Skills deleted: 3
 - Lines removed: ~26,429 lines (net after google-gemini-api +37 enhancement)
 - Tokens saved: ~88,163 tokens per invocation (across 40 reduction audits)
-- Average reduction: 54.5% (40 reduction audits, 1 enhancement update, 1 maintenance update)
+- Average reduction: 54.5% (40 reduction audits, 1 enhancement update, 2 maintenance updates)
 - Annual savings (5 uses/month): ~5,289,780 tokens across reduction audits
 
-**Next:** Continue A-Z systematic audit (next skill after tanstack-table alphabetically)
+**Next:** Continue A-Z systematic audit (next skill after thesys-generative-ui alphabetically)
 
 ---
 
