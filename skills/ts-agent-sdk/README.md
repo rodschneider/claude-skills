@@ -38,7 +38,10 @@ await docs.createDocument({ spaceId: 'wiki', title: 'Guide', content: '...' })
 3. Generate typed clients for each server's tools
 4. Create example scripts in `scripts/sdk/`
 
-## Template Repository
+## Templates
 
-Full pattern documentation and examples at:
-`/home/jez/Documents/ts-agent-sdk/`
+SDK templates bundled at `templates/` — copy to your project's `scripts/sdk/`:
+
+```bash
+cp -r ~/.claude/skills/ts-agent-sdk/templates/* ./scripts/sdk/
+```

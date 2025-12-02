@@ -14,10 +14,14 @@ This skill generates typed TypeScript SDKs that allow AI agents (primarily Claud
 
 ## Template Location
 
-The core SDK template files are at:
-`/home/jez/Documents/ts-agent-sdk/template/scripts/sdk/`
+The core SDK template files are bundled with this skill at:
+`templates/`
 
-Copy these files to the target project's `scripts/sdk/` directory as a starting point.
+Copy these files to the target project's `scripts/sdk/` directory as a starting point:
+
+```bash
+cp -r ~/.claude/skills/ts-agent-sdk/templates/* ./scripts/sdk/
+```
 
 ## SDK Generation Workflow
 
