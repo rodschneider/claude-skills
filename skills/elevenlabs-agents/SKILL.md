@@ -8,7 +8,7 @@ description: |
   or tools, adding RAG knowledge bases, testing with CLI "agents as code", or troubleshooting deprecated @11labs
   packages, Android audio cutoff, CSP violations, dynamic variables, or WebRTC config.
 
-  Keywords: ElevenLabs Agents, ElevenLabs voice agents, AI voice agents, conversational AI, @elevenlabs/react, @elevenlabs/client, @elevenlabs/react-native, @elevenlabs/elevenlabs-js, @elevenlabs/agents-cli, elevenlabs SDK, voice AI, TTS, text-to-speech, ASR, speech recognition, turn-taking model, WebRTC voice, WebSocket voice, ElevenLabs conversation, agent system prompt, agent tools, agent knowledge base, RAG voice agents, multi-voice agents, pronunciation dictionary, voice speed control, elevenlabs scribe, @11labs deprecated, Android audio cutoff, CSP violation elevenlabs, dynamic variables elevenlabs, case-sensitive tool names, webhook authentication
+  Keywords: ElevenLabs Agents, ElevenLabs voice agents, AI voice agents, conversational AI, @elevenlabs/react, @elevenlabs/client, @elevenlabs/react-native, @elevenlabs/elevenlabs-js, @elevenlabs/agents-cli, elevenlabs SDK, voice AI, TTS, text-to-speech, ASR, speech recognition, turn-taking model, WebRTC voice, WebSocket voice, ElevenLabs conversation, agent system prompt, agent tools, agent knowledge base, RAG voice agents, multi-voice agents, pronunciation dictionary, voice speed control, elevenlabs scribe, @11labs deprecated, Android audio cutoff, CSP violation elevenlabs, dynamic variables elevenlabs, case-sensitive tool names, webhook authentication, post-call webhook, webhook payload schema, ElevenLabs-Signature header, transcript null message, call_successful string, webhook cost credits USD, charging llm_price, user context extraction, llm_usage tokens, data_collection_results, evaluation_criteria_results, feedback thumb_rating, interrupted turn, source_medium, rag_retrieval_info, has_audio has_user_audio has_response_audio
 ---
 
 # ElevenLabs Agents Platform
@@ -538,7 +538,7 @@ elevenlabs tests push
 
 ---
 
-## 13. Common Errors & Solutions (17 Documented)
+## 13. Common Errors & Solutions (27 Documented)
 
 ### Error 1: Missing Required Dynamic Variables
 **Cause:** Variables referenced in prompts not provided at conversation start
@@ -551,6 +551,7 @@ elevenlabs tests push
 ### Error 3: Webhook Authentication Failures
 **Cause:** Incorrect HMAC signature, not returning 200, or 10+ failures
 **Solution:** Verify `hmac = crypto.createHmac('sha256', SECRET).update(payload).digest('hex')` and return 200
+**⚠️ Header Name:** Use `ElevenLabs-Signature` (NOT `X-ElevenLabs-Signature` - no X- prefix!)
 
 ### Error 4: Voice Consistency Issues
 **Cause:** Background noise, inconsistent mic distance, extreme volumes in training
@@ -612,6 +613,204 @@ elevenlabs tests push
 3. Update CSP: `script-src 'self' https://elevenlabs.io; worker-src 'self';`
 **Gotcha:** Update worklets when upgrading `@elevenlabs/client`
 
+### Error 18: Webhook Payload - Null Message on Tool Calls
+**Cause:** Schema expects `message: string` but ElevenLabs sends `null` when agent makes tool calls
+**Solution:** Use `z.string().nullable()` for message field in Zod schemas
+```typescript
+// ❌ Fails on tool call turns:
+message: z.string()
+
+// ✅ Correct:
+message: z.string().nullable()
+```
+**Real payload example:**
+```json
+{ "role": "agent", "message": null, "tool_calls": [{ "tool_name": "my_tool", ... }] }
+```
+
+### Error 19: Webhook Payload - call_successful is String, Not Boolean
+**Cause:** Schema expects `call_successful: boolean` but ElevenLabs sends `"success"` or `"failure"` strings
+**Solution:** Accept both types and convert for database storage
+```typescript
+// Schema:
+call_successful: z.union([z.boolean(), z.string()]).optional()
+
+// Conversion helper:
+function parseCallSuccessful(value: unknown): boolean | undefined {
+  if (value === undefined || value === null) return undefined
+  if (typeof value === 'boolean') return value
+  if (typeof value === 'string') return value.toLowerCase() === 'success'
+  return undefined
+}
+```
+
+### Error 20: Webhook Schema Validation Fails Silently
+**Cause:** Real ElevenLabs payloads have many undocumented fields that strict schemas reject
+**Undocumented fields in transcript turns:**
+- `agent_metadata`, `multivoice_message`, `llm_override`, `rag_retrieval_info`
+- `llm_usage`, `interrupted`, `original_message`, `source_medium`
+**Solution:** Add all as `.optional()` with `z.any()` for fields you don't process
+**Debugging tip:** Use https://webhook.site to capture real payloads, then test schema locally
+
+### Error 21: Webhook Cost Field is Credits, NOT USD
+**Cause:** `metadata.cost` contains **ElevenLabs credits**, not USD dollars. Displaying this directly shows wildly wrong values (e.g., "$78.0000" when actual cost is ~$0.003)
+**Solution:** Extract actual USD from `metadata.charging.llm_price` instead
+```typescript
+// ❌ Wrong - displays credits as dollars:
+cost: metadata?.cost  // Returns 78 (credits)
+
+// ✅ Correct - actual USD cost:
+const charging = metadata?.charging as any
+cost: charging?.llm_price ?? null  // Returns 0.0036 (USD)
+```
+**Real payload structure:**
+```json
+{
+  "metadata": {
+    "cost": 78,  // ← CREDITS, not dollars!
+    "charging": {
+      "llm_price": 0.0036188999999999995,  // ← Actual USD cost
+      "llm_charge": 18,   // LLM credits
+      "call_charge": 60,  // Audio credits
+      "tier": "pro"
+    }
+  }
+}
+```
+**Note:** `llm_price` only covers LLM costs. Audio costs may require separate calculation based on your plan.
+
+### Error 22: User Context Available But Not Extracted
+**Cause:** Webhook contains authenticated user info from widget but code doesn't extract it
+**Solution:** Extract `dynamic_variables` from `conversation_initiation_client_data`
+```typescript
+const dynamicVars = data.conversation_initiation_client_data?.dynamic_variables
+const callerName = dynamicVars?.user_name || null
+const callerEmail = dynamicVars?.user_email || null
+const currentPage = dynamicVars?.current_page || null
+```
+**Payload example:**
+```json
+{
+  "conversation_initiation_client_data": {
+    "dynamic_variables": {
+      "user_name": "Jeremy Dawes",
+      "user_email": "jeremy@jezweb.net",
+      "current_page": "/dashboard/calls"
+    }
+  }
+}
+```
+
+### Error 23: Data Collection Results Available But Not Displayed
+**Cause:** ElevenLabs agents can collect structured data during calls (configured in agent settings). This data is stored in `analysis.data_collection_results` but often not parsed/displayed in UI.
+**Solution:** Parse the JSON and display collected fields with their values and rationales
+```typescript
+const dataCollectionResults = analysis?.dataCollectionResults
+  ? JSON.parse(analysis.dataCollectionResults)
+  : null
+
+// Display each collected field:
+Object.entries(dataCollectionResults).forEach(([key, data]) => {
+  console.log(`${key}: ${data.value} (${data.rationale})`)
+})
+```
+**Payload example:**
+```json
+{
+  "data_collection_results": {
+    "customer_name": { "value": "John Smith", "rationale": "Customer stated their name" },
+    "intent": { "value": "billing_inquiry", "rationale": "Asking about invoice" },
+    "callback_number": { "value": "+61400123456", "rationale": "Provided for callback" }
+  }
+}
+```
+
+### Error 24: Evaluation Criteria Results Available But Not Displayed
+**Cause:** Custom success criteria (configured in agent) produce results in `analysis.evaluation_criteria_results` but often not parsed/displayed
+**Solution:** Parse and show pass/fail status with rationales
+```typescript
+const evaluationResults = analysis?.evaluationCriteriaResults
+  ? JSON.parse(analysis.evaluationCriteriaResults)
+  : null
+
+Object.entries(evaluationResults).forEach(([key, data]) => {
+  const passed = data.result === 'success' || data.result === true
+  console.log(`${key}: ${passed ? 'PASS' : 'FAIL'} - ${data.rationale}`)
+})
+```
+**Payload example:**
+```json
+{
+  "evaluation_criteria_results": {
+    "verified_identity": { "result": "success", "rationale": "Customer verified DOB" },
+    "resolved_issue": { "result": "failure", "rationale": "Escalated to human" }
+  }
+}
+```
+
+### Error 25: Feedback Rating Available But Not Extracted
+**Cause:** User can provide thumbs up/down feedback. Stored in `metadata.feedback.thumb_rating` but not extracted
+**Solution:** Extract and store the rating (1 = thumbs up, -1 = thumbs down)
+```typescript
+const feedback = metadata?.feedback as any
+const feedbackRating = feedback?.thumb_rating ?? null  // 1, -1, or null
+
+// Also available:
+const likes = feedback?.likes    // Array of things user liked
+const dislikes = feedback?.dislikes  // Array of things user disliked
+```
+**Payload example:**
+```json
+{
+  "metadata": {
+    "feedback": {
+      "thumb_rating": 1,
+      "likes": ["helpful", "natural"],
+      "dislikes": []
+    }
+  }
+}
+```
+
+### Error 26: Per-Turn Metadata Not Extracted (interrupted, source_medium, rag_retrieval_info)
+**Cause:** Each transcript turn has valuable metadata that's often ignored
+**Solution:** Store these fields per message for analytics and debugging
+```typescript
+const turnAny = turn as any
+const messageData = {
+  // ... existing fields
+  interrupted: turnAny.interrupted ?? null,          // Was turn cut off by user?
+  sourceMedium: turnAny.source_medium ?? null,       // Channel: web, phone, etc.
+  originalMessage: turnAny.original_message ?? null, // Pre-processed message
+  ragRetrievalInfo: turnAny.rag_retrieval_info       // What knowledge was retrieved
+    ? JSON.stringify(turnAny.rag_retrieval_info)
+    : null,
+}
+```
+**Use cases:**
+- `interrupted: true` → User spoke over agent (UX insight)
+- `source_medium` → Analytics by channel
+- `rag_retrieval_info` → Debug/improve knowledge base retrieval
+
+### Error 27: Upcoming Audio Flags (August 2025)
+**Cause:** Three new boolean fields coming in August 2025 webhooks that may break schemas
+**Solution:** Add these fields to schemas now (as optional) to be ready
+```typescript
+// In webhook payload (coming August 15, 2025):
+has_audio: boolean        // Was full audio recorded?
+has_user_audio: boolean   // Was user audio captured?
+has_response_audio: boolean // Was agent audio captured?
+
+// Schema (future-proof):
+const schema = z.object({
+  // ... existing fields
+  has_audio: z.boolean().optional(),
+  has_user_audio: z.boolean().optional(),
+  has_response_audio: z.boolean().optional(),
+})
+```
+**Note:** These match the existing fields in the GET Conversation API response
+
 ---
 
 ## Integration with Existing Skills
@@ -646,6 +845,6 @@ This skill composes well with:
 
 ---
 
-**Production Tested**: WordPress Auditor, Customer Support Agents
-**Last Updated**: 2025-11-25
+**Production Tested**: WordPress Auditor, Customer Support Agents, AgentFlow (webhook integration)
+**Last Updated**: 2025-12-06
 **Package Versions**: elevenlabs@1.59.0, @elevenlabs/elevenlabs-js@2.25.0, @elevenlabs/agents-cli@0.6.1, @elevenlabs/react@0.11.3, @elevenlabs/client@0.11.3, @elevenlabs/react-native@0.5.4

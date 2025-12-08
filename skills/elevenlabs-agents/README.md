@@ -15,7 +15,7 @@ This skill should be used when working with:
 - **Multi-voice**, **pronunciation dictionary**, **voice design**
 - **RAG knowledge base**, **ElevenLabs RAG**, **knowledge base agent**
 - **ElevenLabs MCP**, **MCP tools**, **Model Context Protocol**
-- **Client tools**, **server tools**, **webhook tools**, **system tools**
+- **Client tools**, **server tools**, **webhook tools**, **system tools**, **post-call webhook**
 - **Telephony integration**, **Twilio ElevenLabs**, **SIP trunk**
 - **Voice testing**, **agent testing**, **scenario testing**
 - **HIPAA voice agent**, **GDPR compliance**, **voice compliance**
@@ -82,7 +82,7 @@ This skill should be used when working with:
 
 ## Errors Prevented
 
-This skill prevents 17+ common errors:
+This skill prevents 20+ common errors:
 
 1. **Package deprecation** (@11labs/* → @elevenlabs/*)
 2. **Android audio cutoff** (connectionDelay configuration)
@@ -90,7 +90,7 @@ This skill prevents 17+ common errors:
 4. **WebRTC vs WebSocket** confusion (different auth flows)
 5. Missing required dynamic variables
 6. Case-sensitive tool names mismatch
-7. Webhook authentication failures (HMAC verification)
+7. Webhook authentication failures (HMAC verification, header name)
 8. Voice consistency issues (training data quality)
 9. Wrong language voice (English voice for Spanish, etc.)
 10. Restricted API keys in CLI
@@ -101,6 +101,9 @@ This skill prevents 17+ common errors:
 15. 401 Unauthorized in production (visibility settings)
 16. Allowlist connection errors
 17. Workflow infinite loops
+18. **Webhook null message on tool calls** (message: z.string().nullable())
+19. **Webhook call_successful is string** ("success" not true)
+20. **Webhook undocumented fields** (agent_metadata, llm_usage, etc.)
 
 ## Quick Start Examples
 
@@ -153,7 +156,7 @@ const agent = await client.agents.create({
 ## Impact Metrics
 
 - **Token Savings**: ~73% (22k → 6k tokens)
-- **Errors Prevented**: 17+ common issues (including v1.1.0 additions)
+- **Errors Prevented**: 20+ common issues (including webhook payload gotchas)
 - **Time Savings**: 6-8 hours → 6-8 minutes with Claude Code
 - **Coverage**: 31 major features, 100% platform coverage (includes Scribe + WebRTC)
 

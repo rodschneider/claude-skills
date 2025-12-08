@@ -1,6 +1,6 @@
 {
   "name": "tiptap",
-  "description": "Build rich text editors with Tiptap - headless editor framework with React, shadcn/ui, and Tailwind v4 integration. Includes SSR-safe setup, image uploads to R2, prose styling, collaborative editing, and markdown support. Use when creating blog editors, comment systems, documentation platforms, or Notion-like apps, or troubleshooting SSR hydration errors, Tailwind typography issues, or image upload performance.",
+  "description": "Build rich text editors with Tiptap - headless editor framework with React, shadcn/ui, and Tailwind v4 integration. Includes SSR-safe setup, image uploads to R2, prose styling, collaborative editing, and markdown support. Use when creating blog editors, comment systems, documentation platforms, or Notion-like apps, or troubleshooting SSR hydration errors, Tailwind typography issues, or image upload performance. const editor = useEditor({ extensions: [StarterKit], content: <p>Hello World!</p>, im",
   "version": "1.0.0",
   "author": {
     "name": "Jeremy Dawes",
