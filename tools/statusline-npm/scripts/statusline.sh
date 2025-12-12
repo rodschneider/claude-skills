@@ -94,20 +94,52 @@ fi
 
 # Build Line 2: Context Brick Visualization
 # Try native context_window first (Claude Code 2.0.65+)
-input_tokens=$(echo "$input" | jq -r '.context_window.total_input_tokens // null')
+cumulative_input=$(echo "$input" | jq -r '.context_window.total_input_tokens // null')
+cumulative_output=$(echo "$input" | jq -r '.context_window.total_output_tokens // 0')
+total_tokens=$(echo "$input" | jq -r '.context_window.context_window_size // 200000')
 
-if [[ "$input_tokens" != "null" && -n "$input_tokens" && "$input_tokens" != "0" ]]; then
-    # Use native context_window data (2.0.65+)
-    output_tokens=$(echo "$input" | jq -r '.context_window.total_output_tokens // 0')
-    total_tokens=$(echo "$input" | jq -r '.context_window.context_window_size // 200000')
-    used_tokens=$((input_tokens + output_tokens))
+compacted=false
+
+if [[ "$cumulative_input" != "null" && -n "$cumulative_input" && "$cumulative_input" != "0" ]]; then
+    cumulative_total=$((cumulative_input + cumulative_output))
+
+    # Detect compaction: cumulative exceeds context limit
+    if [[ $cumulative_total -gt $total_tokens ]]; then
+        compacted=true
+
+        # Get ACTUAL current context from last message's input_tokens
+        transcript_path=$(echo "$input" | jq -r '.transcript_path // ""')
+
+        if [[ -f "$transcript_path" && -s "$transcript_path" ]]; then
+            # Get the last assistant message's input_tokens (actual context sent)
+            last_input=$(grep '"type":"assistant"' "$transcript_path" 2>/dev/null | \
+                        tail -1 | \
+                        jq -r '.message.usage.input_tokens // 0' 2>/dev/null)
+
+            if [[ -n "$last_input" && "$last_input" =~ ^[0-9]+$ && "$last_input" -gt 0 ]]; then
+                # Add cache tokens for complete picture
+                cache_read=$(grep '"type":"assistant"' "$transcript_path" 2>/dev/null | \
+                            tail -1 | \
+                            jq -r '.message.usage.cache_read_input_tokens // 0' 2>/dev/null)
+                [[ ! "$cache_read" =~ ^[0-9]+$ ]] && cache_read=0
+
+                used_tokens=$((last_input + cache_read))
+            else
+                # Fallback: cap at 90% if we can't determine actual usage
+                used_tokens=$(( (total_tokens * 90) / 100 ))
+            fi
+        else
+            used_tokens=$(( (total_tokens * 90) / 100 ))
+        fi
+    else
+        # Normal state: use cumulative (it's accurate when < limit)
+        used_tokens=$cumulative_total
+    fi
 else
-    # Fallback: Parse transcript for older Claude Code versions
+    # Fallback for older Claude Code versions (no native data)
     transcript_path=$(echo "$input" | jq -r '.transcript_path // ""')
-    total_tokens=200000  # Default context limit
 
     if [[ -f "$transcript_path" && -s "$transcript_path" ]]; then
-        # Parse JSONL transcript - get the LAST assistant message's token usage
         last_usage=$(grep '"type":"assistant"' "$transcript_path" 2>/dev/null | \
                      tail -1 | \
                      jq -r '.message.usage // null' 2>/dev/null)
@@ -123,10 +155,7 @@ else
             used_tokens=0
         fi
 
-        # Ensure we have a valid number
-        if [[ ! "$used_tokens" =~ ^[0-9]+$ ]]; then
-            used_tokens=0
-        fi
+        [[ ! "$used_tokens" =~ ^[0-9]+$ ]] && used_tokens=0
     else
         used_tokens=0
     fi
@@ -171,7 +200,14 @@ for ((i=0; i<free_bricks; i++)); do
     brick_line+="\033[2;37m□\033[0m"
 done
 
-brick_line+="] \033[1m${usage_pct}%\033[0m (${used_k}k/${total_k}k)"
+brick_line+="]"
+
+# Add compaction indicator if applicable
+if [[ "$compacted" == "true" ]]; then
+    brick_line+=" \033[1;35m📦\033[0m"
+fi
+
+brick_line+=" \033[1m${usage_pct}%\033[0m (${used_k}k/${total_k}k)"
 
 # Add free space
 brick_line+=" | \033[1;32m${free_k}k free\033[0m"

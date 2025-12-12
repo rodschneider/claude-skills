@@ -8,6 +8,7 @@ A custom status line for Claude Code CLI that displays real-time context trackin
 
 ### Real-Time Context Tracking
 - **Native context_window support** (Claude Code 2.0.65+) - accurate token data direct from Claude Code
+- **Compaction detection** (v2.1+) - shows real context usage after automatic compaction with 📦 indicator
 - **Fallback for older versions** - parses transcript files if native data unavailable
 - **Brick visualization** showing context usage at a glance
 - **Session duration** - track how long you've been working
@@ -91,9 +92,15 @@ For Max subscribers (no API cost):
 ctx [■■■■■■■■■■■■■■■■■□□□□□□□□□□□□□□□□□□□□□□□] 43% (86k/200k) | 113k free | 12m45s
 ```
 
+After context compaction (📦 indicates compaction occurred):
+```
+ctx [■■■■■■■■■■■■■■■■■■■■■■■■■■■■□□□□□□□□□□□□] 📦 68% (136k/200k) | 64k free | 2h 38m
+```
+
 **Color Legend:**
 - 🟦 Cyan = Used context
 - ⬜ Dim hollow = Free space
+- 📦 Purple = Context has been compacted (shows actual current usage, not cumulative)
 
 ## 🔧 Requirements
 
@@ -125,9 +132,21 @@ ctx [■■■■■■■■■■■■■■■■■□□□□□□□□
 
 The status line:
 1. Checks for native `context_window` data (2.0.65+)
-2. Falls back to transcript parsing for older versions
-3. Calculates percentage against context limit
-4. Generates brick visualization proportional to usage
+2. Detects compaction (when cumulative tokens > context limit)
+3. If compacted: parses transcript for actual current context size
+4. Falls back to transcript parsing for older versions
+5. Generates brick visualization proportional to usage
+
+### Compaction Detection (v2.1+)
+
+Claude Code's `context_window.total_input_tokens` and `total_output_tokens` are **cumulative session totals** that don't reset after compaction. When these exceed the context limit, we know compaction occurred.
+
+To show accurate post-compaction usage, the script reads the **last assistant message's `input_tokens`** from the transcript - this represents the actual tokens sent to Claude in the most recent turn (compacted summary + new content).
+
+When compaction is detected:
+- 📦 indicator appears (purple)
+- Bar shows real current context usage
+- Percentage reflects actual capacity used
 
 ### Fallback for Older Versions
 
@@ -230,6 +249,12 @@ rm ~/.claude/statusline.sh
 ```
 
 ## 📋 Changelog
+
+### v2.1.0 (2025-12-13)
+- **Compaction detection** - Shows accurate context usage after automatic compaction
+- **📦 indicator** - Purple box emoji when context has been compacted
+- **Hybrid calculation** - Uses cumulative tokens when normal, transcript parsing when compacted
+- **Fixes >100% display** - No more "246% (492k/200k)" after compaction
 
 ### v2.0.0 (2025-12-11)
 - **Native context_window support** - Uses Claude Code 2.0.65+ native data

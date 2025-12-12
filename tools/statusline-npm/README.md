@@ -12,6 +12,7 @@ A custom status line for Claude Code that displays accurate token usage with a b
 ## ✨ Features
 
 - 🎯 **Native context_window support** (Claude Code 2.0.65+) - accurate token data
+- 📦 **Compaction detection** (v2.1+) - shows real context usage after automatic compaction
 - 🔄 **Backwards compatible** - falls back to transcript parsing for older versions
 - 🧱 **Brick visualization** showing context usage at a glance
 - 🔧 **Git integration**: repo:branch [commit] message | github-repo *↑↓
@@ -73,9 +74,15 @@ For Max subscribers (no API cost):
 ctx [■■■■■■■■■■■■■■■■■□□□□□□□□□□□□□□□□□□□□□□□] 43% (86k/200k) | 113k free | 12m45s
 ```
 
+After context compaction (📦 indicates compaction occurred):
+```
+ctx [■■■■■■■■■■■■■■■■■■■■■■■■■■■■□□□□□□□□□□□□] 📦 68% (136k/200k) | 64k free | 2h 38m
+```
+
 **Color Legend:**
 - 🟦 Cyan = Used context
 - ⬜ Dim hollow = Free space
+- 📦 Purple = Context has been compacted (shows actual current usage)
 
 ## 🔧 Requirements
 
@@ -131,6 +138,12 @@ npx contextbricks@latest init
 ```
 
 ## 📋 Changelog
+
+### v2.1.0 (2025-12-13)
+- **Compaction detection** - Shows accurate context usage after automatic compaction
+- **📦 indicator** - Purple box emoji when context has been compacted
+- **Hybrid calculation** - Uses cumulative tokens when normal, transcript parsing when compacted
+- **Fixes >100% display** - No more "246% (492k/200k)" after compaction
 
 ### v2.0.0 (2025-12-11)
 - **Native context_window support** - Uses Claude Code 2.0.65+ native data
