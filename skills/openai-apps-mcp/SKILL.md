@@ -1,5 +1,5 @@
 ---
-name: OpenAI Apps MCP
+name: openai-apps-mcp
 description: |
   Build ChatGPT apps with MCP servers on Cloudflare Workers. Extend ChatGPT with custom tools and interactive widgets (HTML/JS UI).
 

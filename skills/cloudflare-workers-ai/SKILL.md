@@ -5,17 +5,7 @@ description: |
   Flux image generation, BGE embeddings (2x faster, 2025), streaming support, and AI Gateway for cost tracking.
 
   Use when: implementing LLM inference, generating images, building RAG with embeddings, streaming AI responses,
-  using AI Gateway, troubleshooting max_tokens defaults (breaking change 2025), BGE pooling parameter (not backwards
-  compatible), or handling AI_ERROR, rate limits, model deprecations, token limits.
-
-  Keywords: workers ai, cloudflare ai, ai bindings, llm workers, @cf/meta/llama-4-scout, @cf/google/gemma-3-12b-it,
-  @cf/mistralai/mistral-small-3.1-24b-instruct, @cf/openai/gpt-oss-120b, workers ai models, ai inference,
-  cloudflare llm, ai streaming, text generation ai, ai embeddings, bge pooling cls mean, image generation ai,
-  workers ai rag, ai gateway, llama workers, flux image generation, deepgram aura, leonardo image generation,
-  vision models ai, ai chat completion, AI_ERROR, rate limit ai, model not found, max_tokens breaking change,
-  bge pooling backwards compatibility, model deprecations october 2025, token limit exceeded, neurons exceeded,
-  workers ai hono, ai gateway workers, vercel ai sdk workers, openai compatible workers, workers ai vectorize,
-  workers-ai-provider v2, ai sdk v5, lora adapters rank 32
+  using AI Gateway, troubleshooting max_tokens defaults, BGE pooling parameter, or handling AI_ERROR.
 ---
 
 # Cloudflare Workers AI

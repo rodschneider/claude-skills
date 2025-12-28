@@ -5,10 +5,7 @@ description: |
   Configure agents, tools (client/server/MCP), RAG knowledge bases, multi-voice, and Scribe real-time STT.
 
   Use when: building voice chat interfaces, implementing AI phone agents with Twilio, configuring agent workflows
-  or tools, adding RAG knowledge bases, testing with CLI "agents as code", or troubleshooting deprecated @11labs
-  packages, Android audio cutoff, CSP violations, dynamic variables, or WebRTC config.
-
-  Keywords: ElevenLabs Agents, ElevenLabs voice agents, AI voice agents, conversational AI, @elevenlabs/react, @elevenlabs/client, @elevenlabs/react-native, @elevenlabs/elevenlabs-js, @elevenlabs/agents-cli, elevenlabs SDK, voice AI, TTS, text-to-speech, ASR, speech recognition, turn-taking model, WebRTC voice, WebSocket voice, ElevenLabs conversation, agent system prompt, agent tools, agent knowledge base, RAG voice agents, multi-voice agents, pronunciation dictionary, voice speed control, elevenlabs scribe, @11labs deprecated, Android audio cutoff, CSP violation elevenlabs, dynamic variables elevenlabs, case-sensitive tool names, webhook authentication, post-call webhook, webhook payload schema, ElevenLabs-Signature header, transcript null message, call_successful string, webhook cost credits USD, charging llm_price, user context extraction, llm_usage tokens, data_collection_results, evaluation_criteria_results, feedback thumb_rating, interrupted turn, source_medium, rag_retrieval_info, has_audio has_user_audio has_response_audio
+  or tools, adding RAG knowledge bases, testing with CLI "agents as code".
 ---
 
 # ElevenLabs Agents Platform

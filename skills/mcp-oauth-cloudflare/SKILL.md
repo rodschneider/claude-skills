@@ -1,5 +1,5 @@
 ---
-name: MCP OAuth Cloudflare
+name: mcp-oauth-cloudflare
 description: |
   Add OAuth authentication to MCP servers on Cloudflare Workers. Uses @cloudflare/workers-oauth-provider with Google OAuth for Claude.ai-compatible authentication.
 
